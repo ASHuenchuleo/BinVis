@@ -102,3 +102,9 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# Virtualenv
+projectenv/
+
+# Node.js
+node-v10.16.1-linux-x64/
