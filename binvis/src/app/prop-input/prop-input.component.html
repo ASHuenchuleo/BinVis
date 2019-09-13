@@ -1,0 +1,42 @@
+<div class='view-card-title'><h3> Parameter selection </h3></div>
+
+<form name="attrForm" (submit)="updateViews(attributes)">
+
+<div class='container'>
+<div class='row'>
+<div class='col-4'>
+<div *ngFor="let attr of attributes | slice: 0: attributes.length/2">
+	<div class="input-group mb-3">
+		<div class='input-group-prepend'>
+		<span class="input-group-text" [innerHTML]="attr.name"></span>
+		</div> 
+		<input class='input-group-text' min={{attr.min}} max={{attr.max}} type="number" name='{{attr.name}}' [(ngModel)]='attr.value'> 
+		<!--<div style="color:red" ng-show="myForm.user.$dirty && myForm.user.$invalid" *ngIf="attr.hasRange">
+			<span ng-show="attrForm.user.$error.min" >{{attr.name}} should be above {{attr.min}}.</span>
+			<span ng-show="attrForm.user.$error.max" >{{attr.name}} should be below {{attr.max}}.</span>
+		</div> -->
+	</div>
+</div>
+</div>
+
+<div class='col-4'>
+<div *ngFor="let attr of attributes | slice: attributes.length/2">
+	<div class="input-group mb-3">
+		<div class='input-group-prepend'>
+		<span class="input-group-text" [innerHTML]="attr.name"></span>
+		</div> 
+		<input class='input-group-text' (ngChange)="setLimit(attr)" type="number" name='{{attr.name}}' [(ngModel)]='attr.value'> 
+	</div>
+
+
+</div>
+
+
+<div class='mb-3'><button class="btn btn-primary">Render these parameters</button> </div>
+
+</div>
+</div>
+</div>
+
+</form>
+
