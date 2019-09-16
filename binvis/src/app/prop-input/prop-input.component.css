@@ -2,3 +2,25 @@ sub {
   vertical-align: sub;
   font-size: smaller;
 }
+
+.view-select{
+}
+
+.input-numeric{
+	width: 50%;
+}
+
+.input-label{
+	width: 80px;
+}
+
+.parameter-group{
+	margin-bottom: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.075);
+}
+
+.input-group-parameter{
+	margin-left: 15%;
+	margin-bottom: 20px;
+}
+

@@ -1,8 +1,6 @@
-import { Component, ViewChild,OnInit, ElementRef } from '@angular/core';
+import { Component, ViewChild, AfterViewInit, OnDestroy, ElementRef } from '@angular/core';
 import { PosManagerService } from './../pos-manager.service';
-import { ConfigService} from './../config.service';
 import { ThreeDView} from './../three-d-view';
-
 
 
 import * as THREE from 'three'
@@ -15,7 +13,7 @@ import OrbitControls from 'three-orbitcontrols';
   styleUrls: ['./main-view.component.css']
 })
 /** Handles and shows the velocity graph for the orbit */
-export class MainViewComponent extends ThreeDView implements OnInit {
+export class MainViewComponent extends ThreeDView implements AfterViewInit, OnDestroy {
 
   /* Paths to be followed */
   private xPath : number[];
@@ -24,14 +22,27 @@ export class MainViewComponent extends ThreeDView implements OnInit {
 
 
 
-  constructor(private manager : PosManagerService,
-   private config : ConfigService) {
-    super('projection-div');
-   config.mainViewUpdate$.subscribe(
-     attributes => {
-      this.clean();
-      this.init();
-     });
+  constructor(private manager : PosManagerService) {
+  super('projection-div');
+  }
+
+  ngAfterViewInit(){
+    this.clean();
+    this.init();
+  }
+
+  ngOnDestroy() : void{
+    this.clean();
+    let test = (obj = this.scene) =>
+    {
+          if (obj.children !== undefined) {
+              while (obj.children.length > 0) {
+                  console.log(obj);
+                  this.clean(obj.children[0]);
+              }
+          }
+      }
+    test();
   }
 
 

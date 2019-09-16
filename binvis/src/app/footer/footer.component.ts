@@ -1,4 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+/**
+* WORKAROUND, service is not initialized before the first
+* message is sent because the components that inyect it
+* don't exist before the message
+*/
+import { PosManagerService } from './../pos-manager.service';
+
 
 @Component({
   selector: 'app-footer',
@@ -7,7 +14,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FooterComponent implements OnInit {
 
-  constructor() { }
+  constructor(posManagerService : PosManagerService) { }
 
   ngOnInit() {
   }

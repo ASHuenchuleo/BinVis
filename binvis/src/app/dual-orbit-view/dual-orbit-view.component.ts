@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, AfterViewInit, ViewChild, OnDestroy, ElementRef } from '@angular/core';
 import { PosManagerService } from './../pos-manager.service';
 import { ConfigService} from './../config.service';
 import { ThreeDView} from './../three-d-view';
@@ -13,7 +13,7 @@ import OrbitControls from 'three-orbitcontrols';
   templateUrl: './dual-orbit-view.component.html',
   styleUrls: ['./dual-orbit-view.component.css']
 })
-export class DualOrbitViewComponent extends ThreeDView implements OnInit {
+export class DualOrbitViewComponent extends ThreeDView implements AfterViewInit, OnDestroy{
 
 
   /* Paths to be followed */
@@ -25,30 +25,27 @@ export class DualOrbitViewComponent extends ThreeDView implements OnInit {
   private yPathSec : number[];
   private zPathSec : number[];
 
-  constructor(private manager : PosManagerService,
-   private config : ConfigService) {
+  constructor(private manager : PosManagerService) {
    super('dual-orbit-div');
-   config.dualOrbitViewUpdate$.subscribe(
-     attributes => {
-      this.clean();
-      let test = (obj = this.scene) =>
-      {
-            if (obj.children !== undefined) {
-                while (obj.children.length > 0) {
-                    console.log(obj);
-                    this.clean(obj.children[0]);
-                }
-            }
-        }
-        test();
-      this.init();
+  }
 
-     });
+  ngOnDestroy() : void{
+    this.clean();
+    let test = (obj = this.scene) =>
+    {
+          if (obj.children !== undefined) {
+              while (obj.children.length > 0) {
+                  console.log(obj);
+                  this.clean(obj.children[0]);
+              }
+          }
+      }
+    test();
   }
 
   
 
-  init()
+  ngAfterViewInit()
   {
     this.manager.buildPrimaryPath();
     let pathPrim = this.manager.getPrimaryPath();

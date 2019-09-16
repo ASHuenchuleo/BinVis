@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import {OrbitAttribute} from './orbit-attribute'
-import { Subject }    from 'rxjs';
+import { timer, Subject }    from 'rxjs';
+
+import {ViewWindow} from './view-window';
+import {ViewItem} from './view-item';
+
 
 
 @Injectable({
@@ -13,24 +17,34 @@ export class ConfigService {
 
   // Observable string sources
   private posManagerUpdateSource = new Subject<OrbitAttribute[]>();
-  private mainViewUpdateSource = new Subject<OrbitAttribute[]>();
-  private dualOrbitViewUpdateSource = new Subject<OrbitAttribute[]>();
-  private velocityViewUpdateSource = new Subject<OrbitAttribute[]>();
+  private viewCardLeftUpdateSource = new Subject<ViewWindow>();
+  private viewCardRightUpdateSource = new Subject<ViewWindow>();
 
   // Observable string streams
   posManagerUpdate$ = this.posManagerUpdateSource.asObservable();
-  mainViewUpdate$ = this.mainViewUpdateSource.asObservable();
-  dualOrbitViewUpdate$ = this.dualOrbitViewUpdateSource.asObservable();
-  velocityViewUpdate$ = this.velocityViewUpdateSource.asObservable();
+  viewCardLeftUpdate$ = this.viewCardLeftUpdateSource.asObservable();
+  viewCardRightUpdate$ = this.viewCardRightUpdateSource.asObservable();
 
-  constructor() { }
+  loading;
+
+  constructor() {}
 
 
-  updateSceneAttr(attributes : OrbitAttribute[])
+                                      
+  /**
+  * Sends messages to the respective components to update the data and display
+  * the selected views
+  * @param {OrbitAttribute[]} attributes The numeric attributes for the orbit
+  * @param {ViewWindow} leftView The selected view window for the left view
+  * @param {ViewWindow} leftView The selected view window for the right view
+  */
+  updateSceneAttr(attributes : OrbitAttribute[], leftView : ViewWindow, rightView : ViewWindow)
   {
-  	this.posManagerUpdateSource.next(attributes);
-  	this.mainViewUpdateSource.next();
-  	this.dualOrbitViewUpdateSource.next();
-  	this.velocityViewUpdateSource.next();
+
+    console.log('Called to update the posmanager');
+    this.posManagerUpdateSource.next(attributes);
+    this.viewCardLeftUpdateSource.next(leftView);
+    this.viewCardRightUpdateSource.next(rightView);
+
   }	
 }

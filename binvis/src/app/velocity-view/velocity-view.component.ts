@@ -1,7 +1,6 @@
-import { Component, ViewChild, OnInit } from '@angular/core';
+import { Component, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { PosManagerService } from './../pos-manager.service';
 import { VelocityManagerService } from './../velocity-manager.service';
-import { ConfigService} from './../config.service';
 
 
 import Two from 'two.js';
@@ -16,7 +15,7 @@ let AxisEnum = {
   templateUrl: './velocity-view.component.html',
   styleUrls: ['./velocity-view.component.css']
 })
-export class VelocityViewComponent implements OnInit{
+export class VelocityViewComponent implements AfterViewInit, OnDestroy{
   /** Speed factor of the orbit */
   private speed : number = 5.0;
   /** Current index of the animation */
@@ -65,31 +64,24 @@ export class VelocityViewComponent implements OnInit{
   /** Two.js scene */
   private two : Two;
 
+  private elem;
+  private params;
+
 
 
   constructor(private manager : PosManagerService,
-    private graphDrawer : VelocityManagerService,
-    private config : ConfigService) {
-    config.velocityViewUpdate$.subscribe(
-      attributes => {
-        this.clean();
-        this.init();
-      });
+    private graphDrawer : VelocityManagerService) {
+
   }
+  
+  /**
+  * Executed once the calculations are done
+  */
+  ngAfterViewInit() {
 
-  ngOnInit(){
-    var elem = document.getElementById('velocity-time');
-
-    var params = { width: this.width, height: this.height };
-    this.two = new Two(params).appendTo(elem);
-  }
-
-  clean(){
-    this.two.clear();
-  }
-
-  init() {
-
+    this.elem = document.getElementById('velocity-time');
+    this.params = { width: this.width, height: this.height };
+    this.two = new Two(this.params).appendTo(this.elem);
 
     this.manager.buildCMRadialVelocities();
   	this.velsPrimary = this.manager.getPrimaryCMVelocities(this.nT);
@@ -172,6 +164,11 @@ export class VelocityViewComponent implements OnInit{
 
     let sizeX = this.finalX - this.initX;
     this.scaleX =  sizeX / (this.finalXaxis -  this.initialXaxis);
+  }
+
+  ngOnDestroy() : void
+  {
+    this.two.clear();
   }
 
 

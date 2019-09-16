@@ -35,8 +35,10 @@ export class PosManagerService {
   attributes : OrbitAttribute[];
 
   constructor(private solver : KeplerSolverService, private config : ConfigService){
+    console.log('PosManager created!');
     config.posManagerUpdate$.subscribe(
       attributes => {
+        console.log('Posmanager recieved the message!');
         this.attributes = attributes;
         this.init();
       });
@@ -71,7 +73,10 @@ export class PosManagerService {
   		this.times.push(currentTime);
   		currentTime += this.timeStep;
     }
+    console.log('Calculating EVals!');
     this.solver.solveEVals(this.times);
+    console.log('Finished calculating EVals!');
+
 
   }
   /**

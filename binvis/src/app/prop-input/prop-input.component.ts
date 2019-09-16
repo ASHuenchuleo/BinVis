@@ -1,7 +1,8 @@
-import { Component, AfterViewInit, Input} from '@angular/core';
+import { Component, Input} from '@angular/core';
 import {OrbitAttribute} from '../orbit-attribute'
 import { ConfigService} from '../config.service';
 
+import {ViewWindow} from '../view-window';
 
 
 @Component({
@@ -9,7 +10,11 @@ import { ConfigService} from '../config.service';
   templateUrl: './prop-input.component.html',
   styleUrls: ['./prop-input.component.css']
 })
-export class PropInputComponent implements AfterViewInit {
+/**
+* Handles all inputs and sends a message to update the parameters and do the
+* calculations, and then calls the selected views to be shown
+*/
+export class PropInputComponent {
 
   omega : OrbitAttribute = new OrbitAttribute('&#969;[°]', 60, true, 0, 360); // deg
   Omega : OrbitAttribute = new OrbitAttribute('&#937; [°]', 50.36, true, 0, 360); // deg
@@ -22,18 +27,37 @@ export class PropInputComponent implements AfterViewInit {
   plx : OrbitAttribute = new OrbitAttribute('π [mas]', 0.8); // mas
   v0 : OrbitAttribute = new OrbitAttribute('V<sub>0</sub> [<sup>km</sup>&frasl;<sub>s</sub>]', 200); // km/s
 
-  attributes : OrbitAttribute[] = 
+  viewOptions = [
+    {id: ViewWindow.Main, name: "Primary Component "},
+    {id: ViewWindow.CM, name: "Centre of Mass"},
+    {id: ViewWindow.Vel, name: "Velocity Graph"}
+  ];
+
+  leftView = this.viewOptions[0];
+  rightView = this.viewOptions[2];
+
+
+  physicalAttributes : OrbitAttribute[] = 
   [
-  	this.omega,
-  	this.Omega,
-  	this.i,
-  	this.T,
   	this.P,
   	this.a,
   	this.e,
-  	this.q,
-  	this.plx,
-  	this.v0
+  	this.q
+  ];
+
+  measuredAttributes : OrbitAttribute[]=
+  [
+    this.plx,
+    this.v0
+  ];
+
+
+  visualAttributes: OrbitAttribute[] =
+  [
+  this.omega,
+  this.Omega,
+  this.i,
+  this.T
   ]; 
 
 
@@ -41,12 +65,9 @@ export class PropInputComponent implements AfterViewInit {
 
   }
 
-  ngAfterViewInit() {
-    this.updateViews();
-  }
-
   updateViews() {
-    this.config.updateSceneAttr(this.attributes);
+    let attributes = this.visualAttributes.concat(this.physicalAttributes.concat(this.visualAttributes));
+    this.config.updateSceneAttr(attributes, this.leftView.id, this.rightView.id);
   }
 
 }

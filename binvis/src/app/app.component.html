@@ -7,37 +7,30 @@
 </div>
 
 <div class='container-fluid'>
+
 <div class='row' style='padding-bottom: 40px'>
-	<div class='col-6'>
-	<div class='view-card-left'>
-
-	<ul class="nav">
-	  <li class="nav-item active"><a href="#home">Home</a></li>
-	  <li class="nav-item"><a href="#menu1">Menu 1</a></li>
-	</ul>
-
-		<app-main-view></app-main-view>
-	</div>
-	</div>
-	<div class='col-6'>
-	<div class='view-card-right'>
-
-		<app-velocity-view></app-velocity-view>
-
-	</div>
-	</div>
-</div>
-
-<div class='row'>
-	<!--
-	<div class='col-6'>
-		<app-dual-orbit-view></app-dual-orbit-view>
-	</div>
--->
 	<div class='view-card-input'>
 		<app-prop-input></app-prop-input>
 	</div>
 </div>
+
+<div class='row'>
+	<div class='col-6'>
+	<div class='view-card-left'>
+		<app-view-card-left></app-view-card-left>
+	</div>
+	</div>
+
+	<div class='col-6'>
+	<div class='view-card-right'>
+
+		<app-view-card-right></app-view-card-right>
+
+	</div>
+	</div>
+</div>
+
+
 </div>
 
 <app-footer></app-footer>
