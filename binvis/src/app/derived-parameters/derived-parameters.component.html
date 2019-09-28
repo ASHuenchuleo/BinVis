@@ -1,0 +1,7 @@
+<div class="view-card-title"> <h5> Calculated Parameters </h5> </div> 
+<div class="parameter-group container">
+	<div *ngFor="let par of derivedParameters" class='row'>
+			<div class='col-4 parameter-name'> <span [innerHTML]="par.name"></span> </div>
+			<div class='col-4 parameter-value'> {{par.value}} </div>
+			<div class='col-4 parameter-units'> <span [innerHTML]="par.units"></span>  </div>
+</div>

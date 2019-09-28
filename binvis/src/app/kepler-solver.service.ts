@@ -2,19 +2,25 @@ import {Injectable } from '@angular/core';
 import { throwError } from 'rxjs'; 
 import Victor from 'victor';
 
+const kmUA = 1.496 * Math.pow(10, 8); // kilometers in an UA
+const secYr = 3.15 * Math.pow(10, 7); // Number of seconds in year
+const UApc = 206265; // Number of UA in a parsec
+let Gtemp = 4.3 * Math.pow(10, -3) ; // pc / Ms * (km/s)^2
+const G = Gtemp * Math.pow(secYr, 2) / Math.pow(kmUA, 2) * UApc;  // UA * (UA/yr)^2/ Ms
+
 @Injectable({
   providedIn: 'root'
 })
 export class KeplerSolverService {
-  private omega : number;
-  private Omega : number;
-  private i : number;
-  private T : number;
-  private P : number;
-  private a : number;
-  private e : number;
+  private omega : number; // rad
+  private Omega : number; // rad
+  private i : number; // rad
+  private T : number; // yr
+  private P : number; // yr
+  private a : number; // ''
+  private e : number; 
   private q : number;
-  private plx : number;
+  private plx : number; // mas
 
   private A : number;
   private B : number;
@@ -34,7 +40,7 @@ export class KeplerSolverService {
   /**
   * Semi amplitude of the radial velocity curve, in km/s
   */
-  private Kl : number = 100;
+  private Kl : number;
   /**
   *Values for E
   */
@@ -83,12 +89,22 @@ export class KeplerSolverService {
   }
 
   /**
-  * Returns the periastrum and the periastrum in the main view
+  * Returns the periastrum and the periastrum in the main view, in arcseconds
   */
   getPeriApoMain()
   {
     let peri = this.apparentPositionFromTrueAnomaly(0);
     let apo = this.apparentPositionFromTrueAnomaly(Math.PI);
+    return [peri, apo];
+  }
+
+    /**
+  * Returns the periastrum and the periastrum in the main view, in UA
+  */
+  getPeriApoMainUA()
+  {
+    let peri = this.apparentPositionFromTrueAnomaly(0).map((x) => {return this.plx * x / (1000 * this.a);});
+    let apo = this.apparentPositionFromTrueAnomaly(Math.PI).map((x) => {return this.plx * x / (1000 * this.a);});
     return [peri, apo];
   }
 
@@ -101,7 +117,16 @@ export class KeplerSolverService {
   }
 
 
-
+  /*
+  * Returns an array with the mass of each star in an array [primary, secondary],
+  * in solar masses
+  */
+  getStarMasses()
+  {
+    let M = Math.pow(1000 * this.a/this.plx, 3) / (G * Math.pow(this.P/(2 * Math.PI), 2)) / (1 + this.q);
+    let m = M * this.q;
+    return [M, m];
+  }
 
   /*
   * Returns the velocity of the centre of mass
@@ -154,8 +179,8 @@ export class KeplerSolverService {
   	this.C = this.a * sinom * sini;
   	this.H = this.a * cosom * sini;
 
-    let scale_fact =   1.496 * Math.pow(10, 8) / (3.154 * Math.pow(10,7)); // UA/yr to km/s
-    let a_p = 1000 * this.a / this.plx * this.q / (1 + this.q);
+    let scale_fact =   kmUA / secYr; // UA/yr to km/s
+    let a_p = 1000 * this.a / this.plx * this.q / (1 + this.q); // converted plx from mas to as
     let a_s = 1000 * this.a / this.plx * 1 / (1 + this.q);
     let fact = 2 * Math.PI * sini / (this.P * Math.sqrt(1 - Math.pow(this.e, 2)));
     this.Kp =  scale_fact * a_p * fact;
@@ -173,7 +198,7 @@ export class KeplerSolverService {
 
   /**
   * Calculates the position of the secondary in the main view
-  * given the value of the true anomaly
+  * given the value of the true anomaly. In arcseconds.
   */
 
   private apparentPositionFromTrueAnomaly(nu : number){

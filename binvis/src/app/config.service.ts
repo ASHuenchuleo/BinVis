@@ -12,23 +12,21 @@ import {ViewItem} from './view-item';
 })
 export class ConfigService {
   /*
-  * Class responsible for recieving parameter inputs and updating the logic and every view
+  * Class responsible for recieving parameter inputs and updating the logic, every view
+  * and the derived parameteers
   */
 
   // Observable string sources
   private posManagerUpdateSource = new Subject<OrbitAttribute[]>();
+  private derivedParametersUpdateSource = new Subject<any>();
   private viewCardLeftUpdateSource = new Subject<ViewWindow>();
   private viewCardRightUpdateSource = new Subject<ViewWindow>();
 
   // Observable string streams
   posManagerUpdate$ = this.posManagerUpdateSource.asObservable();
+  derivedParametersUpdate$ = this.derivedParametersUpdateSource.asObservable();
   viewCardLeftUpdate$ = this.viewCardLeftUpdateSource.asObservable();
   viewCardRightUpdate$ = this.viewCardRightUpdateSource.asObservable();
-
-  loading;
-
-  constructor() {}
-
 
                                       
   /**
@@ -40,11 +38,10 @@ export class ConfigService {
   */
   updateSceneAttr(attributes : OrbitAttribute[], leftView : ViewWindow, rightView : ViewWindow)
   {
-
-    console.log('Called to update the posmanager');
-    this.posManagerUpdateSource.next(attributes);
-    this.viewCardLeftUpdateSource.next(leftView);
-    this.viewCardRightUpdateSource.next(rightView);
+    this.posManagerUpdateSource.next(attributes); // Do calculations
+    this.derivedParametersUpdateSource.next(); // Update derived parameters
+    this.viewCardLeftUpdateSource.next(leftView); // Update left viewcard
+    this.viewCardRightUpdateSource.next(rightView); // Update right viewcard
 
   }	
 }

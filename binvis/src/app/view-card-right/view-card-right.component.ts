@@ -1,12 +1,31 @@
 import { Component, OnInit, ComponentFactoryResolver } from '@angular/core';
-import { ConfigService} from '../config.service';
+import {
+  trigger,
+  state,
+  style,
+  animate,
+  transition,
+  // ...
+} from '@angular/animations';
 
+import { ConfigService} from '../config.service';
 import {ViewCardComponent} from '../view-card'
 
 @Component({
   selector: 'app-view-card-right',
   templateUrl: './view-card-right.component.html',
-  styleUrls: ['./view-card-right.component.css']
+  styleUrls: ['./view-card-right.component.css'],
+  animations : [
+  trigger('balloonEffect', [
+    state('unloaded', style({ opacity: 0})),
+    state('loaded', style({ opacity: 1})),
+     transition('loaded=>unloaded',[
+          animate('1000ms')
+          ]),
+     transition('unloaded=>loaded',[
+          animate('1000ms')
+          ])
+     ])]
 })
 /**
 * Component for the right view card
@@ -15,11 +34,10 @@ export class ViewCardRightComponent extends ViewCardComponent {
 
 	constructor(protected config : ConfigService, protected componentFactoryResolver: ComponentFactoryResolver) {
 		super(config, componentFactoryResolver);
+    	this.cardClass = 'view-card-right';
 		config.viewCardRightUpdate$.subscribe(
 		  selected => {
 		    this.loadComponent(selected);
-        	console.log('Right component called with ' + selected);
-
 		  });
 
 	}

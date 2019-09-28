@@ -55,6 +55,7 @@ export class ThreeDView {
 	lineColor : string = 'rgb(127, 140, 141)';
 
 	constructor(divName : string){
+		/** Name of the div for the given component */
 		this.divName = divName;
 	}
 
@@ -91,7 +92,7 @@ export class ThreeDView {
 
 	}
 
-	ngOnInit()
+	initScene()
 	{
 
 	  let elem = document.getElementById(this.divName);

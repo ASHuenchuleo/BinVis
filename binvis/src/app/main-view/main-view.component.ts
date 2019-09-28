@@ -2,6 +2,8 @@ import { Component, ViewChild, AfterViewInit, OnDestroy, ElementRef } from '@ang
 import { PosManagerService } from './../pos-manager.service';
 import { ThreeDView} from './../three-d-view';
 
+import {ViewComponent} from './../view.component';
+
 
 import * as THREE from 'three'
 import SpriteText from 'three-spritetext';
@@ -13,22 +15,20 @@ import OrbitControls from 'three-orbitcontrols';
   styleUrls: ['./main-view.component.css']
 })
 /** Handles and shows the velocity graph for the orbit */
-export class MainViewComponent extends ThreeDView implements AfterViewInit, OnDestroy {
+export class MainViewComponent extends ThreeDView
+          implements AfterViewInit, OnDestroy, ViewComponent {
 
   /* Paths to be followed */
   private xPath : number[];
   private yPath : number[];
   private zPath : number[];
 
+  /* css class for the component view card */
+  cardClass : string;
 
 
   constructor(private manager : PosManagerService) {
   super('projection-div');
-  }
-
-  ngAfterViewInit(){
-    this.clean();
-    this.init();
   }
 
   ngOnDestroy() : void{
@@ -46,8 +46,11 @@ export class MainViewComponent extends ThreeDView implements AfterViewInit, OnDe
   }
 
 
-  init()
+  ngAfterViewInit()
   {
+    this.divName = this.divName + '-' + this.cardClass;
+    this.initScene();
+
     this.manager.buildProjectionPath();
     let path = this.manager.getProjectionPath();
     this.xPath = path[0];

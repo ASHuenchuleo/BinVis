@@ -35,10 +35,8 @@ export class PosManagerService {
   attributes : OrbitAttribute[];
 
   constructor(private solver : KeplerSolverService, private config : ConfigService){
-    console.log('PosManager created!');
     config.posManagerUpdate$.subscribe(
       attributes => {
-        console.log('Posmanager recieved the message!');
         this.attributes = attributes;
         this.init();
       });
@@ -73,9 +71,7 @@ export class PosManagerService {
   		this.times.push(currentTime);
   		currentTime += this.timeStep;
     }
-    console.log('Calculating EVals!');
     this.solver.solveEVals(this.times);
-    console.log('Finished calculating EVals!');
 
 
   }
@@ -85,6 +81,18 @@ export class PosManagerService {
   getCMVel(){
     return this.solver.getCMVel();
   }
+
+
+
+  /*
+  * Returns an array with the mass of each star in an array [primary, secondary],
+  * in solar masses
+  */
+  getStarMasses()
+  {
+    return this.solver.getStarMasses();
+  }
+
 
   /**
   * Returns the mass ratio of the stars
@@ -101,11 +109,20 @@ export class PosManagerService {
   }
 
   /**
-  * Returns the periastrum and the periastrum in the main view
+  * Returns the periastrum and the periastrum in the main view, in arcseconds
   */
   getPeriApoMain(){
     return this.solver.getPeriApoMain();
   }
+
+  /**
+  * Returns the periastrum and the periastrum in the main view, in UA
+  */
+  getPeriApoMainUA()
+  {
+    return this.solver.getPeriApoMainUA();
+  }
+
 
   /**
   * Returns the path for the projection orbit

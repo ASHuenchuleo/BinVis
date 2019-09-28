@@ -2,6 +2,8 @@ import { Component, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { PosManagerService } from './../pos-manager.service';
 import { VelocityManagerService } from './../velocity-manager.service';
 
+import {ViewComponent} from './../view.component';
+
 
 import Two from 'two.js';
 
@@ -15,7 +17,8 @@ let AxisEnum = {
   templateUrl: './velocity-view.component.html',
   styleUrls: ['./velocity-view.component.css']
 })
-export class VelocityViewComponent implements AfterViewInit, OnDestroy{
+export class VelocityViewComponent implements AfterViewInit, OnDestroy, ViewComponent{
+
   /** Speed factor of the orbit */
   private speed : number = 5.0;
   /** Current index of the animation */
@@ -67,19 +70,24 @@ export class VelocityViewComponent implements AfterViewInit, OnDestroy{
   private elem;
   private params;
 
+  /* css class for the component view card */
+  cardClass : string;
+
+  /** Name of the div for the given component */
+  divName : string;
 
 
   constructor(private manager : PosManagerService,
     private graphDrawer : VelocityManagerService) {
-
+    this.divName = 'velocity-time';
   }
   
   /**
   * Executed once the calculations are done
   */
   ngAfterViewInit() {
-
-    this.elem = document.getElementById('velocity-time');
+    this.divName = this.divName  + '-' + this.cardClass;
+    this.elem = document.getElementById(this.divName);
     this.params = { width: this.width, height: this.height };
     this.two = new Two(this.params).appendTo(this.elem);
 

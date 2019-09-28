@@ -1,5 +1,7 @@
 import { Component, ViewChild, ComponentFactoryResolver } from '@angular/core';
 
+import {ViewComponent} from './view.component';
+
 
 import {ViewItem} from './view-item';
 import {ViewWindow} from './view-window';
@@ -12,8 +14,16 @@ import {DualOrbitViewComponent} from './dual-orbit-view/dual-orbit-view.componen
 import { ConfigService} from './config.service';
 
 
+
 export class ViewCardComponent{
 
+  /* css class for the view card */
+  cardClass : string;
+
+  /* State for animation */
+  state : string = "unloaded";
+
+  /* Lists of views IN THE SAME ORDER AS THE ENUM */
   views = [
     new ViewItem(MainViewComponent),
     new ViewItem(DualOrbitViewComponent),
@@ -28,6 +38,7 @@ export class ViewCardComponent{
   }
 
   loadComponent(selected : ViewWindow) {
+    this.state = "unloaded";
     
 
     const viewItem = this.views[selected];
@@ -39,6 +50,10 @@ export class ViewCardComponent{
     viewContainerRef.clear();
     
     const componentRef = viewContainerRef.createComponent(componentFactory);
+
+    (<ViewComponent>componentRef.instance).cardClass = this.cardClass;
+
+    this.state = "loaded";
    }
 
 }

@@ -1,4 +1,4 @@
-
+<div class='view-card-input'>
 
 <div class='view-card-title'><h3> View Configuration </h3></div>
 
@@ -7,76 +7,93 @@
 <div class='container'>
 <div class='row'>
 
-<div class='col-6'>
-	<div class="view-card-title"> <h5> Parameter Selection </h5> </div> 
+	<div class='col-4'>
+		<div class="view-card-title"> <h5> Parameter Selection </h5> </div> 
+
+		<div class="parameter-group">
+		<div *ngFor="let attr of visualAttributes" class='input-group input-group-parameter'>
+				<div class='input-group-prepend'>
+				<span class="input-group-text input-label" [innerHTML]="attr.name"></span>
+				</div> 
+				<input class='input-group-text input-numeric' min={{attr.min}} max={{attr.max}} type="number" name='{{attr.name}}' [(ngModel)]='attr.value'> 
+		</div>
+	</div>
+	<div class="parameter-group">
+		<div *ngFor="let attr of measuredAttributes" class='input-group input-group-parameter'>
+				<div class='input-group-prepend'>
+				<span class="input-group-text input-label" [innerHTML]="attr.name"></span>
+				</div> 
+				<input class='input-group-text input-numeric' min={{attr.min}} max={{attr.max}} type="number" name='{{attr.name}}' [(ngModel)]='attr.value'> 
+		</div>
+	</div>
 
 	<div class="parameter-group">
-	<div *ngFor="let attr of visualAttributes" class='input-group input-group-parameter'>
-			<div class='input-group-prepend'>
-			<span class="input-group-text input-label" [innerHTML]="attr.name"></span>
-			</div> 
-			<input class='input-group-text input-numeric' min={{attr.min}} max={{attr.max}} type="number" name='{{attr.name}}' [(ngModel)]='attr.value'> 
-	</div>
-</div>
-<div class="parameter-group">
-	<div *ngFor="let attr of measuredAttributes" class='input-group input-group-parameter'>
-			<div class='input-group-prepend'>
-			<span class="input-group-text input-label" [innerHTML]="attr.name"></span>
-			</div> 
-			<input class='input-group-text input-numeric' min={{attr.min}} max={{attr.max}} type="number" name='{{attr.name}}' [(ngModel)]='attr.value'> 
-	</div>
-</div>
+		<div *ngFor="let attr of physicalAttributes" class='input-group input-group-parameter'>
+				<div class='input-group-prepend'>
+				<span class="input-group-text input-label" [innerHTML]="attr.name"></span>
+				</div> 
+				<input class='input-group-text input-numeric' (ngChange)="setLimit(attr)" type="number" name='{{attr.name}}' [(ngModel)]='attr.value'> 
 
-<div class="parameter-group">
-	<div *ngFor="let attr of physicalAttributes" class='input-group input-group-parameter'>
-			<div class='input-group-prepend'>
-			<span class="input-group-text input-label" [innerHTML]="attr.name"></span>
-			</div> 
-			<input class='input-group-text input-numeric' (ngChange)="setLimit(attr)" type="number" name='{{attr.name}}' [(ngModel)]='attr.value'> 
-
-	</div>
-</div>
-
-</div>
-
-<div class='col-6'>
-
-
-<div class="container">
-	<div class="view-card-title"> <h5> View Selection </h5> </div> 
-	<div class="row view-select">
-	  <div class="col">
-
-	  	<div class="input-group mb-3">
-	  	  <div class="input-group-prepend">
-	  	    <span class="input-group-text">Left View</span>
-	  	  </div>
-	  	  <select class="browser-default custom-select" name="left-view-select"[(ngModel)]="leftView">
-	  	       <option *ngFor="let c of viewOptions" [ngValue]="c">{{c.name}}</option>
-	  	  </select>
-	  	</div>
-	  </div>
+		</div>
 	</div>
 
-	<div class="row view-select">
-	  <div class="col">
-
-	  	<div class="input-group mb-3">
-	  	  <div class="input-group-prepend">
-	  	    <span class="input-group-text">Right View</span>
-	  	  </div>
-	  	  <select class="browser-default custom-select" name="right-view-select"[(ngModel)]="rightView">
-	  	       <option *ngFor="let c of viewOptions" [ngValue]="c">{{c.name}}</option>
-	  	  </select>
-	  	</div>
-	  </div>
 	</div>
-</div>
 
-<button class="btn btn-outline-success">Render with these settings</button> 
-</div>
+	<div class='col-4'>
+
+
+	<div class="container">
+		<div class="view-card-title"> <h5> View Selection </h5> </div> 
+		<div class="row view-select">
+		  <div class="col">
+
+		  	<div class="input-group mb-3">
+		  	  <div class="input-group-prepend">
+		  	    <span class="input-group-text">Left View</span>
+		  	  </div>
+		  	  <select class="browser-default custom-select" name="left-view-select"[(ngModel)]="leftView">
+		  	       <option *ngFor="let c of viewOptions" [ngValue]="c">{{c.name}}</option>
+		  	  </select>
+		  	</div>
+		  </div>
+		</div>
+
+		<div class="row view-select">
+		  <div class="col">
+
+		  	<div class="input-group mb-3">
+		  	  <div class="input-group-prepend">
+		  	    <span class="input-group-text">Right View</span>
+		  	  </div>
+		  	  <select class="browser-default custom-select" name="right-view-select"[(ngModel)]="rightView">
+		  	       <option *ngFor="let c of viewOptions" [ngValue]="c">{{c.name}}</option>
+		  	  </select>
+		  	</div>
+		  </div>
+		</div>
+	</div>
+
+	<div class="container">
+		<div class="view-card-title"> <h5> Data Input </h5> </div> 
+		<div class="row view-select">
+		  <div class="col">
+		  	Input Interface
+		  </div>
+		</div>
+	</div>
+
+
+	<button class="btn btn-outline-success" style="margin: 5%;">Render with these settings</button> 
+	</div>
+
+	<div class='col-4'>
+		<app-derived-parameters> </app-derived-parameters>
+	</div>
 </div>
 </div>
 
 </form>
 
+
+
+</div>
