@@ -1,85 +1,29 @@
 import { Component, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { PosManagerService } from './../pos-manager.service';
-import { VelocityManagerService } from './../velocity-manager.service';
+import {VelocityRecord} from './../csv-parser';
 
-import {ViewComponent} from './../view.component';
+import {TwoDView} from './../two-d-view';
 
-
-import Two from 'two.js';
-
-let AxisEnum = {
+const AxisEnum = {
   TIMES: 1,
   PHASE: 2
 };
+
+import Two from 'two.js';
 
 @Component({
   selector: 'app-velocity-view',
   templateUrl: './velocity-view.component.html',
   styleUrls: ['./velocity-view.component.css']
 })
-export class VelocityViewComponent implements AfterViewInit, OnDestroy, ViewComponent{
+export class VelocityViewComponent extends TwoDView implements AfterViewInit, OnDestroy{
 
-  /** Speed factor of the orbit */
-  private speed : number = 5.0;
-  /** Current index of the animation */
-  private index : number = 0;
-  /** Numero de periodos en el gráfico */
-  private nT : number = 3;
+  /* Primary and secondary velocity markers */
+  primaryCurrent;
+  secondaryCurrent;
 
-
-  private width : number = 600;
-  private height : number = 400;
-
-
-  /** Portion of the canvas used for graph */
-  private portionX : number = 0.7;
-  private portionY : number = 0.8;
-  /* Starting x pixel for graph */
-  private initX : number = this.width * (1 - this.portionX) / 2;;
-  /* Final x pixel for graph */
-  private finalX : number = this.width * (1 + this.portionX) / 2;
-  /* Starting y pixel for graph */
-  private initY : number = this.height * (1 - this.portionY) / 2;;
-  /* Final y pixel for graph */
-  private finalY : number = this.height * (1 + this.portionY) / 2;
-
-  /** Scale of the vertical axis */
-  private scaleY : number;
-  /** Scale of the horizontal axis */
-  private scaleX : number;
-
-  /** Velocities of primary and secondary */
-  private velsPrimary : number[];
-  private velsSecondary : number[];
-
-  /** Values for the x axis */
-  private Xaxis : number[];
-  private initialXaxis : number;
-  private finalXaxis : number;
-
-  /** Extremes for the velocity */
-  private minVel : number;
-  private maxVel : number;
-
-  /** Parametrization */
-  private parametrization = AxisEnum.PHASE;
-
-  /** Two.js scene */
-  private two : Two;
-
-  private elem;
-  private params;
-
-  /* css class for the component view card */
-  cardClass : string;
-
-  /** Name of the div for the given component */
-  divName : string;
-
-
-  constructor(private manager : PosManagerService,
-    private graphDrawer : VelocityManagerService) {
-    this.divName = 'velocity-time';
+  constructor(private manager : PosManagerService) {
+    super(manager, 'velocity-time');
   }
   
   /**
@@ -95,15 +39,16 @@ export class VelocityViewComponent implements AfterViewInit, OnDestroy, ViewComp
   	this.velsPrimary = this.manager.getPrimaryCMVelocities(this.nT);
     this.velsSecondary = this.manager.getSecondaryCMVelocities(this.nT);
 
+    this.parametrization = AxisEnum.PHASE;
     if(this.parametrization == AxisEnum.TIMES)
     {
       this.Xaxis = this.manager.getTimes(this.nT);
-      var xLabel = 'T[yr]';
+      this.xLabel = 'T[yr]';
     }
     else if(this.parametrization == AxisEnum.PHASE)
     {
       this.Xaxis = this.manager.getPhases(this.nT);
-      var xLabel = 'Phase';
+      this.xLabel = 'Phase';
     }
 
     /** Scaling */
@@ -119,8 +64,8 @@ export class VelocityViewComponent implements AfterViewInit, OnDestroy, ViewComp
     
     /** Axis */
     let fontsize = 11;
-    this.graphDrawer.drawAxis(10, this.nT,
-      xLabel, 'V [km/s]',
+    this.drawAxis(10, this.nT,
+      this.xLabel, 'V [km/s]',
       this.initX, this.finalX,
       this.initY, this.finalY,
       this.scaleX, this.scaleY,
@@ -129,12 +74,12 @@ export class VelocityViewComponent implements AfterViewInit, OnDestroy, ViewComp
       fontsize, this.two);
 
     /** Drawing graphs */
-    let primaryCurrent = this.graphDrawer.makeVelocityCurve(
-      this.width, this.height, this.Xaxis, this.velsPrimary, this.two, 'orange');
-    let secondaryCurrent = this.graphDrawer.makeVelocityCurve(
-      this.width, this.height, this.Xaxis, this.velsSecondary, this.two, 'blue');
+    this.primaryCurrent = this.makeVelocityCurve(
+      this.width, this.height, this.Xaxis, this.velsPrimary, this.two, 'blue');
+    this.secondaryCurrent = this.makeVelocityCurve(
+      this.width, this.height, this.Xaxis, this.velsSecondary, this.two, 'orange');
 
-    this.graphDrawer.drawCMVelLine(this.manager.getCMVel(),
+    this.drawCMVelLine(this.manager.getCMVel(),
       this.initX, this.finalX,
       this.initY, this.finalY,
       this.scaleX, this.scaleY,
@@ -143,41 +88,51 @@ export class VelocityViewComponent implements AfterViewInit, OnDestroy, ViewComp
       fontsize, this.two);
 
     /* Animation */
-  	this.two.bind('update', (frameCount) => {
-  	  let velPrim = this.velsPrimary[this.index];
-      let velSec = this.velsSecondary[this.index];
-
-  	  let time = this.Xaxis[this.index];
-
-  	  this.index = (this.index + this.speed) % this.Xaxis.length;
-
-  	  primaryCurrent.translation.set(time, velPrim);
-      secondaryCurrent.translation.set(time, velSec)
-  	}).play();
+  	this.two.bind('update', this.update).play();
   }
-  
 
-  /** Sets up the scaling for both axis, given the values */
-  buildScaling() : void
+  /**
+  * Draws the loaded records into the canvas as points.
+  * @param {VelocityRecord[]} An array of velocity records
+  * with the information ready to be displayed.
+  */
+  drawData(records : VelocityRecord[]){
+    let xAxisScaling = (t)=> {return this.scaleX * (t - this.initialXaxis) + this.initX;};
+    let velocityScaling = (v) => {
+      return -this.scaleY * (v - this.minVel) + this.finalY;};
+
+    for(let record of records){
+      let xVal = record.epoch; // in yr
+      if(this.parametrization == AxisEnum.PHASE) // Convert to phase
+        xVal = this.manager.toPhase(xVal)
+
+      xVal = xAxisScaling(xVal);
+
+      let yVal = record.vel; // in km/s
+      yVal = velocityScaling(yVal);
+
+      let marker = this.two.makeCircle(xVal, yVal, 2);
+      if(record.comp == 'Va') marker.stroke = 'blue';
+      if(record.comp == 'Vb') marker.stroke = 'orange';
+    }
+
+  }
+
+
+  moveFrames(frames : number) : void
   {
-    this.maxVel =  Math.max(...this.velsPrimary, ...this.velsSecondary);
-    this.minVel =  Math.min(...this.velsPrimary, ...this.velsSecondary);
+    this.index = (this.index + frames) % this.Xaxis.length;
 
-    let sizeY = this.finalY - this.initY;
-    this.scaleY =  sizeY / (this.maxVel - this.minVel);
+    let velPrim = this.velsPrimary[this.index];
+    let velSec = this.velsSecondary[this.index];
+
+    let time = this.Xaxis[this.index];
 
 
-    this.finalXaxis = this.Xaxis[this.Xaxis.length - 1];
-    this.initialXaxis = this.Xaxis[0];
-
-    let sizeX = this.finalX - this.initX;
-    this.scaleX =  sizeX / (this.finalXaxis -  this.initialXaxis);
+    this.primaryCurrent.translation.set(time, velPrim);
+    this.secondaryCurrent.translation.set(time, velSec);
   }
 
-  ngOnDestroy() : void
-  {
-    this.two.clear();
-  }
 
 
 }

@@ -13,20 +13,33 @@ import {ViewItem} from './view-item';
 export class ConfigService {
   /*
   * Class responsible for recieving parameter inputs and updating the logic, every view
-  * and the derived parameteers
+  * and the derived parameteers, and setting the configuration on every component on
+  * response to the user-given input passed by the input component
   */
 
   // Observable string sources
   private posManagerUpdateSource = new Subject<OrbitAttribute[]>();
   private derivedParametersUpdateSource = new Subject<any>();
+
   private viewCardLeftUpdateSource = new Subject<ViewWindow>();
+  private viewCardLeftAnimUpdateSource = new Subject<any>();
+  private viewCardLeftDataUpdateSource = new Subject<any>();
+
   private viewCardRightUpdateSource = new Subject<ViewWindow>();
+  private viewCardRightAnimUpdateSource = new Subject<any>();
+  private viewCardRightDataUpdateSource = new Subject<any>();
 
   // Observable string streams
   posManagerUpdate$ = this.posManagerUpdateSource.asObservable();
   derivedParametersUpdate$ = this.derivedParametersUpdateSource.asObservable();
+
   viewCardLeftUpdate$ = this.viewCardLeftUpdateSource.asObservable();
+  viewCardLeftAnimUpdate$ = this.viewCardLeftAnimUpdateSource.asObservable();
+  viewCardLeftDataUpdate$ = this.viewCardLeftDataUpdateSource.asObservable();
+
   viewCardRightUpdate$ = this.viewCardRightUpdateSource.asObservable();
+  viewCardRightAnimUpdate$ = this.viewCardRightAnimUpdateSource.asObservable();
+  viewCardRightDataUpdate$ = this.viewCardRightDataUpdateSource.asObservable();
 
                                       
   /**
@@ -44,4 +57,23 @@ export class ConfigService {
     this.viewCardRightUpdateSource.next(rightView); // Update right viewcard
 
   }	
+
+  /**
+  * Sends a message to set the animation state to state
+  * @param Dictionary with the animation commands
+  */
+  updateAnimationState(animCom){
+    this.viewCardRightAnimUpdateSource.next(animCom);
+    this.viewCardLeftAnimUpdateSource.next(animCom);
+  }
+
+  /**
+  * Sends the file dictionary to both viewcards so they can be displayed
+  * @param {[type : string] : File | undefined} Dictionary with both files
+  */
+  passFileInput(dataInput : {[type : string] : File | undefined}){
+    this.viewCardRightDataUpdateSource.next(dataInput);
+    this.viewCardLeftDataUpdateSource.next(dataInput);
+  }
+
 }

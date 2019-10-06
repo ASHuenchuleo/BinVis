@@ -33,12 +33,9 @@ import {ViewCardComponent} from '../view-card'
 export class ViewCardLeftComponent extends ViewCardComponent {
 
   constructor(protected config : ConfigService, protected componentFactoryResolver: ComponentFactoryResolver) {
-  	super(config, componentFactoryResolver);
-    this.cardClass = 'view-card-left';
-  	config.viewCardLeftUpdate$.subscribe(
-  	  selected => {
-  	    this.loadComponent(selected);
-  	  });
+  	super(config, componentFactoryResolver,
+      config.viewCardLeftUpdate$, config.viewCardLeftAnimUpdate$,
+      config.viewCardLeftDataUpdate$, 'view-card-left');
   }
 
 }

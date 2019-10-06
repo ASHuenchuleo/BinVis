@@ -4,8 +4,6 @@ import { PosManagerService } from './../pos-manager.service';
 import { ConfigService} from './../config.service';
 import { ThreeDView} from './../three-d-view';
 
-import {ViewComponent} from './../view.component';
-
 
 import * as THREE from 'three'
 import SpriteText from 'three-spritetext';
@@ -19,7 +17,7 @@ import OrbitControls from 'three-orbitcontrols';
 
 
 export class DualOrbitViewComponent extends ThreeDView
-            implements AfterViewInit, OnDestroy, ViewComponent{
+            implements AfterViewInit, OnDestroy{
 
   /* Paths to be followed */
   private xPathPrim : number[];
@@ -30,8 +28,12 @@ export class DualOrbitViewComponent extends ThreeDView
   private yPathSec : number[];
   private zPathSec : number[];
 
-  /* css class for the component view card */
-  cardClass : string;
+  /** Meshes for the moving objects */
+  secondaryReal : THREE.Mesh;
+  secondaryProj : THREE.LineLoop;
+
+  primaryReal : THREE.Mesh;
+  primaryProj : THREE.LineLoop;
 
 
   constructor(private manager : PosManagerService) {
@@ -86,16 +88,16 @@ export class DualOrbitViewComponent extends ThreeDView
     let primarySize = 5;
     let secondarySize = primarySize * this.manager.getMassRatio();
 
-    let primaryReal = this.drawStar(this.primaryColor, primarySize);
-    let secondaryReal = this.drawStar(this.secondaryColor, secondarySize);
+    this.primaryReal = this.drawStar(this.primaryColor, primarySize);
+    this.secondaryReal = this.drawStar(this.secondaryColor, secondarySize);
 
     /* Real orbit line */
     let orbitRealPrim = this.drawOrbitLine(this.xPathPrim, this.yPathPrim, this.zPathPrim);
     let orbitReaSec = this.drawOrbitLine(this.xPathSec, this.yPathSec, this.zPathSec);
 
     /* Primary and secondary in projected view*/
-    let primaryProj = this.drawStarProjection(this.primaryColor, primarySize);
-    let secondaryProj = this.drawStarProjection(this.secondaryColor, secondarySize);
+    this.primaryProj = this.drawStarProjection(this.primaryColor, primarySize);
+    this.secondaryProj = this.drawStarProjection(this.secondaryColor, secondarySize);
 
     /* Projected orbit line */
     let orbitProjPrim = this.drawOrbitLine(this.xPathPrim, this.yPathPrim, 0);
@@ -110,15 +112,12 @@ export class DualOrbitViewComponent extends ThreeDView
     this.drawAxisLabels(tickSize, this.scale, axisLength, axisSteps);
     this.renderer.render( this.scene, this.camera );
 
+    this.animate()
 
-    let animate = () => {
-      if (!this.isPlay) return;
+  }
 
-      this.controls.update();
-
-      primaryReal.quaternion.copy( this.camera.quaternion );
-      secondaryReal.quaternion.copy( this.camera.quaternion );
-
+  moveFrames(frames : number){
+      this.index = (this.index + frames) % this.xPathPrim.length;
 
       let xPrim = this.xPathPrim[this.index];
       let yPrim = this.yPathPrim[this.index];
@@ -128,21 +127,20 @@ export class DualOrbitViewComponent extends ThreeDView
       let ySec = this.yPathSec[this.index];
       let zSec = this.zPathSec[this.index];
 
-      this.index = (this.index + this.speed) % this.xPathPrim.length;
 
-      secondaryReal.position.set(xSec, ySec, zSec);
-      secondaryProj.position.set(xSec, ySec, 0);
+      this.secondaryReal.position.set(xSec, ySec, zSec);
+      this.secondaryProj.position.set(xSec, ySec, 0);
 
-      primaryReal.position.set(xPrim, yPrim, zPrim);
-      primaryProj.position.set(xPrim, yPrim, 0);
-
-      this.renderer.render( this.scene, this.camera );
-
-      requestAnimationFrame( animate );
-
-    }
-    this.isPlay = true;
-    animate()
-
+      this.primaryReal.position.set(xPrim, yPrim, zPrim);
+      this.primaryProj.position.set(xPrim, yPrim, 0);
   }
+
+  updateRotations(){
+    this.primaryReal.quaternion.copy( this.camera.quaternion );
+    this.secondaryReal.quaternion.copy( this.camera.quaternion );
+  }
+
+  
 }
+
+

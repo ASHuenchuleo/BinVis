@@ -2,8 +2,6 @@ import { Component, ViewChild, AfterViewInit, OnDestroy, ElementRef } from '@ang
 import { PosManagerService } from './../pos-manager.service';
 import { ThreeDView} from './../three-d-view';
 
-import {ViewComponent} from './../view.component';
-
 
 import * as THREE from 'three'
 import SpriteText from 'three-spritetext';
@@ -16,15 +14,24 @@ import OrbitControls from 'three-orbitcontrols';
 })
 /** Handles and shows the velocity graph for the orbit */
 export class MainViewComponent extends ThreeDView
-          implements AfterViewInit, OnDestroy, ViewComponent {
+          implements AfterViewInit, OnDestroy {
 
   /* Paths to be followed */
   private xPath : number[];
   private yPath : number[];
   private zPath : number[];
 
-  /* css class for the component view card */
-  cardClass : string;
+  /** Meshes of the moving objects */
+  primaryReal : THREE.Mesh;
+
+  secondaryReal : THREE.Mesh;
+  secondaryProj : THREE.LineLoop;
+
+  apoMesh : THREE.Mesh;
+  periMesh : THREE.Mesh;
+
+  ascMesh : THREE.Mesh;
+  descMesh : THREE.Mesh;
 
 
   constructor(private manager : PosManagerService) {
@@ -68,14 +75,14 @@ export class MainViewComponent extends ThreeDView
     /* Primary and secondary in real view*/
     let primarySize = 5;
     let secondarySize = primarySize * this.manager.getMassRatio();
-    let primaryReal = this.drawStar(this.primaryColor, primarySize);
-    let secondaryReal = this.drawStar(this.secondaryColor, secondarySize);
+    this.primaryReal = this.drawStar(this.primaryColor, primarySize);
+    this.secondaryReal = this.drawStar(this.secondaryColor, secondarySize);
 
     /* Real orbit line */
     let orbitReal = this.drawOrbitLine(this.xPath, this.yPath, this.zPath);
 
     /* Secondary in projected view*/
-    let secondaryProj = this.drawStarProjection(this.secondaryColor, secondarySize);
+    this.secondaryProj = this.drawStarProjection(this.secondaryColor, secondarySize);
 
     /* projected orbit line */
     let orbitProj = this.drawOrbitLine(this.xPath, this.yPath, 0);
@@ -88,11 +95,11 @@ export class MainViewComponent extends ThreeDView
     asc = asc.map(scalinFun);
     desc = desc.map(scalinFun);
 
-    let ascMesh = this.drawNode('black', indicatorSize);
-    ascMesh.position.set(asc[0], asc[1], asc[2]);
+    this.ascMesh = this.drawNode('black', indicatorSize);
+    this.ascMesh.position.set(asc[0], asc[1], asc[2]);
 
-    let descMesh = this.drawNode('black', indicatorSize);
-    descMesh.position.set(desc[0], desc[1], desc[2]);
+    this.descMesh = this.drawNode('black', indicatorSize);
+    this.descMesh.position.set(desc[0], desc[1], desc[2]);
 
 
     /* Line of nodes */
@@ -107,11 +114,11 @@ export class MainViewComponent extends ThreeDView
     let [peri, apo] = this.manager.getPeriApoMain();
     peri = peri.map(scalinFun);
     apo = apo.map(scalinFun);
-    let periMesh = this.drawStar('black', indicatorSize);
-    periMesh.position.set(peri[0], peri[1], peri[2])
+    this.periMesh = this.drawStar('black', indicatorSize);
+    this.periMesh.position.set(peri[0], peri[1], peri[2])
 
-    let apoMesh = this.drawStar('black', indicatorSize);
-    apoMesh.position.set(apo[0], apo[1], apo[2])
+    this.apoMesh = this.drawStar('black', indicatorSize);
+    this.apoMesh.position.set(apo[0], apo[1], apo[2])
 
     let periProjMesh = this.drawStarProjection('black', indicatorSize);
     periProjMesh.position.set(peri[0], peri[1], 0)
@@ -128,37 +135,32 @@ export class MainViewComponent extends ThreeDView
     this.drawAxisLabels(tickSize, this.scale, axisLength, axisSteps);
     this.renderer.render( this.scene, this.camera );
 
-    let animate = () => {
-      if (!this.isPlay) return;
-
-      this.controls.update();
-
-      primaryReal.quaternion.copy( this.camera.quaternion );
-      secondaryReal.quaternion.copy( this.camera.quaternion );
-
-      apoMesh.quaternion.copy( this.camera.quaternion );
-      periMesh.quaternion.copy( this.camera.quaternion );
-
-      ascMesh.quaternion.copy( this.camera.quaternion );
-      descMesh.quaternion.copy( this.camera.quaternion );
-
-
-      let x = this.xPath[this.index];
-      let y = this.yPath[this.index];
-      let z = this.zPath[this.index];
-
-      this.index = (this.index + this.speed) % this.xPath.length;
-
-      secondaryReal.position.set(x, y, z);
-      secondaryProj.position.set(x, y, 0);
-
-      this.renderer.render( this.scene, this.camera );
-      requestAnimationFrame( animate );
-
-    }
-    this.isPlay = true;
-    animate()
+    this.animate()
 
   }
 
+  moveFrames(frames : number){
+
+    this.index = (this.index + frames) % this.xPath.length;
+
+    let x = this.xPath[this.index];
+    let y = this.yPath[this.index];
+    let z = this.zPath[this.index];
+
+    this.secondaryReal.position.set(x, y, z);
+    this.secondaryProj.position.set(x, y, 0);
+  }
+
+  updateRotations(){
+    this.primaryReal.quaternion.copy( this.camera.quaternion );
+    this.secondaryReal.quaternion.copy( this.camera.quaternion );
+
+    this.apoMesh.quaternion.copy( this.camera.quaternion );
+    this.periMesh.quaternion.copy( this.camera.quaternion );
+
+    this.ascMesh.quaternion.copy( this.camera.quaternion );
+    this.descMesh.quaternion.copy( this.camera.quaternion );
+  }
+
+  
 }

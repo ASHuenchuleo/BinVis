@@ -103,17 +103,36 @@ export class KeplerSolverService {
   */
   getPeriApoMainUA()
   {
-    let peri = this.apparentPositionFromTrueAnomaly(0).map((x) => {return this.plx * x / (1000 * this.a);});
-    let apo = this.apparentPositionFromTrueAnomaly(Math.PI).map((x) => {return this.plx * x / (1000 * this.a);});
+
+    let peri = this.apparentPositionFromTrueAnomaly(0).map(this.arcsecToAU);
+    let apo = this.apparentPositionFromTrueAnomaly(Math.PI).map(this.arcsecToAU);
     return [peri, apo];
   }
 
-  /*
-  * Returns the mass ratio of the system
+  arcsecToAU = (x) => {
+    let plxArcSec = this.plx / 1000;
+
+    return x / plxArcSec; // x was in arcsec
+  }
+
+  /**
+  * @return The mass ratio of the system
   */
   getMassRatio()
   {
     return this.q;
+  }
+
+  /**
+  * Converts the epoch value to phase
+  * @param The epoch to be converted
+  * @return The equivalent phase, in [0, 1]
+  */
+  toPhase(epoch : number){
+    let prop = (epoch - this.T)/this.P;
+    prop = prop - Math.floor(prop);
+    let phase;
+    return prop;
   }
 
 
@@ -192,7 +211,14 @@ export class KeplerSolverService {
   	const kepler = (E) => {
   		return 2 * Math.PI * (tau - this.T) / this.P - (E - this.e * Math.sin(E));
   	};
-  	var Esol = this.newtonRaphson(6.0, 0.01, 100, 0.001, kepler);
+    let E0;
+    if(this.e < 0.8){
+      E0 = 2 * Math.PI * (tau - this.T) / this.P
+    }
+    else{
+      E0 = Math.PI;
+    }
+  	var Esol = this.newtonRaphson(E0, 0.01, 100, 0.001, kepler);
   	return Esol;
   }
 
@@ -203,12 +229,23 @@ export class KeplerSolverService {
 
   private apparentPositionFromTrueAnomaly(nu : number){
 
+
+      /* Since atan only returns from -pi/2 to pi/2
+      * we must make adjustments
+      */
+      while(nu < -Math.PI){
+        nu =  nu + 2 * Math.PI;
+      }
+      while(nu > Math.PI){
+        nu = nu - 2 * Math.PI;
+      }
+
       const trueAnomalyRelation = (E) => {
-        return 2 * Math.atan(
+        return 2  * Math.atan(
       Math.sqrt((1 + this.e) / (1 - this.e)) * Math.tan(E/2)) - nu;
       };
 
-      var Esol = this.newtonRaphson(0, 0.01, 100, 0.001, trueAnomalyRelation);
+      var Esol = this.newtonRaphson(nu, 0.01, 100, 0.01, trueAnomalyRelation);
       var x = Math.cos(Esol) - this.e;
       var y = Math.sqrt(1-Math.pow(this.e, 2)) * Math.sin(Esol);
 
@@ -221,7 +258,7 @@ export class KeplerSolverService {
   }
 
   /**
-  * Calculates the apparent position of the secondary given a certain instant of time,
+  * Calculates the apparent position of the secondary given a certain index,
   * relative to the primary
   * @return {number[number[]]} Array with triads (x, y, z)
   */

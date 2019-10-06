@@ -76,13 +76,20 @@ export class PosManagerService {
 
   }
   /**
-  * Returns the velocity of the centre of mass
+  * @return the velocity of the centre of mass
   */
   getCMVel(){
     return this.solver.getCMVel();
   }
 
-
+  /**
+  * Converts the epoch value to phase
+  * @param The epoch to be converted
+  * @return The equivalent phase
+  */
+  toPhase(epoch : number){
+    return this.solver.toPhase(epoch);
+  }
 
   /*
   * Returns an array with the mass of each star in an array [primary, secondary],
@@ -170,9 +177,9 @@ export class PosManagerService {
   }
 
   /**
-  * Returns the values for the time steps
+  * Returns the values for the phase steps
   * @param {number} nT The number of periods to be returned
-  * @return {number[]} array of values of the phase, in years
+  * @return {number[]} array of values of the phase, between 0 and 1
   */
   getPhases(nT : number = 1) : number[]
   {

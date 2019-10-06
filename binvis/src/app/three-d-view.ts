@@ -2,8 +2,10 @@ import * as THREE from 'three'
 import SpriteText from 'three-spritetext';
 import OrbitControls from 'three-orbitcontrols';
 
+import {ViewComponent} from './view.component';
 
-export class ThreeDView {
+
+export class ThreeDView implements ViewComponent{
 	/** Speed factor of the orbit */
 	protected speed : number = 5.0;
 	/** Current index of the animation */
@@ -42,9 +44,6 @@ export class ThreeDView {
 	/** Name of the div where it should be drawn */
 	protected divName : string;
 
-	/** Is the animation playing ? */
-	protected isPlay : boolean = false;
-
 	/* Scale factor for the plane size according to the axes size */
 	planeFactor : number = 5;
 	/* Plane Transparency */
@@ -54,14 +53,41 @@ export class ThreeDView {
 	/* Line color */
 	lineColor : string = 'rgb(127, 140, 141)';
 
+	/** card class for the component view card */
+	cardClass : string;
+
+	/** State of the animation */
+	isRunning : boolean;
+
+	/** Not implemented on the parent class! */
+	moveFrames(f : number) : void{
+	}
+
+	updateRotations(){
+		return;
+	}
+
+
+
 	constructor(divName : string){
 		/** Name of the div for the given component */
 		this.divName = divName;
+
+		if(window.innerWidth > 1200){ // lg screen
+			this.width = 500;
+		}
+		if(1200 >= window.innerWidth && window.innerWidth > 500){ // sm screen
+			this.width = 400;
+		}
+		if(500 >= window.innerWidth ){ // xs screen
+			this.width = 3 * window.innerWidth/4;
+		}
+		this.height = this.width;
 	}
 
 	clean(obj = this.scene)
 	{
-	  this.isPlay = false;
+	  this.isRunning = false;
 	  if (obj instanceof THREE.Mesh || obj instanceof THREE.LineLoop || obj instanceof THREE.Line
 	  	|| obj instanceof THREE.Sprite)
 	  {
@@ -126,10 +152,12 @@ export class ThreeDView {
 	  	this.controls.update();
 	  }
 
-	  let buttons = document.getElementsByTagName("button");
-	  for (let i = 0; i < buttons.length; i++) {
-	    buttons[i].addEventListener("click", onButtonClick, false);
-	  };
+	  let buttons : any = document.getElementsByClassName("reset-view");
+	  for(let button of buttons)
+	  {
+	  	button.addEventListener("click", onButtonClick, false);
+	  	button.style.width = this.width + 'px';
+	  }
 	}
 
 
@@ -152,7 +180,7 @@ export class ThreeDView {
 	* @param {number} steps Number of ticks on the axis
 	*/
 	drawAxisLabels(tickLength, scale, length, steps){
-	  let fontsize = 0.5 * length/steps;
+	  let fontsize = 0.45 * length/steps;
 
 	  /* Texto */
 	  let labels = ['E ["]', 'N ["]', 'Z ["]'];
@@ -192,39 +220,47 @@ export class ThreeDView {
 
 	    for(let j = 1; j < labelsDistances.length; j++)
 	    {
+	      let labelTick = (j * (length/scale) / steps).toPrecision(2); //.slice(1);
+	      let labelLen = labelTick.length;
+
 	      switch(i){
 	        case 0:
-	          var pos = new THREE.Vector3(-labelsDistances[j], -2*tickLength, 0);
+	          var pos = new THREE.Vector3(-labelsDistances[j], -labelLen/2*fontsize, 0);
 	          var tickStart = new THREE.Vector3(-labelsDistances[j], -tickLength/2, 0);
 	          var tickEnd = new THREE.Vector3(-labelsDistances[j], tickLength/2, 0);
+	          var rotation = -Math.PI/2;
 	          break;
 	        case 1:
-	          var pos = new THREE.Vector3(2*tickLength, labelsDistances[j], 0);
+	          var pos = new THREE.Vector3(labelLen/2*fontsize, labelsDistances[j], 0);
 	          var tickStart = new THREE.Vector3(-tickLength/2, labelsDistances[j], 0);
 	          var tickEnd = new THREE.Vector3(tickLength/2, labelsDistances[j], 0);
+	          var rotation = 0;
 	          break;
 	        case 2:
-	          var pos = new THREE.Vector3(0, -2*tickLength, -labelsDistances[j]);
+	          var pos = new THREE.Vector3(0, -labelLen/2*fontsize, -labelsDistances[j]);
 	          var tickStart = new THREE.Vector3(0, -tickLength/2, -labelsDistances[j]);
 	          var tickEnd = new THREE.Vector3(0, tickLength/2, -labelsDistances[j]);
+	          var rotation = -Math.PI/2;
 	          break;
 	      }
-	      var labelTick = (j * (length/scale) / steps).toFixed(2).slice(1);
 
 	      var text = new SpriteText(labelTick);
 	      text.color = colors[i];
 	      text.position.copy(pos);
 	      text.textHeight = fontsize;
+	      text.material.rotation = rotation;
 	      this.scene.add(text);
 
 	      var tickGeometry = new THREE.Geometry();
 	      tickGeometry.vertices.push(tickStart);
 	      tickGeometry.vertices.push(tickEnd);
 
+
 	      var tickMaterial = new THREE.LineBasicMaterial(
 	        { color: colors[i] ,
 	          linewidth : tickLength/4} );
 	      let tick = new THREE.Line(tickGeometry, tickMaterial)
+
 
 	      this.scene.add(tick);
 	    }
@@ -398,5 +434,21 @@ export class ThreeDView {
 	    this.scene.add(line);
 	  }
 	}
+
+	animate = () => {
+		if(this.isRunning)
+	  		this.moveFrames(this.speed);
+
+		this.updateRotations();
+
+		this.controls.update();
+		this.renderer.render( this.scene, this.camera );
+	      
+		requestAnimationFrame( this.animate );
+	}
+
+	showData(fileDict : {[type : string] : File | undefined}) : void{
+		let astroData = fileDict['astrometry'];
+	}	
 
 }

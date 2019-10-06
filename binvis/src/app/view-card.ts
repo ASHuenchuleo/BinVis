@@ -23,6 +23,9 @@ export class ViewCardComponent{
   /* State for animation */
   state : string = "unloaded";
 
+  /* Currently loaded component */
+  componentRefInst : ViewComponent;
+
   /* Lists of views IN THE SAME ORDER AS THE ENUM */
   views = [
     new ViewItem(MainViewComponent),
@@ -32,8 +35,25 @@ export class ViewCardComponent{
 
   @ViewChild(ViewDirective, {static: true}) viewHost : ViewDirective;
 
-  constructor(protected config : ConfigService, protected componentFactoryResolver: ComponentFactoryResolver)
+  constructor(protected config : ConfigService, protected componentFactoryResolver: ComponentFactoryResolver,
+    update, animUpdate, dataUpdate, cardClass : string)
   {
+    this.cardClass = cardClass;
+    update.subscribe(
+      selected => {
+        this.loadComponent(selected);
+      });
+    animUpdate.subscribe(
+      animComm => {
+        this.componentRefInst.isRunning = animComm['running'];
+        if(animComm['toMove'] != 0)
+          this.componentRefInst.moveFrames(animComm['toMove']);
+      });
+
+    dataUpdate.subscribe(
+      dataInput => {
+          this.componentRefInst.showData(dataInput);
+      });
 
   }
 
@@ -51,9 +71,10 @@ export class ViewCardComponent{
     
     const componentRef = viewContainerRef.createComponent(componentFactory);
 
-    (<ViewComponent>componentRef.instance).cardClass = this.cardClass;
+    this.componentRefInst = (<ViewComponent>componentRef.instance);
+
+    this.componentRefInst.cardClass = this.cardClass;
 
     this.state = "loaded";
    }
-
 }
