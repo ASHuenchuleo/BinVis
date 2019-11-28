@@ -53,15 +53,15 @@ export class KeplerSolverService {
   /**
   * Initializator for the solver class, responsible for 
   * finding the value of a parameter given an instant of time.
-  * @param {number} omega argument of periastrum
-  * @param {number} Omega Positional angle of ascending node
-  * @param {number} i inclination
-  * @param {number} T Date of periastrum passage
-  * @param {number} P period
-  * @param {number} a semi-major axis
+  * @param {number} omega argument of periastrum in rad
+  * @param {number} Omega Positional angle of ascending node in rad
+  * @param {number} i inclination in rad
+  * @param {number} T Date of periastrum passage in yr
+  * @param {number} P period in yr
+  * @param {number} a semi-major axis in arcsec
   * @param {number} e excentriccity
-  * @param {number} plx parallax of the system
-  * @param {number} v0 Velocity of the centre of mass
+  * @param {number} plx parallax of the system in mas
+  * @param {number} v0 Velocity of the centre of mass in km/s
   */
   init(omega : number, Omega : number, i : number, T : number,
          P : number, a : number, e : number, q : number, plx : number, v0 : number) : void{
@@ -246,15 +246,7 @@ export class KeplerSolverService {
       };
 
       var Esol = this.newtonRaphson(nu, 0.01, 100, 0.01, trueAnomalyRelation);
-      var x = Math.cos(Esol) - this.e;
-      var y = Math.sqrt(1-Math.pow(this.e, 2)) * Math.sin(Esol);
-
-      var X = this.B * x + this.G * y;
-      var Y = this.A * x + this.F * y;
-      var Z = (this.C * x + this.H * y);
-
-      var position = [X, Y, Z];
-      return position;
+      return this.getPositionFromE(Esol);
   }
 
   /**
@@ -265,14 +257,21 @@ export class KeplerSolverService {
   apparentPosition(index  : number)
   {
   	let Esol = this.EVals[index]
-    var x = Math.cos(Esol) - this.e;
-    var y = Math.sqrt(1-Math.pow(this.e, 2)) * Math.sin(Esol);
+    return this.getPositionFromE(Esol);
+  }
+
+  /**
+  * Returns the apparent position given the value for E
+  */
+  getPositionFromE(E : number){
+    var x = Math.cos(E) - this.e;
+    var y = Math.sqrt(1-Math.pow(this.e, 2)) * Math.sin(E);
 
     var X = this.B * x + this.G * y;
     var Y = this.A * x + this.F * y;
-    var Z = (this.C * x + this.H * y);
+    var Z = this.C * x + this.H * y;
 
-    var position = [X, Y, Z];
+    var position = [-X, Y, Z];
     return position;
   }
 

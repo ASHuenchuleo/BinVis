@@ -55,21 +55,21 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
     this.buildScaling();
 
     let velocityScaling = (v) => {
-      return -this.scaleY * (v - this.minVel) + this.finalY;};
+      return -this.scaleY * (v - this.minVel) + this.finalYpixel;};
     this.velsPrimary = this.velsPrimary.map(velocityScaling);
     this.velsSecondary = this.velsSecondary.map(velocityScaling);
 
-    let xAxisScaling = (t)=> {return this.scaleX * (t - this.initialXaxis) + this.initX;};
+    let xAxisScaling = (t)=> {return this.scaleX * (t - this.initXval) + this.initXpixel;};
     this.Xaxis = this.Xaxis.map(xAxisScaling);
     
     /** Axis */
     let fontsize = 11;
     this.drawAxis(10, this.nT,
       this.xLabel, 'V [km/s]',
-      this.initX, this.finalX,
-      this.initY, this.finalY,
+      this.initXpixel, this.finalXpixel,
+      this.initYpixel, this.finalYpixel,
       this.scaleX, this.scaleY,
-      this.initialXaxis, this.finalXaxis,
+      this.initXval, this.finalXval,
       this.minVel, this.maxVel,
       fontsize, this.two);
 
@@ -80,10 +80,10 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
       this.width, this.height, this.Xaxis, this.velsSecondary, this.two, 'orange');
 
     this.drawCMVelLine(this.manager.getCMVel(),
-      this.initX, this.finalX,
-      this.initY, this.finalY,
+      this.initXpixel, this.finalXpixel,
+      this.initYpixel, this.finalYpixel,
       this.scaleX, this.scaleY,
-      this.initialXaxis, this.finalXaxis,
+      this.initXval, this.finalXval,
       this.minVel, this.maxVel,
       fontsize, this.two);
 
@@ -96,15 +96,21 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
   * @param {VelocityRecord[]} An array of velocity records
   * with the information ready to be displayed.
   */
-  drawData(records : VelocityRecord[]){
-    let xAxisScaling = (t)=> {return this.scaleX * (t - this.initialXaxis) + this.initX;};
+  drawData(records : VelocityRecord[]){     
+
+    let xAxisScaling = (t)=> {
+      return this.scaleX * (t - this.initXval) + this.initXpixel;};
     let velocityScaling = (v) => {
-      return -this.scaleY * (v - this.minVel) + this.finalY;};
+      return -this.scaleY * (v - this.minVel) + this.finalYpixel;};
+
+
 
     for(let record of records){
       let xVal = record.epoch; // in yr
+
       if(this.parametrization == AxisEnum.PHASE) // Convert to phase
         xVal = this.manager.toPhase(xVal)
+
 
       xVal = xAxisScaling(xVal);
 

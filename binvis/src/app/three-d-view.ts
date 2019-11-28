@@ -4,6 +4,9 @@ import OrbitControls from 'three-orbitcontrols';
 
 import {ViewComponent} from './view.component';
 
+import {CsvParser, 	AstrometryRecord} from './csv-parser';
+
+
 
 export class ThreeDView implements ViewComponent{
 	/** Speed factor of the orbit */
@@ -267,6 +270,8 @@ export class ThreeDView implements ViewComponent{
 	 	}
 	}
 
+
+
 	/**
 	* Draws the dotted line representing the orbit
 	* @param {number[]} xPath x positions for the orbit
@@ -296,6 +301,30 @@ export class ThreeDView implements ViewComponent{
 	    }
 	    geometry.vertices.push(new THREE.Vector3(xPath[i], yPath[i], zPath[i]));
 	  }
+	}
+
+	/**
+	* Draws a line between the start and end spots
+	* @param {THREE.Vector3} start
+	* @param {THREE.Vector3} stop
+	* @param {string} color
+	* @return {THREE.Line} The line object
+	*/
+	drawLine(start : THREE.Vector3, stop : THREE.Vector3, color : string)
+	{
+		let material = new THREE.LineBasicMaterial(
+		  { color: color,
+		    linewidth : 1} );
+
+		let geometry = new THREE.Geometry();
+	    geometry.vertices.push(start);
+	    geometry.vertices.push(stop);
+
+
+		let line = new THREE.Line( geometry, material );
+		this.scene.add(line);
+
+		return line;
 	}
 
 	/**
@@ -447,8 +476,39 @@ export class ThreeDView implements ViewComponent{
 		requestAnimationFrame( this.animate );
 	}
 
+
 	showData(fileDict : {[type : string] : File | undefined}) : void{
-		let astroData = fileDict['astrometry'];
-	}	
+		let astroFile = fileDict['astrometry'];
+		if(!astroFile) return;
+
+		let reader = new FileReader();
+
+		reader.onload = () => {
+		    var astroData = reader.result;
+		    let csvRecordsArray = (<string>astroData).split(/\r\n|\n/); 
+
+
+			let parser = new CsvParser();
+
+		    let headersRow = parser.getHeaderArray(csvRecordsArray, " ");  
+		    let records : AstrometryRecord[] = parser.getDataRecordsArrayFromCSVFile(csvRecordsArray,
+		    	headersRow.length, false, " ", 'astrometry');
+		    this.drawData(records);
+
+		}
+		reader.onerror = function () {  
+		  console.log('error has occured while reading file!');  
+		}
+
+		reader.readAsText(astroFile);
+	}
+
+	
+	/**
+	* Template of the DrawData function
+	*/
+	drawData(records : AstrometryRecord[]){
+		return;
+	}
 
 }

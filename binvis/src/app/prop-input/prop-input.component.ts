@@ -21,7 +21,7 @@ export class PropInputComponent {
   omega : OrbitAttribute = new OrbitAttribute('&#969;', 86.65, '[°]', true, 0, 360); // deg
   Omega : OrbitAttribute = new OrbitAttribute('&#937;', 51.2, '[°]', true, 0, 360); // deg
   i : OrbitAttribute = new OrbitAttribute('i',  146.2, '[°]', true, -180, 180); // deg
-  T : OrbitAttribute = new OrbitAttribute('T', 1990, '[yr]'); // yr
+  T : OrbitAttribute = new OrbitAttribute('T', 1990.675, '[yr]'); // yr
   P : OrbitAttribute = new OrbitAttribute('P', 0.546, '[yr]'); // yr
   a : OrbitAttribute = new OrbitAttribute('a', 0.019, '["]'); // arcsec
   e : OrbitAttribute = new OrbitAttribute('e', 0.302, '', true, .0, 1.0);

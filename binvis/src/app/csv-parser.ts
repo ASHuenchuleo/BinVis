@@ -1,3 +1,8 @@
+/**
+* Class for the velocity data, epoch is in years,
+* vel is in km/s, res1 and res2 are the residuals and
+* comp is the either Va or Vb, primary or secondary
+*/
 export class VelocityRecord {  
     public epoch : any;  
     public vel : any;  
@@ -5,7 +10,10 @@ export class VelocityRecord {
     public res2 : any;
     public comp : any; 
 }
-
+/**
+* Class for the astrometry data, epoch is in years,
+* PA in deg, rho in arcsec and error_rho in arcsec
+*/
 export class AstrometryRecord {  
     public epoch : any;  
     public PA : any;  
@@ -25,28 +33,42 @@ export class CsvParser {
       if(hasHeader && i == 0)
       	continue;
 
-      let curruntRecord = (<string>csvRecordsArray[i]).split(/\s+/);
+      let currentRecord = (<string>csvRecordsArray[i]).split(/\s+/);
 
-      if (curruntRecord.length == headerLength) {
-      	let record;  
-      	if(type == 'astrometry'){
-      		record = new AstrometryRecord();
-      		record.epoch = curruntRecord[0].trim();
-      		record.PA = curruntRecord[1].trim();
-      		record.rho = curruntRecord[2].trim();
-      		record.error_rho = curruntRecord[3].trim(); 
-      	}
-      	else if(type == 'velocity')
-      	{
-      		record = new VelocityRecord();
-      		record.epoch = curruntRecord[0].trim(); 
-      		record.vel = curruntRecord[1].trim();
-      		record.res1 = curruntRecord[2].trim();
-      		record.res2 = curruntRecord[3].trim();
-      		record.comp = curruntRecord[4].trim();
-      	}
-        csvArr.push(record);  
-      }  
+      try
+      {
+        if (currentRecord.length == headerLength) {
+        	let record;  
+        	if(type == 'astrometry')
+          {
+            //if(currentRecord.length != 4)
+            //  throw new Error('Bad file format!');
+        		record = new AstrometryRecord();
+        		record.epoch = currentRecord[0].trim();
+        		record.PA = currentRecord[1].trim();
+        		record.rho = currentRecord[2].trim();
+        		record.error_rho = currentRecord[3].trim(); 
+        	}
+        	else if(type == 'velocity')
+        	{
+            //if(currentRecord.length != 5)
+            //  throw new Error('Bad file format!');
+        		record = new VelocityRecord();
+        		record.epoch = currentRecord[0].trim(); 
+        		record.vel = currentRecord[1].trim();
+        		record.res1 = currentRecord[2].trim();
+        		record.res2 = currentRecord[3].trim();
+        		record.comp = currentRecord[4].trim();
+        	}
+          csvArr.push(record);  
+        }
+        else{
+          throw new Error('Bad header!');
+        }
+      }
+      catch (error) {
+        console.error(error);
+      }
     }  
     return csvArr;  
   } 

@@ -23,13 +23,13 @@ export class TwoDView implements ViewComponent
 	protected portionX : number = 0.9;
 	protected portionY : number = 0.8;
 	/* Starting x pixel for graph */
-	protected initX : number;
+	protected initXpixel : number;
 	/* Final x pixel for graph */
-	protected finalX : number;
+	protected finalXpixel : number;
 	/* Starting y pixel for graph */
-	protected initY : number;
+	protected initYpixel : number;
 	/* Final y pixel for graph */
-	protected finalY : number;
+	protected finalYpixel : number;
 
 	/** Scale of the vertical axis */
 	protected scaleY : number;
@@ -42,8 +42,8 @@ export class TwoDView implements ViewComponent
 
 	/** Values for the x axis */
 	protected Xaxis : number[];
-	protected initialXaxis : number;
-	protected finalXaxis : number;
+	protected initXval : number;
+	protected finalXval : number;
 
 	/** Label for the x axis */
 	protected xLabel : string;
@@ -95,10 +95,10 @@ export class TwoDView implements ViewComponent
 		}
 		this.height = this.width;
 
-		this.initX = this.width * (1 - this.portionX) / 2 + 20;
-		this.finalX = this.width * (1 + this.portionX) / 2 - 20;
-		this.initY = this.height * (1 - this.portionY) / 2;
-		this.finalY = this.height * (1 + this.portionY) / 2;
+		this.initXpixel = this.width * (1 - this.portionX) / 2 + 20;
+		this.finalXpixel = this.width * (1 + this.portionX) / 2 - 20;
+		this.initYpixel = this.height * (1 - this.portionY) / 2;
+		this.finalYpixel = this.height * (1 + this.portionY) / 2;
 	}
 
 	/** Sets up the scaling for both axis, given the values */
@@ -107,15 +107,15 @@ export class TwoDView implements ViewComponent
 	  this.maxVel =  Math.max(...this.velsPrimary, ...this.velsSecondary);
 	  this.minVel =  Math.min(...this.velsPrimary, ...this.velsSecondary);
 
-	  let sizeY = this.finalY - this.initY;
+	  let sizeY = this.finalYpixel - this.initYpixel;
 	  this.scaleY =  sizeY / (this.maxVel - this.minVel);
 
 
-	  this.finalXaxis = this.Xaxis[this.Xaxis.length - 1];
-	  this.initialXaxis = this.Xaxis[0];
+	  this.finalXval = this.Xaxis[this.Xaxis.length - 1];
+	  this.initXval = this.Xaxis[0];
 
-	  let sizeX = this.finalX - this.initX;
-	  this.scaleX =  sizeX / (this.finalXaxis -  this.initialXaxis);
+	  let sizeX = this.finalXpixel - this.initXpixel;
+	  this.scaleX =  sizeX / (this.finalXval -  this.initXval);
 	}
 
 	ngOnDestroy() : void
@@ -198,10 +198,10 @@ export class TwoDView implements ViewComponent
 	/**
 	* Draws the dotted line for a given y value
 	* @param {number} value Value to be drawn on the graph
-	* @param {number} initX Lowest value for x position
-	* @param {number} finalX Highest value for x position
-	* @param {number} initY Lowest value for y position
-	* @param {number} finalY Highest value for y position
+	* @param {number} initXpixel Lowest value for x position
+	* @param {number} finalXpixel Highest value for x position
+	* @param {number} initYpixel Lowest value for y position
+	* @param {number} finalYpixel Highest value for y position
 	* @param {number} scaleX Scale relating pixel values to real values in x axis
 	* @param {number} scaleY Scale relating pixel values to real values in y axis
 	* @param {number} minX Minimum x value for real values
@@ -211,18 +211,18 @@ export class TwoDView implements ViewComponent
 	* @param {number} fontsize Font height in pixels
 	* @param {Two}  two Two scene to drawn on
 	*/
-	drawCMVelLine(value, initX, finalX, initY, finalY, scaleX, scaleY,
+	drawCMVelLine(value, initXpixel, finalXpixel, initYpixel, finalYpixel, scaleX, scaleY,
 	  minX, maxX, minY, maxY,
 	  fontsize, two) : void
 	{
-		let lineYPos = finalY - (value - minY) * scaleY;
+		let lineYPos = finalYpixel - (value - minY) * scaleY;
 
 		let steps = 150;
 		let cutSize = 1;
 		let lineSize = 3;
 		let anchors = [];
-		let pos = initX;
-		let step = (finalX - initX) / steps;
+		let pos = initXpixel;
+		let step = (finalXpixel - initXpixel) / steps;
 		for(let i = 0; i < steps; i++){
 		  if(i%lineSize===0 && i!=0){
 
@@ -244,7 +244,7 @@ export class TwoDView implements ViewComponent
 	      fill: 'black',
 	      weight: 150
 	    };
-		var text = two.makeText('VCM = ' + value + ' km/s', finalX - 20, lineYPos + 10, style);
+		var text = two.makeText('VCM = ' + value + ' km/s', finalXpixel - 20, lineYPos + 10, style);
 	}
 
 
@@ -254,10 +254,10 @@ export class TwoDView implements ViewComponent
 	* @param {string} xLabel Label for x axis
 	* @param {string} yLabel Label for y axis
 	* @param {number} nT Number of periods in the graph
-	* @param {number} initX Lowest value for x position
-	* @param {number} finalX Highest value for x position
-	* @param {number} initY Lowest value for y position
-	* @param {number} finalY Highest value for y position
+	* @param {number} initXpixel Lowest value for x position
+	* @param {number} finalXpixel Highest value for x position
+	* @param {number} initYpixel Lowest value for y position
+	* @param {number} finalYpixel Highest value for y position
 	* @param {number} scaleX Scale relating pixel values to real values in x axis
 	* @param {number} scaleY Scale relating pixel values to real values in y axis
 	* @param {number} minX Minimum x value for real values
@@ -268,12 +268,12 @@ export class TwoDView implements ViewComponent
 	* @param {Two}  two Two scene to drawn on
 	*/
 	drawAxis(tickLength, nT,
-	  xLabel, yLabel, initX, finalX, initY, finalY, scaleX, scaleY,
+	  xLabel, yLabel, initXpixel, finalXpixel, initYpixel, finalYpixel, scaleX, scaleY,
 	  minX, maxX, minY, maxY,
 	  fontsize, two) : void
 	{
-	  let lengthX = finalX - initX;
-	  let lengthY = finalY - initY;
+	  let lengthX = finalXpixel - initXpixel;
+	  let lengthY = finalYpixel - initYpixel;
 	  let stepsX = 0.3 * lengthX / fontsize; 
 	  let stepsY = 0.3 * lengthY / fontsize; 
 
@@ -302,23 +302,23 @@ export class TwoDView implements ViewComponent
 	      weight: 100
 	    }];
 	  let labelPos = [
-	    [initX + lengthX + 20, finalY],
-	    [initX, finalY - lengthY - 10]
+	    [initXpixel + lengthX + 20, finalYpixel],
+	    [initXpixel, finalYpixel - lengthY - 10]
 	    ];
 	  let axisEndPoints = [
-	    new Two.Anchor(initX + lengthX, finalY),
-	    new Two.Anchor(initX, finalY - lengthY)
+	    new Two.Anchor(initXpixel + lengthX, finalYpixel),
+	    new Two.Anchor(initXpixel, finalYpixel - lengthY)
 	    ];
 
-	  let labelsDistancesX = linspace(initX, finalX, stepsX)
-	  let labelsDistancesY = linspace(finalY, initY, stepsY)
+	  let labelsDistancesX = linspace(initXpixel, finalXpixel, stepsX)
+	  let labelsDistancesY = linspace(finalYpixel, initYpixel, stepsY)
 
 
 	  /* Draw the axis */
 	  for(let i = 0; i < 2; i++)
 	  {
 	    let anchors = [
-	      new Two.Anchor(initX, finalY),
+	      new Two.Anchor(initXpixel, finalYpixel),
 	      axisEndPoints[i]
 	    ];
 	    let axis = two.makeCurve(anchors, true);
@@ -334,9 +334,9 @@ export class TwoDView implements ViewComponent
 	  for(let j = 0; j < labelsDistancesX.length; j++)
 	  {
 
-	    var pos = [labelsDistancesX[j], finalY + 2*tickLength];
-	    var tickStart = new Two.Anchor(labelsDistancesX[j], finalY + tickLength/2);
-	    var tickEnd = new Two.Anchor(labelsDistancesX[j], finalY - tickLength/2);
+	    var pos = [labelsDistancesX[j], finalYpixel + 2*tickLength];
+	    var tickStart = new Two.Anchor(labelsDistancesX[j], finalYpixel + tickLength/2);
+	    var tickEnd = new Two.Anchor(labelsDistancesX[j], finalYpixel - tickLength/2);
 	    var labelTick = parseFloat((lengthX / scaleX) * j / stepsX + minX).toFixed(2);
 
 	    var text = two.makeText(labelTick, pos[0], pos[1], styles[0]);
@@ -348,9 +348,9 @@ export class TwoDView implements ViewComponent
 
 	  for(let j = 0; j < labelsDistancesY.length; j++)
 	  {
-	    var pos = [initX - 2*tickLength, labelsDistancesY[j]];
-	    var tickStart = new Two.Anchor(initX - tickLength/2, labelsDistancesY[j]);
-	    var tickEnd = new Two.Anchor(initX + tickLength/2, labelsDistancesY[j]);
+	    var pos = [initXpixel - 2*tickLength, labelsDistancesY[j]];
+	    var tickStart = new Two.Anchor(initXpixel - tickLength/2, labelsDistancesY[j]);
+	    var tickEnd = new Two.Anchor(initXpixel + tickLength/2, labelsDistancesY[j]);
 	    var labelTick = parseFloat((lengthY/scaleY) * j / stepsY + minY).toFixed(0);
 
 	    
@@ -361,14 +361,14 @@ export class TwoDView implements ViewComponent
 	    tick.stroke = colors[1];
 	  }
 
-	  let tLines = linspace(initX,finalX, nT);
+	  let tLines = linspace(initXpixel,finalXpixel, nT);
 
 	  /** Draw the lines that divide periods */
 	  for(let frac = 1; frac <= nT; frac++)
 	  {
-	    let pos = [tLines[frac], finalY];
-	    let lineStart = new Two.Anchor(tLines[frac], finalY);
-	    let lineEnd = new Two.Anchor(tLines[frac], initY);
+	    let pos = [tLines[frac], finalYpixel];
+	    let lineStart = new Two.Anchor(tLines[frac], finalYpixel);
+	    let lineEnd = new Two.Anchor(tLines[frac], initYpixel);
 
 	    let anchors = [lineStart, lineEnd];
 	    let line = two.makeCurve(anchors, true);

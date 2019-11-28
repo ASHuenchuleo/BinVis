@@ -223,7 +223,7 @@ export class PosManagerService {
   }
 
   /**
-  * Builds the projection path and readies it to be fetched
+  * Builds the projection path in arcsec and readies it to be fetched
   */
   buildProjectionPath() : void {
   	this.projectionPath = [];
@@ -244,7 +244,7 @@ export class PosManagerService {
   }
 
   /**
-  * Builds the primary's path relative to the centre of mass
+  * Builds the primary's path relative to the centre of mass in arcsec 
   * and readies it to be fetched
   */
   buildPrimaryPath() : void {
@@ -266,7 +266,7 @@ export class PosManagerService {
   }
 
   /**
-  * Builds the secondary's path relative to the centre of mass
+  * Builds the secondary's path relative to the centre of mass in arcsec 
   * and readies it to be fetched
   */
   buildSecondaryPath() : void {

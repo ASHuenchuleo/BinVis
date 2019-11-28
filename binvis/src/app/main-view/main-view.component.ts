@@ -1,6 +1,8 @@
 import { Component, ViewChild, AfterViewInit, OnDestroy, ElementRef } from '@angular/core';
 import { PosManagerService } from './../pos-manager.service';
 import { ThreeDView} from './../three-d-view';
+import {AstrometryRecord} from './../csv-parser';
+
 
 
 import * as THREE from 'three'
@@ -44,7 +46,6 @@ export class MainViewComponent extends ThreeDView
     {
           if (obj.children !== undefined) {
               while (obj.children.length > 0) {
-                  console.log(obj);
                   this.clean(obj.children[0]);
               }
           }
@@ -160,6 +161,33 @@ export class MainViewComponent extends ThreeDView
 
     this.ascMesh.quaternion.copy( this.camera.quaternion );
     this.descMesh.quaternion.copy( this.camera.quaternion );
+  }
+
+  /**
+  * Draws the loaded records into the canvas as points.
+  * @param {AstrometryRecord[]} An array of astrometry records
+  * with the information ready to be displayed.
+  */
+  drawData(records : AstrometryRecord[]){ 
+    let markersize = 2;
+    for(let record of records){
+      // Position of the marker
+      let fact = Math.PI/180;
+      let xPos = this.scale * record.rho * Math.cos(fact * record.PA + Math.PI/2);
+      let yPos = this.scale * record.rho * Math.sin(fact * record.PA + Math.PI/2);
+      let dataMesh = this.drawStarProjection('orange', markersize);
+      dataMesh.position.set(xPos, yPos, 0)
+
+      // Error bar
+      let eX = this.scale * record.error_rho * Math.cos(fact * record.PA + Math.PI/2);
+      let eY = this.scale * record.error_rho * Math.sin(fact * record.PA + Math.PI/2);
+
+      let errorbar = this.drawLine(new THREE.Vector3(xPos + eX, yPos + eY, 0),
+                            new THREE.Vector3(xPos - eX, yPos - eY, 0), 'orange');
+
+
+    }
+
   }
 
   
