@@ -17,6 +17,9 @@ export class ThreeDView implements ViewComponent{
 	/** Scale of the animation */
 	protected scale : number;
 
+	/** Scaling function */
+	protected scalinFun;
+
 	/** width of the canvas */
 	protected width : number = 400;
 	/** height of the canvas */
@@ -172,6 +175,8 @@ export class ThreeDView implements ViewComponent{
 	  this.maxAbsPos = Math.max(Math.abs(maxPos), Math.abs(minPos))
 
 	  this.scale =  this.maxDis / this.maxAbsPos;
+
+      this.scalinFun = (x) => {return this.scale * x;}
 	}
 
 
@@ -221,33 +226,34 @@ export class ThreeDView implements ViewComponent{
 	    text.position.copy(labelPos[i]);
 	    this.scene.add(text);
 
+	    let tickSpacing = +((length/scale) / steps).toPrecision(2);
 	    for(let j = 1; j < labelsDistances.length; j++)
 	    {
-	      let labelTick = (j * (length/scale) / steps).toPrecision(2); //.slice(1);
-	      let labelLen = labelTick.length;
+	      let tickPosReal = j * tickSpacing;
+	      let tickTextLen = String(tickPosReal).length;
 
 	      switch(i){
 	        case 0:
-	          var pos = new THREE.Vector3(-labelsDistances[j], -labelLen/2*fontsize, 0);
+	          var pos = new THREE.Vector3(-labelsDistances[j], -tickTextLen/2*fontsize, 0);
 	          var tickStart = new THREE.Vector3(-labelsDistances[j], -tickLength/2, 0);
 	          var tickEnd = new THREE.Vector3(-labelsDistances[j], tickLength/2, 0);
 	          var rotation = -Math.PI/2;
 	          break;
 	        case 1:
-	          var pos = new THREE.Vector3(labelLen/2*fontsize, labelsDistances[j], 0);
+	          var pos = new THREE.Vector3(tickTextLen/2*fontsize, labelsDistances[j], 0);
 	          var tickStart = new THREE.Vector3(-tickLength/2, labelsDistances[j], 0);
 	          var tickEnd = new THREE.Vector3(tickLength/2, labelsDistances[j], 0);
 	          var rotation = 0;
 	          break;
 	        case 2:
-	          var pos = new THREE.Vector3(0, -labelLen/2*fontsize, -labelsDistances[j]);
+	          var pos = new THREE.Vector3(0, -tickTextLen/2*fontsize, -labelsDistances[j]);
 	          var tickStart = new THREE.Vector3(0, -tickLength/2, -labelsDistances[j]);
 	          var tickEnd = new THREE.Vector3(0, tickLength/2, -labelsDistances[j]);
 	          var rotation = -Math.PI/2;
 	          break;
 	      }
 
-	      var text = new SpriteText(labelTick);
+	      var text = new SpriteText(tickPosReal);
 	      text.color = colors[i];
 	      text.position.copy(pos);
 	      text.textHeight = fontsize;
@@ -277,16 +283,16 @@ export class ThreeDView implements ViewComponent{
 	* @param {number[]} xPath x positions for the orbit
 	* @param {number[]} yPath y positions for the orbit
 	* @param {number[]} zPath z positions for the orbit
-	* @param {Scene} scene Scene to drawn the line
+	* @param {number} color Color for the line
+	* @param {number} segLen Number of points per segment
 	*/
-	drawOrbitLine(xPath, yPath, zPath, color='black') {
+	drawOrbitLine(xPath, yPath, zPath, color='black', segLen = 15) {
 
 
 	  let material = new THREE.LineBasicMaterial(
 	    { color: color,
 	      linewidth : 1} );
 
-	  let segLen = 15
 	  let geometry = new THREE.Geometry();
 
 	  for(let i = 0; i < xPath.length; i++){
@@ -297,7 +303,7 @@ export class ThreeDView implements ViewComponent{
 	      this.scene.add(line);
 
 	      geometry = new THREE.Geometry();
-	      i+=5;
+	      i+= parseInt(String(segLen/4));
 	    }
 	    geometry.vertices.push(new THREE.Vector3(xPath[i], yPath[i], zPath[i]));
 	  }
@@ -348,7 +354,7 @@ export class ThreeDView implements ViewComponent{
 
 
 	/**
-	* Draws a star projection with given properties, and returns the mesh
+	* Draws a star projection with given properties as a circle, and returns the mesh
 	* @param {Scene} scene Scene to drawn the primary
 	* @param {number} color Color for the mesh
 	* @param {number} size Size for the star
@@ -368,6 +374,11 @@ export class ThreeDView implements ViewComponent{
 	  return star;
 	}
 
+	/**
+	* Draws a node as a filled square
+	* @param {number} color Color for the mesh
+	* @param {number} size Size for the marker
+	*/
 	drawNode(color, size){
 	  let nodeGeometry = new THREE.PlaneGeometry(2 * size, 2 * size, 1, 1)
 	  let nodeMaterial = new THREE.MeshBasicMaterial({
@@ -380,6 +391,11 @@ export class ThreeDView implements ViewComponent{
 	  return node;
 	}
 
+	/**
+	* Draws a node projection as an empty square
+	* @param {number} color Color for the mesh
+	* @param {number} size Size for the marker
+	*/
 	drawNodeProjection(color, size){
 		let nodeGeometry = new THREE.EdgesGeometry(new THREE.PlaneGeometry(2 * size, 2 * size, 1, 1));
 		let nodeMaterial = new THREE.LineBasicMaterial({
@@ -477,6 +493,10 @@ export class ThreeDView implements ViewComponent{
 	}
 
 
+	/**
+	* Sends the data in the recieved file to be drawn
+	* @param {{[type : string] : File | undefined}} fileDict sent file
+	*/
 	showData(fileDict : {[type : string] : File | undefined}) : void{
 		let astroFile = fileDict['astrometry'];
 		if(!astroFile) return;

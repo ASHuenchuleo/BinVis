@@ -43,6 +43,7 @@ export class DualOrbitViewComponent extends ThreeDView
   ngOnDestroy() : void{
 
     this.clean();
+    /**
     let test = (obj = this.scene) =>
     {
           if (obj.children !== undefined) {
@@ -53,6 +54,7 @@ export class DualOrbitViewComponent extends ThreeDView
           }
       }
     test();
+    */
   }
   
   ngAfterViewInit()
@@ -74,14 +76,13 @@ export class DualOrbitViewComponent extends ThreeDView
 
     this.buildScaling(this.xPathSec, this.yPathSec, this.zPathSec);
 
-    let scalinFun = (x) => {return this.scale * x;}
-    this.xPathPrim = this.xPathPrim.map(scalinFun);
-    this.yPathPrim = this.yPathPrim.map(scalinFun);
-    this.zPathPrim = this.zPathPrim.map(scalinFun);
+    this.xPathPrim = this.xPathPrim.map(this.scalinFun);
+    this.yPathPrim = this.yPathPrim.map(this.scalinFun);
+    this.zPathPrim = this.zPathPrim.map(this.scalinFun);
 
-    this.xPathSec = this.xPathSec.map(scalinFun);
-    this.yPathSec = this.yPathSec.map(scalinFun);
-    this.zPathSec = this.zPathSec.map(scalinFun);
+    this.xPathSec = this.xPathSec.map(this.scalinFun);
+    this.yPathSec = this.yPathSec.map(this.scalinFun);
+    this.zPathSec = this.zPathSec.map(this.scalinFun);
 
 
     /* Primary and secondary in real view*/
@@ -118,6 +119,8 @@ export class DualOrbitViewComponent extends ThreeDView
 
   moveFrames(frames : number){
       this.index = (this.index + frames) % this.xPathPrim.length;
+      if(this.index < 0)
+        this.index = this.xPathPrim.length + this.index;
 
       let xPrim = this.xPathPrim[this.index];
       let yPrim = this.yPathPrim[this.index];

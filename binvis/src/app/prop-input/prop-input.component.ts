@@ -22,7 +22,7 @@ export class PropInputComponent {
   Omega : OrbitAttribute = new OrbitAttribute('&#937;', 51.2, '[°]', true, 0, 360); // deg
   i : OrbitAttribute = new OrbitAttribute('i',  146.2, '[°]', true, -180, 180); // deg
   T : OrbitAttribute = new OrbitAttribute('T', 1990.675, '[yr]'); // yr
-  P : OrbitAttribute = new OrbitAttribute('P', 0.546, '[yr]'); // yr
+  P : OrbitAttribute = new OrbitAttribute('P', 0.546643, '[yr]'); // yr
   a : OrbitAttribute = new OrbitAttribute('a', 0.019, '["]'); // arcsec
   e : OrbitAttribute = new OrbitAttribute('e', 0.302, '', true, .0, 1.0);
   q : OrbitAttribute = new OrbitAttribute('q', 0.956, '', true, .0, 1.0);
@@ -30,7 +30,7 @@ export class PropInputComponent {
   v0 : OrbitAttribute = new OrbitAttribute('V<sub>0</sub>', -14.131, '[<sup>km</sup>&frasl;<sub>s</sub>]'); // km/s
 
   viewOptions = [
-    {id: ViewWindow.Main, name: "Primary Component "},
+    {id: ViewWindow.Main, name: "Primary Component"},
     {id: ViewWindow.CM, name: "Centre of Mass"},
     {id: ViewWindow.Vel, name: "Velocity Graph"}
   ];
@@ -61,6 +61,15 @@ export class PropInputComponent {
   this.i,
   this.T
   ]; 
+
+  /* Date type for the velocity data */
+  dateVelocityOptions = [
+  {id: 0, name: "Julian Days"},
+  {id: 1, name: "Julian Years"},
+  {id: 2, name: "Besselian Years"},
+  ];
+
+  dateVelocity = this.dateVelocityOptions[1];
 
   /* Wether the animation is running */
   running : boolean = true;
@@ -142,6 +151,9 @@ export class PropInputComponent {
     {
       'astrometry' : this.astrometryFile,
       'velocity' : this.velocityFile
+    },
+    {
+      'dateVelocity' : this.dateVelocity.id
     });
   }
 

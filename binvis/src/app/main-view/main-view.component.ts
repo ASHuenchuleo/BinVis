@@ -42,6 +42,7 @@ export class MainViewComponent extends ThreeDView
 
   ngOnDestroy() : void{
     this.clean();
+    /**
     let test = (obj = this.scene) =>
     {
           if (obj.children !== undefined) {
@@ -51,6 +52,7 @@ export class MainViewComponent extends ThreeDView
           }
       }
     test();
+    */
   }
 
 
@@ -67,10 +69,9 @@ export class MainViewComponent extends ThreeDView
 
     this.buildScaling(this.xPath, this.yPath, this.zPath);
 
-    let scalinFun = (x) => {return this.scale * x;}
-    this.xPath = this.xPath.map(scalinFun);
-    this.yPath = this.yPath.map(scalinFun);
-    this.zPath = this.zPath.map(scalinFun);
+    this.xPath = this.xPath.map(this.scalinFun);
+    this.yPath = this.yPath.map(this.scalinFun);
+    this.zPath = this.zPath.map(this.scalinFun);
 
 
     /* Primary and secondary in real view*/
@@ -93,8 +94,8 @@ export class MainViewComponent extends ThreeDView
 
     /* Nodes */
     let [asc, desc] = this.manager.getNodesMain();
-    asc = asc.map(scalinFun);
-    desc = desc.map(scalinFun);
+    asc = asc.map(this.scalinFun);
+    desc = desc.map(this.scalinFun);
 
     this.ascMesh = this.drawNode('black', indicatorSize);
     this.ascMesh.position.set(asc[0], asc[1], asc[2]);
@@ -113,8 +114,8 @@ export class MainViewComponent extends ThreeDView
 
     /* periastrum and apoastrum */
     let [peri, apo] = this.manager.getPeriApoMain();
-    peri = peri.map(scalinFun);
-    apo = apo.map(scalinFun);
+    peri = peri.map(this.scalinFun);
+    apo = apo.map(this.scalinFun);
     this.periMesh = this.drawStar('black', indicatorSize);
     this.periMesh.position.set(peri[0], peri[1], peri[2])
 
@@ -143,6 +144,8 @@ export class MainViewComponent extends ThreeDView
   moveFrames(frames : number){
 
     this.index = (this.index + frames) % this.xPath.length;
+    if(this.index < 0)
+      this.index = this.xPath.length + this.index;
 
     let x = this.xPath[this.index];
     let y = this.yPath[this.index];
@@ -178,12 +181,24 @@ export class MainViewComponent extends ThreeDView
       let dataMesh = this.drawStarProjection('orange', markersize);
       dataMesh.position.set(xPos, yPos, 0)
 
-      // Error bar
-      let eX = this.scale * record.error_rho * Math.cos(fact * record.PA + Math.PI/2);
-      let eY = this.scale * record.error_rho * Math.sin(fact * record.PA + Math.PI/2);
+      //console.log(xPos, yPos, this.scale);
+      //console.log(record.PA, record.rho)
 
-      let errorbar = this.drawLine(new THREE.Vector3(xPos + eX, yPos + eY, 0),
-                            new THREE.Vector3(xPos - eX, yPos - eY, 0), 'orange');
+      // Dotted line to actual position
+      let posReal = this.manager.secondaryPositionFromTime(record.epoch);
+      let [xPosReal, yPosReal, zPosReal] = posReal.map(this.scalinFun);
+
+      // Error bar
+      //let eX = this.scale * record.error_rho * Math.cos(fact * record.PA + Math.PI/2);
+      //let eY = this.scale * record.error_rho * Math.sin(fact * record.PA + Math.PI/2);
+
+      let nSteps = 20;
+      let segLen = 4;
+      let diffLinePathX = this.linspace(xPos, xPosReal, nSteps);
+      let diffLinePathY = this.linspace(yPos, yPosReal, nSteps);
+      let diffLinePathZ = this.linspace(0, 0, nSteps);
+      let diffLine = this.drawOrbitLine(diffLinePathX, diffLinePathY, diffLinePathZ,
+                                          'orange', segLen);
 
 
     }

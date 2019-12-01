@@ -17,6 +17,9 @@ export class ConfigService {
   * response to the user-given input passed by the input component
   */
 
+  // View Parameters
+  
+
   // Observable string sources
   private posManagerUpdateSource = new Subject<OrbitAttribute[]>();
   private derivedParametersUpdateSource = new Subject<any>();
@@ -40,6 +43,9 @@ export class ConfigService {
   viewCardRightUpdate$ = this.viewCardRightUpdateSource.asObservable();
   viewCardRightAnimUpdate$ = this.viewCardRightAnimUpdateSource.asObservable();
   viewCardRightDataUpdate$ = this.viewCardRightDataUpdateSource.asObservable();
+
+  // Data input settings
+  dataInputSettings;
 
                                       
   /**
@@ -69,11 +75,15 @@ export class ConfigService {
 
   /**
   * Sends the file dictionary to both viewcards so they can be displayed
-  * @param {[type : string] : File | undefined} Dictionary with both files
+  * @param {[type : string] : File | undefined} dataInput Dictionary with both files
+  * @param {[type : string] : any} settings Dictionary for data settings
   */
-  passFileInput(dataInput : {[type : string] : File | undefined}){
+  passFileInput(dataInput : {[type : string] : File | undefined},
+                      settings : {[type : string] : any}){
+    this.dataInputSettings = settings;
     this.viewCardRightDataUpdateSource.next(dataInput);
     this.viewCardLeftDataUpdateSource.next(dataInput);
+
   }
 
 }

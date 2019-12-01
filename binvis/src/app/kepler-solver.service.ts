@@ -147,6 +147,16 @@ export class KeplerSolverService {
     return [M, m];
   }
 
+    /**
+  * Returns the position of the secondary star relative to the primary
+  * given a date in julian years
+  * @param {number} tau Time in julian years
+  */
+  secondaryPositionFromTime(tau : number) : number[]
+  {
+    return this.getPositionFromE(this.findEsol(tau));
+  }
+
   /*
   * Returns the velocity of the centre of mass
   */
@@ -271,7 +281,7 @@ export class KeplerSolverService {
     var Y = this.A * x + this.F * y;
     var Z = this.C * x + this.H * y;
 
-    var position = [-X, Y, Z];
+    var position = [-X, Y, Z]; // The x coord is inverted
     return position;
   }
 
@@ -326,7 +336,7 @@ export class KeplerSolverService {
     var trueAnomaly = 2 * Math.atan(
       Math.sqrt((1 + this.e) / (1 - this.e)) * Math.tan(Esol/2));
 
-    let rvel = this.v0 + this.Kp * (Math.cos(this.omega + trueAnomaly) +
+    let rvel = this.v0 - this.Kp * (Math.cos(this.omega + trueAnomaly) +
                 this.e * Math.cos(this.omega));
     return rvel
   }
@@ -343,7 +353,8 @@ export class KeplerSolverService {
     let trueAnomaly = 2 * Math.atan(
       Math.sqrt((1 + this.e) / (1 - this.e)) * Math.tan(Esol/2));
 
-    let rvel = this.v0 - this.Ks * (Math.cos(this.omega + trueAnomaly) +
+    // The formula is inverted since the velocity must be a maximum for trueanomaly=-omega
+    let rvel = this.v0 + this.Ks * (Math.cos(this.omega + trueAnomaly) +
                 this.e * Math.cos(this.omega));
     return rvel
   }

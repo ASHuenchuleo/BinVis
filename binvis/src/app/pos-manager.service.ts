@@ -216,10 +216,21 @@ export class PosManagerService {
   /**
   * Returns the secondary's radial velocity array relative to the observer
   * @param {number} nT The number of periods to be returned
+  * @return {number[]} radial velocities for the secondary
   */
   getSecondaryCMVelocities(nT : number = 1) : number[]
   {
     return this.buildPeriodic(this.secondaryCMVelocities, nT); 
+  }
+
+  /**
+  * Returns the position of the secondary star relative to the primary
+  * given a date in julian years
+  * @param {number} tau Time in julian years
+  */
+  secondaryPositionFromTime(tau : number) : number[]
+  {
+    return this.solver.secondaryPositionFromTime(tau);
   }
 
   /**

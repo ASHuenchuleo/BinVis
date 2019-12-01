@@ -1,4 +1,5 @@
-import { PosManagerService } from './pos-manager.service';
+import { PosManagerService} from './pos-manager.service';
+import { ConfigService} from './config.service';
 import {ViewComponent} from './view.component';
 import {CsvParser, VelocityRecord} from './csv-parser';
 
@@ -78,20 +79,20 @@ export class TwoDView implements ViewComponent
 		return;
 	}
 
-	constructor(manager : PosManagerService, divName : string){
+	constructor(manager : PosManagerService, config : ConfigService, divName : string){
 		this.divName = divName;
 
 		if(window.innerWidth > 1200){ // lg screen
 			this.width = 500;
-			this.nT = 3;
+			this.nT = 2;
 		}
 		if(1200 >= window.innerWidth && window.innerWidth > 500){ // sm screen
 			this.width = 400;
-			this.nT = 2;
+			this.nT = 1;
 		}
 		if(500 >= window.innerWidth ){ // xs screen
 			this.width = 3 * window.innerWidth/4;
-			this.nT = 2;
+			this.nT = 1;
 		}
 		this.height = this.width;
 
@@ -139,7 +140,10 @@ export class TwoDView implements ViewComponent
 		    let headersRow = parser.getHeaderArray(csvRecordsArray, " ");  
 		    let records : VelocityRecord[] = parser.getDataRecordsArrayFromCSVFile(csvRecordsArray,
 		    	headersRow.length, false, " ", 'velocity');
+
+        	this.two.pause();
 		    this.drawData(records);
+		    this.two.play();
 
 		}
 		reader.onerror = function () {  
@@ -337,9 +341,11 @@ export class TwoDView implements ViewComponent
 	    var pos = [labelsDistancesX[j], finalYpixel + 2*tickLength];
 	    var tickStart = new Two.Anchor(labelsDistancesX[j], finalYpixel + tickLength/2);
 	    var tickEnd = new Two.Anchor(labelsDistancesX[j], finalYpixel - tickLength/2);
-	    var labelTick = parseFloat((lengthX / scaleX) * j / stepsX + minX).toFixed(2);
 
-	    var text = two.makeText(labelTick, pos[0], pos[1], styles[0]);
+	    let labelSpacing = +((lengthX / scaleX) / stepsX).toPrecision(2);
+	    var tickPosReal = +(j * labelSpacing + minX).toPrecision(2);
+
+	    var text = two.makeText(tickPosReal, pos[0], pos[1], styles[0]);
 
 	    let anchors = [tickStart, tickEnd];
 	    let tick = two.makeCurve(anchors, true);
@@ -351,10 +357,11 @@ export class TwoDView implements ViewComponent
 	    var pos = [initXpixel - 2*tickLength, labelsDistancesY[j]];
 	    var tickStart = new Two.Anchor(initXpixel - tickLength/2, labelsDistancesY[j]);
 	    var tickEnd = new Two.Anchor(initXpixel + tickLength/2, labelsDistancesY[j]);
-	    var labelTick = parseFloat((lengthY/scaleY) * j / stepsY + minY).toFixed(0);
 
+	    let labelSpacing = +((lengthY / scaleY) / stepsY).toPrecision(2);
+	    var tickPosReal = +(j * labelSpacing + minY).toPrecision(2);
 	    
-	    var text = two.makeText(labelTick, pos[0], pos[1], styles[1]);
+	    var text = two.makeText(tickPosReal, pos[0], pos[1], styles[1]);
 
 	    let anchors = [tickStart, tickEnd];
 	    let tick = two.makeCurve(anchors, true);

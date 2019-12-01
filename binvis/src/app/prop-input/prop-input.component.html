@@ -113,6 +113,14 @@
 		  	           id="file"
 		  	           (change)="handleVelocityDataInput($event.target.files)">
 		  	</div>
+		  	<div class="input-group mb-3">
+		  	  <div class="input-group-prepend">
+		  	    <span class="input-group-text">Date Type</span>
+		  	  </div>
+		  	  <select class="browser-default custom-select" name="velocity-date-select"[(ngModel)]="dateVelocity">
+		  	       <option *ngFor="let c of dateVelocityOptions" [ngValue]="c">{{c.name}}</option>
+		  	  </select>
+		  	</div>
 		  </div>
 		</div>
 	</div>

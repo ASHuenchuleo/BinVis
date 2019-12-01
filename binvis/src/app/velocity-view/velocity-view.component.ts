@@ -1,5 +1,6 @@
 import { Component, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { PosManagerService } from './../pos-manager.service';
+import { ConfigService} from './../config.service';
 import {VelocityRecord} from './../csv-parser';
 
 import {TwoDView} from './../two-d-view';
@@ -22,8 +23,9 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
   primaryCurrent;
   secondaryCurrent;
 
-  constructor(private manager : PosManagerService) {
-    super(manager, 'velocity-time');
+  constructor(private manager : PosManagerService,
+              private config : ConfigService) {
+    super(manager, config,  'velocity-time');
   }
   
   /**
@@ -32,7 +34,13 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
   ngAfterViewInit() {
     this.divName = this.divName  + '-' + this.cardClass;
     this.elem = document.getElementById(this.divName);
-    this.params = { width: this.width, height: this.height };
+
+    this.params = {
+      type: Two.Types['svg'],
+      width: this.width,
+      height: this.height
+    };
+
     this.two = new Two(this.params).appendTo(this.elem);
 
     this.manager.buildCMRadialVelocities();
@@ -104,23 +112,52 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
       return -this.scaleY * (v - this.minVel) + this.finalYpixel;};
 
 
+    for(let i = 0; i < this.nT; i++)
+    {
+      for(let record of records){
+        let xVal = record.epoch;
 
-    for(let record of records){
-      let xVal = record.epoch; // in yr
+        switch(this.config.dataInputSettings.dateVelocity) // convert to julian years
+        {
+          case 0: // julian days is -2,400,000.0
+            xVal = 2000 + (xVal - 51545) / 365.25;
+            break;
+          case 1:
+            break;
+          case 2:
+            xVal = (xVal - 1900) * 365.242198781 +  15020.31352;
+            xVal = 2000 + (xVal - 51545) / 365.25;
+            break;
 
-      if(this.parametrization == AxisEnum.PHASE) // Convert to phase
-        xVal = this.manager.toPhase(xVal)
+        }
 
+        if(this.parametrization == AxisEnum.PHASE)// Convert to phase
+        {
+          xVal = this.manager.toPhase(xVal)
+          xVal = xAxisScaling(xVal + i);
+        }
 
-      xVal = xAxisScaling(xVal);
+        let yVal = record.vel; // in km/s
+        yVal = velocityScaling(yVal);
 
-      let yVal = record.vel; // in km/s
-      yVal = velocityScaling(yVal);
+        var marker = this.two.makeCircle(xVal, yVal, 2);
 
-      let marker = this.two.makeCircle(xVal, yVal, 2);
-      if(record.comp == 'Va') marker.stroke = 'blue';
-      if(record.comp == 'Vb') marker.stroke = 'orange';
+        if(record.comp == 'Va') marker.stroke = 'blue';
+        if(record.comp == 'Vb') marker.stroke = 'orange';
+
+        this.update(0);
+        console.log(document.querySelector('#two-107'));
+
+        break;
+
+        var handler = (e) => {marker.fill = 'black';};
+        console.log('#' + marker.id);
+        marker.domElement = document.querySelector('#' + marker.id);
+        marker.domElement.addEventListener('click', handler, false);
+        marker.domElement.style.cursor = 'pointer';
+      }
     }
+
 
   }
 
@@ -128,6 +165,8 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
   moveFrames(frames : number) : void
   {
     this.index = (this.index + frames) % this.Xaxis.length;
+    if(this.index < 0)
+      this.index = this.Xaxis.length + this.index;
 
     let velPrim = this.velsPrimary[this.index];
     let velSec = this.velsSecondary[this.index];
