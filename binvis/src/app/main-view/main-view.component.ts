@@ -153,6 +153,7 @@ export class MainViewComponent extends ThreeDView
 
     this.secondaryReal.position.set(x, y, z);
     this.secondaryProj.position.set(x, y, 0);
+
   }
 
   updateRotations(){
@@ -172,7 +173,10 @@ export class MainViewComponent extends ThreeDView
   * with the information ready to be displayed.
   */
   drawData(records : AstrometryRecord[]){ 
+
     let markersize = 2;
+    let c = 0;
+
     for(let record of records){
       // Position of the marker
       let fact = Math.PI/180;
@@ -180,6 +184,19 @@ export class MainViewComponent extends ThreeDView
       let yPos = this.scale * record.rho * Math.sin(fact * record.PA + Math.PI/2);
       let dataMesh = this.drawStarProjection('orange', markersize);
       dataMesh.position.set(xPos, yPos, 0)
+
+      this.dataGroup.add(dataMesh);
+
+      let objName = "data-point-" + c;
+      c += 1;
+      
+      dataMesh.name = objName;
+      // Add this object's data to the dictionary
+      this.objectDataDict[objName] = {
+        "Rho ['']" : Number(record.rho).toPrecision(3),
+        'Theta [°]' : Number(record.PA).toPrecision(6),
+        'Epoch [yr]' : Number(record.epoch).toPrecision(6)
+        };
 
       //console.log(xPos, yPos, this.scale);
       //console.log(record.PA, record.rho)
@@ -201,7 +218,30 @@ export class MainViewComponent extends ThreeDView
                                           'orange', segLen);
 
 
+      
+
+      /**
+      let clickHandler = (e) => { 
+        this.selectedData = 
+        {
+          'Component' : component,
+          'Phase' : String(phase.toPrecision(2)),
+          'Epoch' : String((+epoch).toPrecision(6)),
+          'Velocity' : String((+vel).toPrecision(3))
+        }
+        let infocard =  <HTMLElement>document.querySelector('#selected-info-' + this.cardClass);
+        infocard.style.display = "block";
+      };
+      let hoverHandler = (e) => {
+        marker.fill = markerColor;
+
+        // reset the color after a short delay
+        setTimeout(function() {
+          marker.noFill();
+        }, 500);
+      */
     }
+    this.scene.add(this.dataGroup);
 
   }
 

@@ -15,8 +15,8 @@ export class DerivedParametersComponent{
   M : OrbitAttribute = new OrbitAttribute('M<sub>p</sub>:', 0, '[M<sub>☉</sub>]'); // Mass of primary
   m : OrbitAttribute = new OrbitAttribute('m<sub>s</sub>:', 0, '[M<sub>☉</sub>]'); // Mass of secondary
 
-  periDis : OrbitAttribute = new OrbitAttribute('Periastrum:', 0, '[AU]'); // Periastrum
-  apoDis : OrbitAttribute = new OrbitAttribute('Apoastrum:', 0, '[AU]'); // Apoastrum
+  periDis : OrbitAttribute = new OrbitAttribute('Periastron:', 0, '[AU]'); // Periastrum
+  apoDis : OrbitAttribute = new OrbitAttribute('Apoastron:', 0, '[AU]'); // Apoastrum
 
   derivedParameters : OrbitAttribute[] =
   [

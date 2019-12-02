@@ -65,7 +65,6 @@ export class TwoDView implements ViewComponent
 	protected params;
 
 
-
 	/* css class for the component view card */
 	cardClass : string;
 
@@ -74,6 +73,9 @@ export class TwoDView implements ViewComponent
 
 	/** true of the animation is running */
 	isRunning : boolean;
+
+	/** Selected data point information dict */
+	selectedData : { [id : string] : string}; 
 
 	moveFrames(f : number) : void{
 		return;
@@ -141,9 +143,8 @@ export class TwoDView implements ViewComponent
 		    let records : VelocityRecord[] = parser.getDataRecordsArrayFromCSVFile(csvRecordsArray,
 		    	headersRow.length, false, " ", 'velocity');
 
-        	this.two.pause();
 		    this.drawData(records);
-		    this.two.play();
+
 
 		}
 		reader.onerror = function () {  
@@ -166,6 +167,7 @@ export class TwoDView implements ViewComponent
 		/* For some reason, it requests a frame before Xaxis is defined */
 	    if(this.isRunning)
 	      this.moveFrames(this.speed)
+
 	}
 
 	/**

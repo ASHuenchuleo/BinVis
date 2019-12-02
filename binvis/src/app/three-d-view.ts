@@ -20,6 +20,10 @@ export class ThreeDView implements ViewComponent{
 	/** Scaling function */
 	protected scalinFun;
 
+	/** frustrum size */
+	protected frustumSize = 400;
+	protected aspect;
+
 	/** width of the canvas */
 	protected width : number = 400;
 	/** height of the canvas */
@@ -50,6 +54,10 @@ export class ThreeDView implements ViewComponent{
 	/** Name of the div where it should be drawn */
 	protected divName : string;
 
+	/** Raycasting */
+	protected raycaster;
+	protected mouse;
+
 	/* Scale factor for the plane size according to the axes size */
 	planeFactor : number = 5;
 	/* Plane Transparency */
@@ -64,6 +72,18 @@ export class ThreeDView implements ViewComponent{
 
 	/** State of the animation */
 	isRunning : boolean;
+
+	/** Dictionary relating the object names and their associated data */
+	objectDataDict : { [name : string] : { [id : string] : string} } = {};
+
+	/** Selected data point information dict */
+	selectedData : { [id : string] : any}; 
+
+	/** Mesh groups */
+    dataGroup = new THREE.Group(); // Group for the data
+
+
+
 
 	/** Not implemented on the parent class! */
 	moveFrames(f : number) : void{
@@ -126,7 +146,6 @@ export class ThreeDView implements ViewComponent{
 
 	initScene()
 	{
-
 	  let elem = document.getElementById(this.divName);
 
 
@@ -138,8 +157,9 @@ export class ThreeDView implements ViewComponent{
 	  elem.appendChild(this.renderer.domElement);
 
 	  /* Set up camera */
-	  this.camera = new THREE.OrthographicCamera(this.width / -3,
-	                this.height / 3, this.height / 3, this.height / - 3, 1, 1000);
+	  this.aspect = this.width / this.height;
+	  this.camera = new THREE.OrthographicCamera( this.frustumSize * this.aspect / - 2, this.frustumSize * this.aspect / 2,
+	  						 this.frustumSize / 2, this.frustumSize / - 2, 1, 1000 );
 	  this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 	  this.camera.position.set( 0, 0, 200 );
 	  this.controls.update();
@@ -148,22 +168,25 @@ export class ThreeDView implements ViewComponent{
 	  /* Set up scene */
 	  this.scene = new THREE.Scene();
 
-	  /** Set up UI */
+	  // Windows resize
+	  let onWindowResize = () => {
 
-	  let onButtonClick = (event) => {
-	  	this.camera = new THREE.OrthographicCamera(this.width / -3,
-	  	              this.height / 3, this.height / 3, this.height / - 3, 1, 1000);
-	  	this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-	  	this.camera.position.set( 0, 0, 200 );
-	  	this.controls.update();
-	  }
 
-	  let buttons : any = document.getElementsByClassName("reset-view");
-	  for(let button of buttons)
-	  {
-	  	button.addEventListener("click", onButtonClick, false);
-	  	button.style.width = this.width + 'px';
-	  }
+			this.aspect = this.width / this.height;
+
+			this.camera.left = - this.frustumSize * this.aspect / 2;
+			this.camera.right = this.frustumSize * this.aspect / 2;
+			this.camera.top = this.frustumSize / 2;
+			this.camera.bottom = - this.frustumSize / 2;
+
+			this.camera.updateProjectionMatrix();
+
+			this.renderer.setSize(this.width, this.height);
+
+		}
+	  window.addEventListener( 'resize', onWindowResize, false );
+
+	  this.initInteractive();
 	}
 
 
@@ -177,6 +200,77 @@ export class ThreeDView implements ViewComponent{
 	  this.scale =  this.maxDis / this.maxAbsPos;
 
       this.scalinFun = (x) => {return this.scale * x;}
+	}
+
+	initInteractive()
+	{
+			  /** Set up UI */
+
+			  let onButtonClick = (event) => {
+			  	this.camera = new THREE.OrthographicCamera( this.frustumSize * this.aspect / - 2, this.frustumSize * this.aspect / 2,
+			  						 this.frustumSize / 2, this.frustumSize / - 2, 1, 1000 );
+			  	this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+			  	this.camera.position.set( 0, 0, 200 );
+			  	this.controls.update();
+			  }
+
+			  let buttons : any = document.getElementsByClassName("reset-view");
+			  for(let button of buttons)
+			  {
+			  	button.addEventListener("click", onButtonClick, false);
+			  	button.style.width = this.width + 'px';
+			  }
+
+			  //Raycaster for click events
+			  this.raycaster = new THREE.Raycaster();
+			  this.mouse = new THREE.Vector2();
+
+
+			  let rayCasterOnClick = (e) => {
+
+			 	this.raycaster.setFromCamera(this.mouse, this.camera);
+
+
+			 	// Data intersections
+			    var intersectsData = this.raycaster.intersectObjects(this.dataGroup.children); //array
+			    for ( var i = 0; i < intersectsData.length; i++ ) {
+
+			    	// Set the infocard's visibility
+		          	let infocard =  <HTMLElement>document.querySelector('#selected-info-' + this.cardClass);
+		          	infocard.style.display = "block";
+
+		          	// Get the object's data
+		          	let objName = intersectsData[i].object.name;
+		          	let data = this.objectDataDict[objName];
+
+		          	// Display the data
+			    	this.selectedData = data;
+
+			    	// Indicate the clicked object
+			    	intersectsData[i].object.material.color.set(0xFF4500);
+
+			    	// reset the color after a short delay
+			    	//setTimeout(() => {
+			    	//    intersectsData[i].object.material.color.set('orange');
+			    	//}, 500);
+			    }
+			  };
+
+			  this.renderer.domElement.addEventListener("click", rayCasterOnClick, true);
+
+			  // Mouse tracker
+			  let tracker = this.drawStar('black', 5);
+			  let onMouseMove = (e) => {
+
+			  	// calculate mouse position in normalized device coordinates
+			  	// (-1 to +1) for both components
+
+			  	this.mouse.x = (e.offsetX / this.width) * 2 - 1;
+			  	this.mouse.y = - (e.offsetY / this.height) * 2 + 1;
+
+			  }
+
+			  this.renderer.domElement.addEventListener( 'mousemove', onMouseMove, false );
 	}
 
 

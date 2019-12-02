@@ -35,6 +35,7 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
     this.divName = this.divName  + '-' + this.cardClass;
     this.elem = document.getElementById(this.divName);
 
+
     this.params = {
       type: Two.Types['svg'],
       width: this.width,
@@ -116,6 +117,7 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
     {
       for(let record of records){
         let xVal = record.epoch;
+        let epoch = xVal;
 
         switch(this.config.dataInputSettings.dateVelocity) // convert to julian years
         {
@@ -130,30 +132,48 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
             break;
 
         }
+        let phase = this.manager.toPhase(xVal);
 
         if(this.parametrization == AxisEnum.PHASE)// Convert to phase
-        {
-          xVal = this.manager.toPhase(xVal)
-          xVal = xAxisScaling(xVal + i);
-        }
+          xVal = xAxisScaling(phase + i);
 
         let yVal = record.vel; // in km/s
+        let vel = yVal;
         yVal = velocityScaling(yVal);
 
-        var marker = this.two.makeCircle(xVal, yVal, 2);
+        let marker = this.two.makeCircle(xVal, yVal, 2);
 
-        if(record.comp == 'Va') marker.stroke = 'blue';
-        if(record.comp == 'Vb') marker.stroke = 'orange';
+        let component = record.comp;
+        let markerColor = 'black';
+        if(component == 'Va') markerColor = 'blue';
+        if(component == 'Vb') markerColor = 'orange';
+        marker.stroke = markerColor;
 
-        this.update(0);
-        console.log(document.querySelector('#two-107'));
+        this.two.update(0);
 
-        break;
+        let clickHandler = (e) => { 
+          this.selectedData = 
+          {
+            'Component' : component,
+            'Phase' : String(phase.toPrecision(2)),
+            'Epoch' : String((+epoch).toPrecision(6)),
+            'Velocity' : String((+vel).toPrecision(3))
+          }
+          let infocard =  <HTMLElement>document.querySelector('#selected-info-' + this.cardClass);
+          infocard.style.display = "block";
+        };
+        let hoverHandler = (e) => {
+          marker.fill = markerColor;
 
-        var handler = (e) => {marker.fill = 'black';};
-        console.log('#' + marker.id);
+          // reset the color after a short delay
+          setTimeout(function() {
+            marker.noFill();
+          }, 500);
+        }
+
         marker.domElement = document.querySelector('#' + marker.id);
-        marker.domElement.addEventListener('click', handler, false);
+        marker.domElement.addEventListener('click', clickHandler, false);
+        marker.domElement.addEventListener('mouseover', hoverHandler, false);
         marker.domElement.style.cursor = 'pointer';
       }
     }
