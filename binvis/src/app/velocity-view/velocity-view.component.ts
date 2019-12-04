@@ -117,7 +117,6 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
     {
       for(let record of records){
         let xVal = record.epoch;
-        let epoch = xVal;
 
         switch(this.config.dataInputSettings.dateVelocity) // convert to julian years
         {
@@ -132,6 +131,7 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
             break;
 
         }
+        let epoch = xVal;
         let phase = this.manager.toPhase(xVal);
 
         if(this.parametrization == AxisEnum.PHASE)// Convert to phase
@@ -145,8 +145,8 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
 
         let component = record.comp;
         let markerColor = 'black';
-        if(component == 'Va') markerColor = 'blue';
-        if(component == 'Vb') markerColor = 'orange';
+        if(component == 'Va') markerColor = this.dataColor1;
+        if(component == 'Vb') markerColor = this.dataColor2;
         marker.stroke = markerColor;
 
         this.two.update(0);
@@ -161,19 +161,19 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
           }
           let infocard =  <HTMLElement>document.querySelector('#selected-info-' + this.cardClass);
           infocard.style.display = "block";
-        };
-        let hoverHandler = (e) => {
-          marker.fill = markerColor;
 
-          // reset the color after a short delay
-          setTimeout(function() {
-            marker.noFill();
-          }, 500);
-        }
+          // Deselect previous
+          if(this.selectedObj)
+            this.selectedObj.noFill();
+
+          // Select current
+          this.selectedObj = marker;
+          this.selectedObj.fill = markerColor;
+
+        };
 
         marker.domElement = document.querySelector('#' + marker.id);
         marker.domElement.addEventListener('click', clickHandler, false);
-        marker.domElement.addEventListener('mouseover', hoverHandler, false);
         marker.domElement.style.cursor = 'pointer';
       }
     }

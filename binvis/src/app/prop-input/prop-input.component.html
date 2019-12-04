@@ -98,17 +98,20 @@
 		<div class="row view-select">
 		  <div class="col">
 		  	<div class="form-group">
-		  	    <label for="file">Choose file for astrometric measurements</label>
+		  	    <label for="file"> <h6> Choose file for astrometric measurements </h6> </label>
+		  	    <label for="file">The expected format is a 3 or more column file with epoch in julian years, theta in degrees and rho in arcseconds in order. </label>
 		  	    <input type="file"
 		  	           id="file"
 		  	           (change)="handleAstrometricDataInput($event.target.files)">
+
 		  	</div>
 		  </div>
 		</div>
 		<div class="row view-select">
 		  <div class="col">
 		  	<div class="form-group">
-		  	    <label for="file">Choose file for velocity measurements</label>
+		  	    <label for="file"> <h6> Choose file for velocity measurements</h6> </label>
+		  	    <label for="file">The expected format is a 3 or more column file with epoch in julian years, days or balessian years, the velocity in km/s and the component labeled as either 'Va' or 'Vb' in order. </label>
 		  	    <input type="file"
 		  	           id="file"
 		  	           (change)="handleVelocityDataInput($event.target.files)">

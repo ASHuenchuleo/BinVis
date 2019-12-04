@@ -56,9 +56,7 @@ export class CsvParser {
         		record = new VelocityRecord();
         		record.epoch = currentRecord[0].trim(); 
         		record.vel = currentRecord[1].trim();
-        		record.res1 = currentRecord[2].trim();
-        		record.res2 = currentRecord[3].trim();
-        		record.comp = currentRecord[4].trim();
+        		record.comp = currentRecord[2].trim();
         	}
           csvArr.push(record);  
         }

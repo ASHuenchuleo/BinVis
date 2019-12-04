@@ -67,6 +67,10 @@ export class ThreeDView implements ViewComponent{
 	/* Line color */
 	lineColor : string = 'rgb(127, 140, 141)';
 
+	dataColor : string = 'rgb(255, 165, 0)';
+
+	dataSelectedColor : string ='rgb(255, 69, 0)';
+
 	/** card class for the component view card */
 	cardClass : string;
 
@@ -78,6 +82,9 @@ export class ThreeDView implements ViewComponent{
 
 	/** Selected data point information dict */
 	selectedData : { [id : string] : any}; 
+
+	/** Selected object */
+	selectedObj;
 
 	/** Mesh groups */
     dataGroup = new THREE.Group(); // Group for the data
@@ -246,13 +253,16 @@ export class ThreeDView implements ViewComponent{
 		          	// Display the data
 			    	this.selectedData = data;
 
-			    	// Indicate the clicked object
-			    	intersectsData[i].object.material.color.set(0xFF4500);
 
-			    	// reset the color after a short delay
-			    	//setTimeout(() => {
-			    	//    intersectsData[i].object.material.color.set('orange');
-			    	//}, 500);
+			    	// Return previus selected to original color
+			    	if(this.selectedObj)
+			    		this.selectedObj.material.color.set(this.dataColor);
+
+			    	// Update selected
+			    	this.selectedObj = intersectsData[i].object;
+			    	// Indicate the clicked object
+			    	this.selectedObj.material.color.set(this.dataSelectedColor);
+
 			    }
 			  };
 

@@ -1,0 +1,9 @@
+br { 
+    display: block; 
+    margin-bottom: 0.2em; 
+} 
+
+.licence-text{
+    text-align: center;
+    font-size: 12px;
+}

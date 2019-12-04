@@ -182,10 +182,32 @@ export class MainViewComponent extends ThreeDView
       let fact = Math.PI/180;
       let xPos = this.scale * record.rho * Math.cos(fact * record.PA + Math.PI/2);
       let yPos = this.scale * record.rho * Math.sin(fact * record.PA + Math.PI/2);
-      let dataMesh = this.drawStarProjection('orange', markersize);
+      let dataMesh = this.drawStarProjection(this.dataColor, markersize);
       dataMesh.position.set(xPos, yPos, 0)
 
       this.dataGroup.add(dataMesh);
+
+      // Dotted line to actual position
+      let posReal = this.manager.secondaryPositionFromTime(record.epoch);
+      let [xPosReal, yPosReal, zPosReal] = posReal.map(this.scalinFun);
+
+      //console.log(xPos, yPos, this.scale);
+      //console.log(record.PA, record.rho)
+
+ 
+      // Error bar
+      //let eX = this.scale * record.error_rho * Math.cos(fact * record.PA + Math.PI/2);
+      //let eY = this.scale * record.error_rho * Math.sin(fact * record.PA + Math.PI/2);
+
+      let nSteps = 20;
+      let segLen = 4;
+      let diffLinePathX = this.linspace(xPos, xPosReal, nSteps);
+      let diffLinePathY = this.linspace(yPos, yPosReal, nSteps);
+      let diffLinePathZ = this.linspace(0, 0, nSteps);
+      let diffLine = this.drawOrbitLine(diffLinePathX, diffLinePathY, diffLinePathZ,
+                                          this.dataColor, segLen);
+
+
 
       let objName = "data-point-" + c;
       c += 1;
@@ -198,48 +220,7 @@ export class MainViewComponent extends ThreeDView
         'Epoch [yr]' : Number(record.epoch).toPrecision(6)
         };
 
-      //console.log(xPos, yPos, this.scale);
-      //console.log(record.PA, record.rho)
-
-      // Dotted line to actual position
-      let posReal = this.manager.secondaryPositionFromTime(record.epoch);
-      let [xPosReal, yPosReal, zPosReal] = posReal.map(this.scalinFun);
-
-      // Error bar
-      //let eX = this.scale * record.error_rho * Math.cos(fact * record.PA + Math.PI/2);
-      //let eY = this.scale * record.error_rho * Math.sin(fact * record.PA + Math.PI/2);
-
-      let nSteps = 20;
-      let segLen = 4;
-      let diffLinePathX = this.linspace(xPos, xPosReal, nSteps);
-      let diffLinePathY = this.linspace(yPos, yPosReal, nSteps);
-      let diffLinePathZ = this.linspace(0, 0, nSteps);
-      let diffLine = this.drawOrbitLine(diffLinePathX, diffLinePathY, diffLinePathZ,
-                                          'orange', segLen);
-
-
-      
-
-      /**
-      let clickHandler = (e) => { 
-        this.selectedData = 
-        {
-          'Component' : component,
-          'Phase' : String(phase.toPrecision(2)),
-          'Epoch' : String((+epoch).toPrecision(6)),
-          'Velocity' : String((+vel).toPrecision(3))
-        }
-        let infocard =  <HTMLElement>document.querySelector('#selected-info-' + this.cardClass);
-        infocard.style.display = "block";
-      };
-      let hoverHandler = (e) => {
-        marker.fill = markerColor;
-
-        // reset the color after a short delay
-        setTimeout(function() {
-          marker.noFill();
-        }, 500);
-      */
+   
     }
     this.scene.add(this.dataGroup);
 

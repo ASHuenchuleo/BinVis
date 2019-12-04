@@ -18,6 +18,9 @@ import { ViewDirective } from './view.directive';
 import { ViewCardLeftComponent } from './view-card-left/view-card-left.component';
 import { ViewCardRightComponent } from './view-card-right/view-card-right.component';
 import { DerivedParametersComponent } from './derived-parameters/derived-parameters.component';
+import { AboutComponent } from './about/about.component';
+import { BinaryComponent } from './binary/binary.component';
+import { AppRoutingModule } from './app-routing.module';
 
 
 @NgModule({
@@ -36,6 +39,8 @@ import { DerivedParametersComponent } from './derived-parameters/derived-paramet
     ViewCardLeftComponent,
     ViewCardRightComponent,
     DerivedParametersComponent,
+    AboutComponent,
+    BinaryComponent,
   ],
   imports: [
     BrowserModule,
@@ -43,7 +48,8 @@ import { DerivedParametersComponent } from './derived-parameters/derived-paramet
     FormsModule,
     ReactiveFormsModule,
     NgbModule,
-    MDBBootstrapModule.forRoot()
+    MDBBootstrapModule.forRoot(),
+    AppRoutingModule
   ],
   schemas: [ NO_ERRORS_SCHEMA ],
   providers: [{

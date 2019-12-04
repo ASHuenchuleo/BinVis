@@ -77,6 +77,17 @@ export class TwoDView implements ViewComponent
 	/** Selected data point information dict */
 	selectedData : { [id : string] : string}; 
 
+	/** Selected object */
+	selectedObj;
+
+	// Colors
+	dataColor1 = 'blue';
+	dataColor2 = 'orange';
+
+	dataColorSelected1 = 'orangered';
+	dataColorSelected2 = 'darkblue';
+
+
 	moveFrames(f : number) : void{
 		return;
 	}
