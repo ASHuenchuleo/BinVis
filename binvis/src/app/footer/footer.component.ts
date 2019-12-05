@@ -4,7 +4,6 @@ import { Component, OnInit } from '@angular/core';
 * message is sent because the components that inyect it
 * don't exist before the message
 */
-import { PosManagerService } from './../pos-manager.service';
 
 
 @Component({
@@ -14,7 +13,7 @@ import { PosManagerService } from './../pos-manager.service';
 })
 export class FooterComponent implements OnInit {
 
-  constructor(posManagerService : PosManagerService) { }
+  constructor() { }
 
   ngOnInit() {
   }

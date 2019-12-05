@@ -1,14 +1,13 @@
-import { Injectable } from '@angular/core';
-import { KeplerSolverService } from './kepler-solver.service';
+import { KeplerSolver } from './kepler-solver';
 import { ConfigService} from './config.service';
 import {OrbitAttribute} from './orbit-attribute'
 
 
-@Injectable({
-  providedIn: 'root'
-})
 /**Handles and stores all calculations, ready to be fetched by view components. */
-export class PosManagerService {
+export class PosManager {
+  /** Orbit solver */
+  private solver : KeplerSolver
+
   /** Initial time for the orbit */
   initT : number;
   /** Number of steps for orbit*/
@@ -32,14 +31,12 @@ export class PosManagerService {
   /** Values for the secondary radial velocites */
   secondaryCMVelocities : number[];
 
+  
   attributes : OrbitAttribute[];
 
-  constructor(private solver : KeplerSolverService, private config : ConfigService){
-    config.posManagerUpdate$.subscribe(
-      attributes => {
-        this.attributes = attributes;
-        this.init();
-      });
+  constructor(attributes : OrbitAttribute[]){
+    this.attributes = attributes;
+    this.init();
   }
 
   /**
@@ -60,7 +57,7 @@ export class PosManagerService {
     let fact = Math.PI/180;
     
 
-  	this.solver.init(omega * fact, Omega * fact, i * fact, T, P, a, e, q, plx, v0);
+  	this.solver = new KeplerSolver(omega * fact, Omega * fact, i * fact, T, P, a, e, q, plx, v0);
   	this.timeStep = P / this.step;
 
   	this.times = [];

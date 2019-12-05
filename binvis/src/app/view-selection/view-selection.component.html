@@ -1,0 +1,27 @@
+		<div class="row view-select">
+		  <div class="col">
+
+		  	<div class="input-group mb-3">
+		  	  <div class="input-group-prepend">
+		  	    <span class="input-group-text">Left View</span>
+		  	  </div>
+		  	  <select class="browser-default custom-select" name="left-view-select"[(ngModel)]="leftView">
+		  	       <option *ngFor="let c of viewOptions" [ngValue]="c">{{c.name}}</option>
+		  	  </select>
+		  	</div>
+		  </div>
+		</div>
+
+		<div class="row view-select">
+		  <div class="col">
+
+		  	<div class="input-group mb-3">
+		  	  <div class="input-group-prepend">
+		  	    <span class="input-group-text">Right View</span>
+		  	  </div>
+		  	  <select class="browser-default custom-select" name="right-view-select"[(ngModel)]="rightView">
+		  	       <option *ngFor="let c of viewOptions" [ngValue]="c">{{c.name}}</option>
+		  	  </select>
+		  	</div>
+		  </div>
+		</div>

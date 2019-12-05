@@ -9,7 +9,7 @@ import { MainViewComponent } from './main-view/main-view.component';
 import { GlobalErrorHandlerService } from './error-handler';
 import { VelocityViewComponent } from './velocity-view/velocity-view.component';
 import { DualOrbitViewComponent } from './dual-orbit-view/dual-orbit-view.component';
-import { PropInputComponent } from './prop-input/prop-input.component';
+import { InputComponent } from './input/input.component';
 import { FooterComponent } from './footer/footer.component';
 
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
@@ -21,6 +21,15 @@ import { DerivedParametersComponent } from './derived-parameters/derived-paramet
 import { AboutComponent } from './about/about.component';
 import { BinaryComponent } from './binary/binary.component';
 import { AppRoutingModule } from './app-routing.module';
+import { NavbarComponent } from './navbar/navbar.component';
+import { HierarchicComponent } from './hierarchic/hierarchic.component';
+import { PropertyInputComponent } from './property-input/property-input.component';
+import { ViewSelectionComponent } from './view-selection/view-selection.component';
+import { FileInputComponent } from './file-input/file-input.component';
+import { InputHierarchicalComponent } from './input-hierarchical/input-hierarchical.component';
+
+import {MatExpansionModule} from '@angular/material/expansion';
+import { SingleOrbitManagerComponent } from './single-orbit-manager/single-orbit-manager.component';
 
 
 @NgModule({
@@ -33,7 +42,7 @@ import { AppRoutingModule } from './app-routing.module';
     MainViewComponent,
     VelocityViewComponent,
     DualOrbitViewComponent,
-    PropInputComponent,
+    InputComponent,
     FooterComponent,
     ViewDirective,
     ViewCardLeftComponent,
@@ -41,6 +50,13 @@ import { AppRoutingModule } from './app-routing.module';
     DerivedParametersComponent,
     AboutComponent,
     BinaryComponent,
+    NavbarComponent,
+    HierarchicComponent,
+    PropertyInputComponent,
+    ViewSelectionComponent,
+    FileInputComponent,
+    InputHierarchicalComponent,
+    SingleOrbitManagerComponent
   ],
   imports: [
     BrowserModule,
@@ -49,7 +65,11 @@ import { AppRoutingModule } from './app-routing.module';
     ReactiveFormsModule,
     NgbModule,
     MDBBootstrapModule.forRoot(),
-    AppRoutingModule
+    AppRoutingModule,
+    MatExpansionModule
+  ],
+  exports : [
+   MatExpansionModule
   ],
   schemas: [ NO_ERRORS_SCHEMA ],
   providers: [{

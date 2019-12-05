@@ -90,8 +90,6 @@ export class ThreeDView implements ViewComponent{
     dataGroup = new THREE.Group(); // Group for the data
 
 
-
-
 	/** Not implemented on the parent class! */
 	moveFrames(f : number) : void{
 	}

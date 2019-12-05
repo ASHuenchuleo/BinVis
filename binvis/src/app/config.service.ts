@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import {OrbitAttribute} from './orbit-attribute'
 import { timer, Subject }    from 'rxjs';
-
 import {ViewWindow} from './view-window';
 import {ViewItem} from './view-item';
+import { PosManager } from './pos-manager';
+
 
 
 
@@ -12,16 +13,12 @@ import {ViewItem} from './view-item';
 })
 export class ConfigService {
   /*
-  * Class responsible for recieving parameter inputs and updating the logic, every view
-  * and the derived parameteers, and setting the configuration on every component on
-  * response to the user-given input passed by the input component
+  * Orbit manager for a single orbit
   */
+  posManager : PosManager;
 
-  // View Parameters
-  
 
   // Observable string sources
-  private posManagerUpdateSource = new Subject<OrbitAttribute[]>();
   private derivedParametersUpdateSource = new Subject<any>();
 
   private viewCardLeftUpdateSource = new Subject<ViewWindow>();
@@ -33,7 +30,6 @@ export class ConfigService {
   private viewCardRightDataUpdateSource = new Subject<any>();
 
   // Observable string streams
-  posManagerUpdate$ = this.posManagerUpdateSource.asObservable();
   derivedParametersUpdate$ = this.derivedParametersUpdateSource.asObservable();
 
   viewCardLeftUpdate$ = this.viewCardLeftUpdateSource.asObservable();
@@ -44,7 +40,7 @@ export class ConfigService {
   viewCardRightAnimUpdate$ = this.viewCardRightAnimUpdateSource.asObservable();
   viewCardRightDataUpdate$ = this.viewCardRightDataUpdateSource.asObservable();
 
-  // Data input settings
+  // Data input settings dict
   dataInputSettings;
 
                                       
@@ -57,7 +53,7 @@ export class ConfigService {
   */
   updateSceneAttr(attributes : OrbitAttribute[], leftView : ViewWindow, rightView : ViewWindow)
   {
-    this.posManagerUpdateSource.next(attributes); // Do calculations
+    this.posManager = new PosManager(attributes); // Do calculations
     this.derivedParametersUpdateSource.next(); // Update derived parameters
     this.viewCardLeftUpdateSource.next(leftView); // Update left viewcard
     this.viewCardRightUpdateSource.next(rightView); // Update right viewcard

@@ -1,0 +1,26 @@
+		<div class="parameter-group"> 
+		<div *ngFor="let attr of visualAttributes" class='input-group input-group-parameter'>
+				<div class='input-group-prepend'>
+				<span class="input-group-text input-label" [innerHTML]="attr.name +  ' ' + attr.units"></span>
+				</div> 
+				<input class='input-group-text input-numeric' type="number" name='{{attr.name}}' [(ngModel)]='attr.value'> 
+		</div>
+	</div>
+	<div class="parameter-group">
+		<div *ngFor="let attr of measuredAttributes" class='input-group input-group-parameter'>
+				<div class='input-group-prepend'>
+				<span class="input-group-text input-label" [innerHTML]="attr.name +  ' ' + attr.units"></span>
+				</div> 
+				<input class='input-group-text input-numeric' type="number" name='{{attr.name}}' [(ngModel)]='attr.value'> 
+		</div>
+	</div>
+
+	<div class="parameter-group">
+		<div *ngFor="let attr of physicalAttributes" class='input-group input-group-parameter'>
+				<div class='input-group-prepend'>
+				<span class="input-group-text input-label" [innerHTML]="attr.name + ' ' +  attr.units"></span>
+				</div> 
+				<input class='input-group-text input-numeric' type="number" name='{{attr.name}}' [(ngModel)]='attr.value'> 
+
+		</div>
+	</div>

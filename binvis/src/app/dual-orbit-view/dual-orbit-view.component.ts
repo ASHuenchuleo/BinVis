@@ -1,6 +1,6 @@
 import { Component, AfterViewInit, ViewChild, OnDestroy, ElementRef } from '@angular/core';
 
-import { PosManagerService } from './../pos-manager.service';
+import { PosManager } from './../pos-manager';
 import { ConfigService} from './../config.service';
 import { ThreeDView} from './../three-d-view';
 
@@ -35,9 +35,12 @@ export class DualOrbitViewComponent extends ThreeDView
   primaryReal : THREE.Mesh;
   primaryProj : THREE.LineLoop;
 
+  // Manager for the orbit in the view
+  manager : PosManager;
 
-  constructor(private manager : PosManagerService) {
+  constructor(private config : ConfigService) {
    super('dual-orbit-div');
+   this.manager = config.posManager;
   }
 
   ngOnDestroy() : void{

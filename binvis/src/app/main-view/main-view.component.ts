@@ -1,9 +1,9 @@
 import { Component, ViewChild, AfterViewInit, OnDestroy, ElementRef } from '@angular/core';
-import { PosManagerService } from './../pos-manager.service';
+import { PosManager } from './../pos-manager';
 import { ThreeDView} from './../three-d-view';
 import {AstrometryRecord} from './../csv-parser';
 
-
+import { ConfigService} from './../config.service';
 
 import * as THREE from 'three'
 import SpriteText from 'three-spritetext';
@@ -14,7 +14,10 @@ import OrbitControls from 'three-orbitcontrols';
   templateUrl: './main-view.component.html',
   styleUrls: ['./main-view.component.css']
 })
-/** Handles and shows the velocity graph for the orbit */
+/**
+* Handles and shows the view for a single system
+* centered on the primary component
+*/
 export class MainViewComponent extends ThreeDView
           implements AfterViewInit, OnDestroy {
 
@@ -35,9 +38,12 @@ export class MainViewComponent extends ThreeDView
   ascMesh : THREE.Mesh;
   descMesh : THREE.Mesh;
 
+  // Manager for the orbit in the view
+  manager : PosManager;
 
-  constructor(private manager : PosManagerService) {
-  super('projection-div');
+  constructor(private config : ConfigService) {
+    super('projection-div');
+    this.manager = config.posManager;
   }
 
   ngOnDestroy() : void{

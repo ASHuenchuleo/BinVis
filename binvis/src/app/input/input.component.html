@@ -1,0 +1,59 @@
+<form name="attrForm" (submit)="updateViews()">
+
+<div class='view-card-input'>
+
+<div class='view-card-title container'>
+<div class='row'>
+	<div class='col-lg-6 col-xs-12' style='padding-bottom: 2%'>
+		<h3> View Configuration </h3>
+	</div>
+	<div class='col-lg-3 col-xs-12' style='padding-bottom: 2%'>
+		<button type="submit" class="btn btn-outline-success">Render with these settings</button> 
+	</div>
+	<div class='col-lg-3 col-xs-12' style='padding-bottom: 2%'>
+	<div class='btn-group'>
+		<button type="button" (click)="moveSingle($event, -1)"class="btn btn-secondary">
+			<
+		</button>
+		<button type="button" (click)="setAnimationState($event)"class="btn btn-secondary">Pause Animation</button>
+		<button type="button" (click)="moveSingle($event, 1)"class="btn btn-secondary"> > </button>
+		</div>
+	</div>
+
+</div>
+</div>
+
+
+<div class='container'>
+<div class='row'>
+
+	<div class='col-lg-4 col-xs-12'>
+		<div class="view-card-title"> <h5> Parameter Selection </h5> </div> 
+		<app-property-input> </app-property-input>
+
+	</div>
+
+	<div class='col-lg-4 col-xs-12'>
+
+
+	<div class="container">
+		<div class="view-card-title"> <h5> View Selection </h5> </div> 
+		<app-view-selection > </app-view-selection>
+	</div>
+
+	<div class="container">
+		<div class="view-card-title"> <h5> Data Input </h5> </div> 
+		<app-file-input> </app-file-input>
+	</div>
+
+	</div>
+
+	<div class='col-lg-4 col-md-12 col-sm-12 col-xs-12'>
+		<app-derived-parameters> </app-derived-parameters>
+	</div>
+</div>
+</div>
+
+</div>
+</form>
+

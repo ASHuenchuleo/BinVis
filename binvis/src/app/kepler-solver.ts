@@ -1,6 +1,5 @@
 import {Injectable } from '@angular/core';
 import { throwError } from 'rxjs'; 
-import Victor from 'victor';
 
 const kmUA = 1.496 * Math.pow(10, 8); // kilometers in an UA
 const secYr = 3.15 * Math.pow(10, 7); // Number of seconds in year
@@ -8,10 +7,7 @@ const UApc = 206265; // Number of UA in a parsec
 let Gtemp = 4.3 * Math.pow(10, -3) ; // pc / Ms * (km/s)^2
 const G = Gtemp * Math.pow(secYr, 2) / Math.pow(kmUA, 2) * UApc;  // UA * (UA/yr)^2/ Ms
 
-@Injectable({
-  providedIn: 'root'
-})
-export class KeplerSolverService {
+export class KeplerSolver {
   private omega : number; // rad
   private Omega : number; // rad
   private i : number; // rad
@@ -47,9 +43,6 @@ export class KeplerSolverService {
   private EVals : number[];
 
 
-
-  constructor() {}
-
   /**
   * Initializator for the solver class, responsible for 
   * finding the value of a parameter given an instant of time.
@@ -63,8 +56,8 @@ export class KeplerSolverService {
   * @param {number} plx parallax of the system in mas
   * @param {number} v0 Velocity of the centre of mass in km/s
   */
-  init(omega : number, Omega : number, i : number, T : number,
-         P : number, a : number, e : number, q : number, plx : number, v0 : number) : void{
+  constructor(omega : number, Omega : number, i : number, T : number,
+         P : number, a : number, e : number, q : number, plx : number, v0 : number){
     this.omega = omega;
     this.Omega = Omega;
     this.i = i;

@@ -1,4 +1,3 @@
-import { PosManagerService} from './pos-manager.service';
 import { ConfigService} from './config.service';
 import {ViewComponent} from './view.component';
 import {CsvParser, VelocityRecord} from './csv-parser';
@@ -92,7 +91,7 @@ export class TwoDView implements ViewComponent
 		return;
 	}
 
-	constructor(manager : PosManagerService, config : ConfigService, divName : string){
+	constructor(config : ConfigService, divName : string){
 		this.divName = divName;
 
 		if(window.innerWidth > 1200){ // lg screen

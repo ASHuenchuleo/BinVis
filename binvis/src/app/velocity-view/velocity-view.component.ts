@@ -1,5 +1,5 @@
 import { Component, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
-import { PosManagerService } from './../pos-manager.service';
+import { PosManager } from './../pos-manager';
 import { ConfigService} from './../config.service';
 import {VelocityRecord} from './../csv-parser';
 
@@ -23,9 +23,12 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
   primaryCurrent;
   secondaryCurrent;
 
-  constructor(private manager : PosManagerService,
-              private config : ConfigService) {
-    super(manager, config,  'velocity-time');
+  // Manager for the orbit in the view
+  manager : PosManager;
+
+  constructor(private config : ConfigService) {
+    super(config,  'velocity-time');
+    this.manager = config.posManager;
   }
   
   /**

@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-
-import { PosManagerService } from './../pos-manager.service';
+import { PosManager } from './../pos-manager';
 import { ConfigService} from './../config.service';
 import {OrbitAttribute} from '../orbit-attribute'
 
@@ -26,9 +25,14 @@ export class DerivedParametersComponent{
   	this.apoDis
   ];
 
-  constructor(private manager : PosManagerService, private config : ConfigService){
+  // Manager for the orbit in analysis
+  manager : PosManager;
+
+
+  constructor(private config : ConfigService){
     config.derivedParametersUpdate$.subscribe(
       () => {
+        this.manager = config.posManager; // Update the manager
         this.update();
       });
 	}
