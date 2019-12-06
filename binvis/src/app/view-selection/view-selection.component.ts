@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import {ViewWindow} from '../view-window';
 
 @Component({
@@ -8,18 +8,18 @@ import {ViewWindow} from '../view-window';
 })
 export class ViewSelectionComponent implements OnInit {
 
-  viewOptions = [
-    {id: ViewWindow.Main, name: "Primary Component"},
-    {id: ViewWindow.CM, name: "Centre of Mass"},
-    {id: ViewWindow.Vel, name: "Velocity Graph"}
-  ];
+  /**
+  * Contains the options to be displayed
+  */
+  @Input('viewOptions') viewOptions;
 
-  leftView = this.viewOptions[0];
-  rightView = this.viewOptions[2];
+  @Input('leftView') leftView;
+  @Input('rightView') rightView;
   
   constructor() { }
 
   ngOnInit() {
+
   }
 
 }

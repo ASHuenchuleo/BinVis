@@ -32,7 +32,7 @@ export class DerivedParametersComponent{
   constructor(private config : ConfigService){
     config.derivedParametersUpdate$.subscribe(
       () => {
-        this.manager = config.posManager; // Update the manager
+        this.manager = config.managers[0]; // Update the manager
         this.update();
       });
 	}

@@ -43,7 +43,7 @@ export class MainViewComponent extends ThreeDView
 
   constructor(private config : ConfigService) {
     super('projection-div');
-    this.manager = config.posManager;
+    this.manager = config.managers[0];
   }
 
   ngOnDestroy() : void{
@@ -67,7 +67,6 @@ export class MainViewComponent extends ThreeDView
     this.divName = this.divName + '-' + this.cardClass;
     this.initScene();
 
-    this.manager.buildProjectionPath();
     let path = this.manager.getProjectionPath();
     this.xPath = path[0];
     this.yPath = path[1];
@@ -89,11 +88,12 @@ export class MainViewComponent extends ThreeDView
     /* Real orbit line */
     let orbitReal = this.drawOrbitLine(this.xPath, this.yPath, this.zPath);
 
+    /* projected orbit line */
+    let orbitProj = this.drawOrbitLine(this.xPath, this.yPath, 0);
+
     /* Secondary in projected view*/
     this.secondaryProj = this.drawStarProjection(this.secondaryColor, secondarySize);
 
-    /* projected orbit line */
-    let orbitProj = this.drawOrbitLine(this.xPath, this.yPath, 0);
 
     /** Size of orbit element indicators */
     let indicatorSize = primarySize * 0.3;
@@ -103,10 +103,10 @@ export class MainViewComponent extends ThreeDView
     asc = asc.map(this.scalinFun);
     desc = desc.map(this.scalinFun);
 
-    this.ascMesh = this.drawNode('black', indicatorSize);
+    this.ascMesh = this.drawNode('red', indicatorSize);
     this.ascMesh.position.set(asc[0], asc[1], asc[2]);
 
-    this.descMesh = this.drawNode('black', indicatorSize);
+    this.descMesh = this.drawNode('blue', indicatorSize);
     this.descMesh.position.set(desc[0], desc[1], desc[2]);
 
 
@@ -118,20 +118,20 @@ export class MainViewComponent extends ThreeDView
       this.linspace(desc[2], asc[2], nSteps));
 
 
-    /* periastrum and apoastrum */
+    /* periastron and apoastron */
     let [peri, apo] = this.manager.getPeriApoMain();
     peri = peri.map(this.scalinFun);
     apo = apo.map(this.scalinFun);
-    this.periMesh = this.drawStar('black', indicatorSize);
+    this.periMesh = this.drawStar('purple', indicatorSize);
     this.periMesh.position.set(peri[0], peri[1], peri[2])
 
-    this.apoMesh = this.drawStar('black', indicatorSize);
+    this.apoMesh = this.drawStar('green', indicatorSize);
     this.apoMesh.position.set(apo[0], apo[1], apo[2])
 
-    let periProjMesh = this.drawStarProjection('black', indicatorSize);
+    let periProjMesh = this.drawStarProjection('purple', indicatorSize);
     periProjMesh.position.set(peri[0], peri[1], 0)
 
-    let apoProjMesh = this.drawStarProjection('black', indicatorSize);
+    let apoProjMesh = this.drawStarProjection('green', indicatorSize);
     apoProjMesh.position.set(apo[0], apo[1], 0)
 
     /* Axis */

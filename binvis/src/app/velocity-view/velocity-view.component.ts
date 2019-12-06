@@ -28,7 +28,7 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
 
   constructor(private config : ConfigService) {
     super(config,  'velocity-time');
-    this.manager = config.posManager;
+    this.manager = config.managers[0];
   }
   
   /**
@@ -158,9 +158,9 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
           this.selectedData = 
           {
             'Component' : component,
-            'Phase' : String(phase.toPrecision(2)),
-            'Epoch' : String((+epoch).toPrecision(6)),
-            'Velocity' : String((+vel).toPrecision(3))
+            'Phase' : String(this.toFixed(phase, 3)),
+            'Epoch' : String(this.toFixed(+epoch, 6)),
+            'Velocity' : String(this.toFixed(+vel, 3))
           }
           let infocard =  <HTMLElement>document.querySelector('#selected-info-' + this.cardClass);
           infocard.style.display = "block";

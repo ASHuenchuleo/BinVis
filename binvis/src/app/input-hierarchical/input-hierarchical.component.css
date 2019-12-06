@@ -1,3 +1,21 @@
 mat-expansion-panel{
 	margin: 5px;
 }
+
+.input-numeric{
+	width: 30%;
+}
+
+.input-label{
+	width: 160px;
+}
+
+.parameter-group{
+	margin-bottom: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.075);
+}
+
+.input-group-parameter{
+	margin-left: 15%;
+	margin-bottom: 20px;
+}

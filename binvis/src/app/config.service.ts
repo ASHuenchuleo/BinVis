@@ -13,12 +13,33 @@ import { PosManager } from './pos-manager';
 })
 export class ConfigService {
   /*
-  * Orbit manager for a single orbit
+  * Current number of systems
   */
-  posManager : PosManager;
+  nSystems : number;
 
 
-  // Observable string sources
+  /*
+  * Position managers for all the systems
+  */
+  managers : PosManager[];
+
+  /*
+  * Data input settings dict
+  */
+  dataInputSettings : {[type : string] : any};
+
+  /*
+  * View settings
+  */
+  // Timescale for the orbit as in [s in real time]/[yr in simulation], greater means faster
+  realSecondsPerSimYear : number;
+  frameRate : number = 60;
+
+
+
+  /*
+  * Observable string sources
+  */
   private derivedParametersUpdateSource = new Subject<any>();
 
   private viewCardLeftUpdateSource = new Subject<ViewWindow>();
@@ -40,20 +61,25 @@ export class ConfigService {
   viewCardRightAnimUpdate$ = this.viewCardRightAnimUpdateSource.asObservable();
   viewCardRightDataUpdate$ = this.viewCardRightDataUpdateSource.asObservable();
 
-  // Data input settings dict
-  dataInputSettings;
-
-                                      
+                       
   /**
   * Sends messages to the respective components to update the data and display
   * the selected views
-  * @param {OrbitAttribute[]} attributes The numeric attributes for the orbit
+  * @param {OrbitAttribute[][]} attributes List with the numeric attributes of each orbit
   * @param {ViewWindow} leftView The selected view window for the left view
   * @param {ViewWindow} leftView The selected view window for the right view
+  * @param {number} realSecondsPerSimYear Timescale for the orbit as in [s in real time]/[yr in simulation], greater means faster
   */
-  updateSceneAttr(attributes : OrbitAttribute[], leftView : ViewWindow, rightView : ViewWindow)
+  updateSceneAttr(attributeList : OrbitAttribute[][], leftView : ViewWindow, rightView : ViewWindow,
+    realSecondsPerSimYear : number)
   {
-    this.posManager = new PosManager(attributes); // Do calculations
+    this.nSystems = attributeList.length;
+    this.managers = new Array(this.nSystems);
+    this.realSecondsPerSimYear = realSecondsPerSimYear;
+    attributeList.forEach((attributes, i) =>
+    {
+      this.managers[i] = new PosManager(attributes, this.realSecondsPerSimYear, this.frameRate,); // Do calculations
+    });
     this.derivedParametersUpdateSource.next(); // Update derived parameters
     this.viewCardLeftUpdateSource.next(leftView); // Update left viewcard
     this.viewCardRightUpdateSource.next(rightView); // Update right viewcard

@@ -1,0 +1,21 @@
+<div class={{cardClass}}>
+
+	<div class='view-card-title'><h3> Orbit relative to A</h3></div>
+		<div id='primary-centered-hierarchical-div-{{cardClass}}' class='threeD-canvas'>
+	</div>
+	<div class="ui">
+		<button class="btn btn-secondary btn-sm reset-view">Reset View</button>
+	</div> 
+	<div id='selected-info-{{cardClass}}' class="container" style="display:none;">
+		<div class="row">
+			<div class="col-lg-6 col-xs-12">
+				<div> <h5> Selected point data: </h5> </div>
+			</div>
+			<div class="col-lg-6 col-xs-12">
+				<div *ngFor="let data of selectedData | keyvalue">
+					{{data.key}}: {{data.value}}
+				</div>
+			</div>
+		</div>
+	</div>
+</div> 

@@ -10,6 +10,8 @@ import {ViewDirective} from './view.directive';
 import {VelocityViewComponent} from './velocity-view/velocity-view.component';
 import {MainViewComponent} from './main-view/main-view.component';
 import {DualOrbitViewComponent} from './dual-orbit-view/dual-orbit-view.component';
+import {PrimaryCenteredHierarchicalComponent} from './primary-centered-hierarchical/primary-centered-hierarchical.component';
+
 
 import { ConfigService} from './config.service';
 
@@ -30,7 +32,8 @@ export class ViewCardComponent{
   views = [
     new ViewItem(MainViewComponent),
     new ViewItem(DualOrbitViewComponent),
-  	new ViewItem(VelocityViewComponent)
+  	new ViewItem(VelocityViewComponent),
+    new ViewItem(PrimaryCenteredHierarchicalComponent)
   	];
 
   @ViewChild(ViewDirective, {static: true}) viewHost : ViewDirective;
@@ -40,8 +43,8 @@ export class ViewCardComponent{
   {
     this.cardClass = cardClass;
     update.subscribe(
-      selected => {
-        this.loadComponent(selected);
+      selectedView => {
+        this.loadComponent(selectedView);
       });
     animUpdate.subscribe(
       animComm => {
@@ -57,11 +60,14 @@ export class ViewCardComponent{
 
   }
 
-  loadComponent(selected : ViewWindow) {
+  /**
+  * Loads and selected view and inserts it in the DOM
+  * @param {ViewWindow} selectedView The selected view in an enum to be loaded.
+  */
+  loadComponent(selectedView : ViewWindow) {
     this.state = "unloaded";
     
-
-    const viewItem = this.views[selected];
+    const viewItem = this.views[selectedView];
     
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(viewItem.component);
     
@@ -71,7 +77,7 @@ export class ViewCardComponent{
     
     const componentRef = viewContainerRef.createComponent(componentFactory);
 
-    this.componentRefInst = (<ViewComponent>componentRef.instance);
+    this.componentRefInst = (<ViewComponent>componentRef.instance); //Instance of the allocated component
 
     this.componentRefInst.cardClass = this.cardClass;
 

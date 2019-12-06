@@ -10,7 +10,7 @@ import {CsvParser, 	AstrometryRecord} from './csv-parser';
 
 export class ThreeDView implements ViewComponent{
 	/** Speed factor of the orbit */
-	protected speed : number = 5.0;
+	protected speed : number = 1.0;
 	/** Current index of the animation */
 	protected index : number = 0;
 
@@ -88,6 +88,13 @@ export class ThreeDView implements ViewComponent{
 
 	/** Mesh groups */
     dataGroup = new THREE.Group(); // Group for the data
+
+    toFixed( num, precision ) {
+    	var multiplicator = Math.pow(10, precision);
+    	num = num * multiplicator;
+
+    	return Math.round(num) / multiplicator;
+    }
 
 
 	/** Not implemented on the parent class! */
@@ -267,7 +274,6 @@ export class ThreeDView implements ViewComponent{
 			  this.renderer.domElement.addEventListener("click", rayCasterOnClick, true);
 
 			  // Mouse tracker
-			  let tracker = this.drawStar('black', 5);
 			  let onMouseMove = (e) => {
 
 			  	// calculate mouse position in normalized device coordinates
@@ -328,7 +334,7 @@ export class ThreeDView implements ViewComponent{
 	    text.position.copy(labelPos[i]);
 	    this.scene.add(text);
 
-	    let tickSpacing = +((length/scale) / steps).toPrecision(2);
+	    let tickSpacing = +this.toFixed(((length/scale) / steps), 4);
 	    for(let j = 1; j < labelsDistances.length; j++)
 	    {
 	      let tickPosReal = j * tickSpacing;
@@ -388,7 +394,7 @@ export class ThreeDView implements ViewComponent{
 	* @param {number} color Color for the line
 	* @param {number} segLen Number of points per segment
 	*/
-	drawOrbitLine(xPath, yPath, zPath, color='black', segLen = 15) {
+	drawOrbitLine(xPath, yPath, zPath, color='black', segLen = 8) {
 
 
 	  let material = new THREE.LineBasicMaterial(

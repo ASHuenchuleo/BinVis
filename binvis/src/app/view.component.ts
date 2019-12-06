@@ -8,4 +8,6 @@ export interface ViewComponent {
 	moveFrames(f : number) : void;
 
 	showData(dataInput : {[type : string] : File}) : void;
+
+	
 }

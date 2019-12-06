@@ -29,14 +29,15 @@ import { FileInputComponent } from './file-input/file-input.component';
 import { InputHierarchicalComponent } from './input-hierarchical/input-hierarchical.component';
 
 import {MatExpansionModule} from '@angular/material/expansion';
-import { SingleOrbitManagerComponent } from './single-orbit-manager/single-orbit-manager.component';
+import { PrimaryCenteredHierarchicalComponent } from './primary-centered-hierarchical/primary-centered-hierarchical.component';
 
 
 @NgModule({
   entryComponents: [
     MainViewComponent,
     VelocityViewComponent,
-    DualOrbitViewComponent],
+    DualOrbitViewComponent,
+    PrimaryCenteredHierarchicalComponent],
   declarations: [
     AppComponent,
     MainViewComponent,
@@ -56,7 +57,7 @@ import { SingleOrbitManagerComponent } from './single-orbit-manager/single-orbit
     ViewSelectionComponent,
     FileInputComponent,
     InputHierarchicalComponent,
-    SingleOrbitManagerComponent
+    PrimaryCenteredHierarchicalComponent
   ],
   imports: [
     BrowserModule,

@@ -40,7 +40,7 @@ export class DualOrbitViewComponent extends ThreeDView
 
   constructor(private config : ConfigService) {
    super('dual-orbit-div');
-   this.manager = config.posManager;
+   this.manager = config.managers[0];
   }
 
   ngOnDestroy() : void{
@@ -65,17 +65,16 @@ export class DualOrbitViewComponent extends ThreeDView
     this.divName = this.divName + '-' + this.cardClass;
     this.initScene();
 
-    this.manager.buildPrimaryPath();
     let pathPrim = this.manager.getPrimaryPath();
     this.xPathPrim = pathPrim[0];
     this.yPathPrim = pathPrim[1];
     this.zPathPrim = pathPrim[2];
 
-    this.manager.buildSecondaryPath();
     let pathSec = this.manager.getSecondaryPath();
     this.xPathSec = pathSec[0];
     this.yPathSec = pathSec[1];
     this.zPathSec = pathSec[2];
+
 
     this.buildScaling(this.xPathSec, this.yPathSec, this.zPathSec);
 

@@ -8,7 +8,7 @@ import Two from 'two.js'
 export class TwoDView implements ViewComponent
 {
 	/** Speed factor of the orbit */
-	protected speed : number = 5.0;
+	protected speed : number = 1.0;
 	/** Current index of the animation */
 	protected index : number = 0;
 	/** Numero de periodos en el gráfico */
@@ -86,6 +86,12 @@ export class TwoDView implements ViewComponent
 	dataColorSelected1 = 'orangered';
 	dataColorSelected2 = 'darkblue';
 
+    toFixed( num, precision ) {
+    	var multiplicator = Math.pow(10, precision);
+    	num = num * multiplicator;
+
+    	return Math.round(num) / multiplicator;
+    }
 
 	moveFrames(f : number) : void{
 		return;
@@ -354,8 +360,8 @@ export class TwoDView implements ViewComponent
 	    var tickStart = new Two.Anchor(labelsDistancesX[j], finalYpixel + tickLength/2);
 	    var tickEnd = new Two.Anchor(labelsDistancesX[j], finalYpixel - tickLength/2);
 
-	    let labelSpacing = +((lengthX / scaleX) / stepsX).toPrecision(2);
-	    var tickPosReal = +(j * labelSpacing + minX).toPrecision(2);
+	    let labelSpacing = +this.toFixed(((lengthX / scaleX) / stepsX), 2);
+	    var tickPosReal = +this.toFixed((j * labelSpacing + minX), 2);
 
 	    var text = two.makeText(tickPosReal, pos[0], pos[1], styles[0]);
 
@@ -370,8 +376,8 @@ export class TwoDView implements ViewComponent
 	    var tickStart = new Two.Anchor(initXpixel - tickLength/2, labelsDistancesY[j]);
 	    var tickEnd = new Two.Anchor(initXpixel + tickLength/2, labelsDistancesY[j]);
 
-	    let labelSpacing = +((lengthY / scaleY) / stepsY).toPrecision(2);
-	    var tickPosReal = +(j * labelSpacing + minY).toPrecision(2);
+	    let labelSpacing = +this.toFixed(((lengthY / scaleY) / stepsY), 2);
+	    var tickPosReal = +this.toFixed((j * labelSpacing + minY), 2);
 	    
 	    var text = two.makeText(tickPosReal, pos[0], pos[1], styles[1]);
 
