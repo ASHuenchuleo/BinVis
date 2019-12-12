@@ -22,9 +22,13 @@ export class MainViewComponent extends ThreeDView
           implements AfterViewInit, OnDestroy {
 
   /* Paths to be followed */
-  private xPath : number[];
-  private yPath : number[];
-  private zPath : number[];
+  private xPathAnimation : number[];
+  private yPathAnimation : number[];
+  private zPathAnimation : number[];
+
+  private xPathDrawn : number[];
+  private yPathDrawn : number[];
+  private zPathDrawn : number[];
 
   /** Meshes of the moving objects */
   primaryReal : THREE.Mesh;
@@ -44,6 +48,8 @@ export class MainViewComponent extends ThreeDView
   constructor(private config : ConfigService) {
     super('projection-div');
     this.manager = config.managers[0];
+    this.manager.initTimes(); // As soon as is created
+    
   }
 
   ngOnDestroy() : void{
@@ -67,32 +73,36 @@ export class MainViewComponent extends ThreeDView
     this.divName = this.divName + '-' + this.cardClass;
     this.initScene();
 
-    let path = this.manager.getProjectionPath();
-    this.xPath = path[0];
-    this.yPath = path[1];
-    this.zPath = path[2];
+    [this.xPathAnimation, this.yPathAnimation, this.zPathAnimation] = this.manager.getProjectionPath();
 
-    this.buildScaling(this.xPath, this.yPath, this.zPath);
 
-    this.xPath = this.xPath.map(this.scalinFun);
-    this.yPath = this.yPath.map(this.scalinFun);
-    this.zPath = this.zPath.map(this.scalinFun);
+    [this.xPathDrawn, this.yPathDrawn, this.zPathDrawn] = this.manager.getProjectionPath(this.manager.pathTimes); // For drawing the path
 
+
+    this.buildScaling(this.xPathAnimation, this.yPathAnimation, this.zPathAnimation);
+
+    this.xPathAnimation = this.xPathAnimation.map(this.scalinFun);
+    this.yPathAnimation = this.yPathAnimation.map(this.scalinFun);
+    this.zPathAnimation = this.zPathAnimation.map(this.scalinFun);
+
+    this.xPathDrawn = this.xPathDrawn.map(this.scalinFun);
+    this.yPathDrawn = this.yPathDrawn.map(this.scalinFun);
+    this.zPathDrawn = this.zPathDrawn.map(this.scalinFun);
 
     /* Primary and secondary in real view*/
-    let primarySize = 5;
-    let secondarySize = primarySize * this.manager.getMassRatio();
-    this.primaryReal = this.drawStar(this.primaryColor, primarySize);
-    this.secondaryReal = this.drawStar(this.secondaryColor, secondarySize);
+    let primarySize = this.config.starViewSettings['primarySize'];
+    let secondarySize = primarySize * this.config.starViewSettings['starScalingFun'](this.manager.getMassRatio());
+    this.primaryReal = this.drawStar(this.starColorArray[0], primarySize);
+    this.secondaryReal = this.drawStar(this.starColorArray[1], secondarySize);
 
     /* Real orbit line */
-    let orbitReal = this.drawOrbitLine(this.xPath, this.yPath, this.zPath);
+    let orbitReal = this.drawOrbitLine(this.xPathDrawn, this.yPathDrawn, this.zPathDrawn);
 
     /* projected orbit line */
-    let orbitProj = this.drawOrbitLine(this.xPath, this.yPath, 0);
+    let orbitProj = this.drawOrbitLine(this.xPathDrawn, this.yPathDrawn, 0);
 
     /* Secondary in projected view*/
-    this.secondaryProj = this.drawStarProjection(this.secondaryColor, secondarySize);
+    this.secondaryProj = this.drawStarProjection(this.starColorArray[1], secondarySize);
 
 
     /** Size of orbit element indicators */
@@ -149,13 +159,13 @@ export class MainViewComponent extends ThreeDView
 
   moveFrames(frames : number){
 
-    this.index = (this.index + frames) % this.xPath.length;
+    this.index = (this.index + frames) % this.xPathAnimation.length;
     if(this.index < 0)
-      this.index = this.xPath.length + this.index;
+      this.index = this.xPathAnimation.length + this.index;
 
-    let x = this.xPath[this.index];
-    let y = this.yPath[this.index];
-    let z = this.zPath[this.index];
+    let x = this.xPathAnimation[this.index];
+    let y = this.yPathAnimation[this.index];
+    let z = this.zPathAnimation[this.index];
 
     this.secondaryReal.position.set(x, y, z);
     this.secondaryProj.position.set(x, y, 0);
@@ -205,8 +215,8 @@ export class MainViewComponent extends ThreeDView
       //let eX = this.scale * record.error_rho * Math.cos(fact * record.PA + Math.PI/2);
       //let eY = this.scale * record.error_rho * Math.sin(fact * record.PA + Math.PI/2);
 
-      let nSteps = 20;
-      let segLen = 4;
+      let nSteps = 50;
+      let segLen = 10;
       let diffLinePathX = this.linspace(xPos, xPosReal, nSteps);
       let diffLinePathY = this.linspace(yPos, yPosReal, nSteps);
       let diffLinePathZ = this.linspace(0, 0, nSteps);

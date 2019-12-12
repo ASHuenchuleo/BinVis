@@ -29,7 +29,11 @@ export class InputBasic{
   framesToMove : number = 0;
 
   /* Seconds per simulation year time scale */
-  realSecondsPerSimYear : number = 0.2;
+  realSecondsPerSimYear : number = 0.5;
+
+  
+  /** Properties for system type selection */
+  systemOptions;
 
   /** Function for input updating */
   private _nSystems : number = 1;
@@ -41,10 +45,13 @@ export class InputBasic{
   set nSystems(val: any) {
     this._nSystems = val;
     this.systemEnumerator = new Array(this._nSystems).fill(0).map((x, i) => i);
+    this.config.isHierarchical = this.nSystems > 1;
+    this.systemOptions = new Array(this._nSystems).fill(0).map((x, i) =>  {
+          return {id : i, name: String(i)};
+        })
   }
 
   systemEnumerator = new Array(this._nSystems).fill(0).map((x, i) => i);
-
 
 
   constructor(protected config : ConfigService) {
@@ -92,17 +99,26 @@ export class InputBasic{
   }
 
   updateViews() {
-    let attributeList : OrbitAttribute[][] = []
+    let attributeList : OrbitAttribute[][] = [];
+    let systemTypeArray : {[id : string] : number}[] = [];
+
     this.propertyInputChildren.forEach((inputChild) => 
       {
         let attributes = inputChild.visualAttributes.concat(
           inputChild.physicalAttributes.concat(
             inputChild.measuredAttributes));
         attributeList.push(attributes);
+
+        let typeDict = {};
+        typeDict['type'] = inputChild.type.id;
+        typeDict['center'] = inputChild.centerIndex.id;
+
+        systemTypeArray.push(typeDict);
+
       });
 
     this.config.updateSceneAttr(attributeList, this.viewSelectionChild.leftView.id, this.viewSelectionChild.rightView.id,
-      this.realSecondsPerSimYear);
+      this.realSecondsPerSimYear, systemTypeArray);
     this.sendAnimationCommand(); // Start animation
     this.sendFileInput(); // sends the files to be displayed
 

@@ -29,6 +29,8 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
   constructor(private config : ConfigService) {
     super(config,  'velocity-time');
     this.manager = config.managers[0];
+    this.manager.initTimes(this.manager.T, this.manager.T + this.nT * this.manager.P);
+
   }
   
   /**
@@ -48,18 +50,18 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
     this.two = new Two(this.params).appendTo(this.elem);
 
     this.manager.buildCMRadialVelocities();
-  	this.velsPrimary = this.manager.getPrimaryCMVelocities(this.nT);
-    this.velsSecondary = this.manager.getSecondaryCMVelocities(this.nT);
+  	this.velsPrimary = this.manager.getPrimaryCMVelocities();
+    this.velsSecondary = this.manager.getSecondaryCMVelocities();
 
     this.parametrization = AxisEnum.PHASE;
     if(this.parametrization == AxisEnum.TIMES)
     {
-      this.Xaxis = this.manager.getTimes(this.nT);
+      this.Xaxis = this.manager.getTimes();
       this.xLabel = 'T[yr]';
     }
     else if(this.parametrization == AxisEnum.PHASE)
     {
-      this.Xaxis = this.manager.getPhases(this.nT);
+      this.Xaxis = this.manager.getPhases();
       this.xLabel = 'Phase';
     }
 
@@ -86,10 +88,13 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
       fontsize, this.two);
 
     /** Drawing graphs */
+    let primarySize = this.config.starViewSettings['primarySize'];
+    let secondarySize = primarySize * this.config.starViewSettings['starScalingFun'](this.manager.getMassRatio());
+    
     this.primaryCurrent = this.makeVelocityCurve(
-      this.width, this.height, this.Xaxis, this.velsPrimary, this.two, 'blue');
+      primarySize, this.Xaxis, this.velsPrimary, this.two, 'blue');
     this.secondaryCurrent = this.makeVelocityCurve(
-      this.width, this.height, this.Xaxis, this.velsSecondary, this.two, 'orange');
+      secondarySize, this.Xaxis, this.velsSecondary, this.two, 'orange');
 
     this.drawCMVelLine(this.manager.getCMVel(),
       this.initXpixel, this.finalXpixel,

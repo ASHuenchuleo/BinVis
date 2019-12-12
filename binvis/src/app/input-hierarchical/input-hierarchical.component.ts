@@ -10,6 +10,7 @@ import { FileInputComponent } from '../file-input/file-input.component';
 
 import {InputBasic} from '../input-basic';
 
+
 @Component({
   selector: 'app-input-hierarchical',
   templateUrl: './input-hierarchical.component.html',
@@ -26,15 +27,15 @@ export class InputHierarchicalComponent extends InputBasic{
 	*/
 
 	viewOptions = [
-	  {id: ViewWindow.PrimaryHierarchy, name: "Relative to A"},
-	  {id: ViewWindow.CMHierarchy, name: "Relative to AB CM"}
+	  {id: ViewWindow.PrimaryHierarchy, name: "All systems"},
+	  {id: ViewWindow.Main, name: "Zoomed on 0"}
 	];
 
 	leftView = this.viewOptions[0];
-	rightView = this.viewOptions[0];
+	rightView = this.viewOptions[1];
 
 	
-	constructor(protected config : ConfigService) {
+	constructor(public config : ConfigService) {
 		super(config);
 	}
 

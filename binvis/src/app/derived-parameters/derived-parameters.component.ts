@@ -11,47 +11,46 @@ import {OrbitAttribute} from '../orbit-attribute'
 })
 export class DerivedParametersComponent{
 
-  M : OrbitAttribute = new OrbitAttribute('M<sub>p</sub>:', 0, '[M<sub>☉</sub>]'); // Mass of primary
-  m : OrbitAttribute = new OrbitAttribute('m<sub>s</sub>:', 0, '[M<sub>☉</sub>]'); // Mass of secondary
+  derivedParametersArray : OrbitAttribute[][];
 
-  periDis : OrbitAttribute = new OrbitAttribute('Periastron:', 0, '[AU]'); // Periastrum
-  apoDis : OrbitAttribute = new OrbitAttribute('Apoastron:', 0, '[AU]'); // Apoastrum
-
-  derivedParameters : OrbitAttribute[] =
-  [
-  	this.M,
-  	this.m,
-  	this.periDis,
-  	this.apoDis
-  ];
-
-  // Manager for the orbit in analysis
-  manager : PosManager;
+  // Managers for the orbit in analysis
+  managers : PosManager[];
 
 
-  constructor(private config : ConfigService){
+  constructor(public config : ConfigService){
     config.derivedParametersUpdate$.subscribe(
       () => {
-        this.manager = config.managers[0]; // Update the manager
+        this.managers = config.managers; // Update the managers
+        this.derivedParametersArray = new Array(this.managers.length);
         this.update();
       });
 	}
 
 
   update() {	
+    this.managers.forEach((manager, index) => {
+      let M, m, peri, apo;
+      [M, m] = manager.getStarMasses();
 
-    let [M, m] = this.manager.getStarMasses();
+      M = parseFloat(M.toPrecision(3));
+      m = parseFloat(m.toPrecision(3));
 
-    this.M.value = parseFloat(M.toPrecision(3));
-    this.m.value = parseFloat(m.toPrecision(3));
+      [peri, apo] = manager.getPeriApoMainUA();
 
-    let [peri, apo] = this.manager.getPeriApoMainUA();
+      peri = Math.sqrt(Math.pow(peri[0], 2) + Math.pow(peri[1], 2) + Math.pow(peri[2], 2));
+      apo = Math.sqrt(Math.pow(apo[0], 2) + Math.pow(apo[1], 2) + Math.pow(apo[2], 2));
 
-  	this.periDis.value = Math.sqrt(Math.pow(peri[0], 2) + Math.pow(peri[1], 2) + Math.pow(peri[2], 2));
-  	this.apoDis.value = Math.sqrt(Math.pow(apo[0], 2) + Math.pow(apo[1], 2) + Math.pow(apo[2], 2));
+      peri = parseFloat(peri.toPrecision(3));
+      apo = parseFloat(apo.toPrecision(3));
 
-  	this.periDis.value = parseFloat(this.periDis.value.toPrecision(3));
-  	this.apoDis.value = parseFloat(this.apoDis.value.toPrecision(3));
+      this.derivedParametersArray[index] =
+      [
+        new OrbitAttribute('M<sub>p</sub>:', M, '[M<sub>☉</sub>]'),
+        new OrbitAttribute('m<sub>s</sub>:', m, '[M<sub>☉</sub>]'),
+        new OrbitAttribute('Periastron:', peri, '[AU]'),
+        new OrbitAttribute('Apoastron:', apo, '[AU]')
+      ];
+    });
   }
 
 }

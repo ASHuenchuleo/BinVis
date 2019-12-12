@@ -24,3 +24,23 @@
 
 		</div>
 	</div>
+
+	<div class="parameter-group" *ngIf="isHierarchical && systemIndex != 0">
+		<div class='input-group'>
+				<div class='input-group-prepend'>
+				<span class="input-group-text  select-label">Centered on</span>
+				</div> 
+				<select class="browser-default custom-select" name="center-select" [(ngModel)]="type">
+				     <option *ngFor="let c of typeOptions" [ngValue]="c">{{c.name}}</option>
+				</select>
+		</div>
+		<div class='input-group'>
+				<div class='input-group-prepend'>
+				<span class="input-group-text  select-label">From system</span>
+				</div> 
+				<select class="browser-default custom-select" name="system-select" [(ngModel)]="centerIndex">
+				     <option *ngFor="let c of systemOptions.slice(0, systemIndex)" [ngValue]="c">{{c.name}}</option>
+				</select>
+		</div>
+
+	</div>

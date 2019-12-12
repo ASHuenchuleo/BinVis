@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input} from '@angular/core';
 import {OrbitAttribute} from '../orbit-attribute'
+import {TypeEnum} from '../type-enum';
+
 
 @Component({
   selector: 'app-property-input',
@@ -44,7 +46,28 @@ export class PropertyInputComponent implements OnInit {
   this.T
   ]; 
 
-  constructor() { }
+
+  typeOptions = [
+    {id: TypeEnum.PrimaryCentered, name: "A"},
+    {id: TypeEnum.CMCentered, name: "The CM's orbit"},
+    {id: TypeEnum.SecondaryCentered, name: "B's orbit"}
+  ];
+
+  @Input('systemOptions') systemOptions : any[]; // Options for the father system
+
+  @Input('isHierarchical') isHierarchical : boolean = false;
+
+
+  @Input('systemIndex') systemIndex : number = 0;
+
+
+  centerIndex = {id: 0, name: 'dummy'};
+  type = this.typeOptions[1];
+
+
+
+  constructor() {
+  }
 
   ngOnInit() {
   }

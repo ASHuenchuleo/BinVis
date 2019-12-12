@@ -1,5 +1,5 @@
 <form name="attrForm" (submit)="updateViews()">
-
+ 
 <div class='view-card-input'>
 
 <div class='view-card-title container'>
@@ -51,16 +51,17 @@
 	</div>
 
 	<div class="view-card-title"> <h5> Parameter Selection </h5> </div>
-		<mat-expansion-panel *ngFor="let index of systemEnumerator">
+		<div *ngFor="let index of systemEnumerator">
+		<mat-expansion-panel >
 		  <mat-expansion-panel-header>
 		    <mat-panel-title>
 		      System {{index}}
 		    </mat-panel-title>
 		  </mat-expansion-panel-header>
 
-		<app-property-input> </app-property-input>
-
-		</mat-expansion-panel>
+		<app-property-input [isHierarchical]="config.isHierarchical" [systemOptions]="systemOptions" [systemIndex]="index"> </app-property-input>
+		</mat-expansion-panel> 
+		</div>
 	</div>
 
 	<div class='col-lg-4 col-xs-12'>
@@ -71,6 +72,7 @@
 		<app-view-selection [leftView]="leftView" [rightView]="rightView" [viewOptions]="viewOptions" > </app-view-selection>
 	</div>
 
+	<!--
 	<div class="container">
 		<div class="view-card-title"> <h5> Data Input </h5> </div> 
 		<mat-expansion-panel *ngFor="let index of systemEnumerator">
@@ -82,6 +84,7 @@
 		<app-file-input id="data-input-{{index}}"> </app-file-input>
 		</mat-expansion-panel>
 	</div>
+	-->
 
 	</div>
 

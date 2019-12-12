@@ -188,18 +188,17 @@ export class TwoDView implements ViewComponent
 
 	/**
 	* Creates a velocity graph, and returns the circle marking the current velocity
-	* @param {number} width The width of the window
-	* @param {number} height The height of the window
+	* @param {number} size The size of the circle
 	* @param {times} times The time array for the graph
 	* @param {number[]} vels The velocity array for the graph
 	* @param {Two} two The two canvas to draw on
 	* @param {String} color The color for the graph
 	* @return {Two.Circle} The circle marking the current velocity
 	*/
-	makeVelocityCurve(width, height, times, vels, two, color) : Two.Circle
+	makeVelocityCurve(size, times, vels, two, color) : Two.Circle
 	{
 	  
-	  var current = two.makeCircle(width/2, height/2, 5);
+	  var current = two.makeCircle(this.width, this.height, size);
 
 	  current.fill = color;
 	  current.noStroke();

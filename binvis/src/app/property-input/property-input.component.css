@@ -2,8 +2,16 @@
 	width: 50%;
 }
 
+.select-label{
+	width: 120px;
+}
+
 .input-label{
 	width: 80px;
+}
+
+.input-label-select{
+
 }
 
 .parameter-group{
@@ -12,7 +20,10 @@
 }
 
 .input-group-parameter{
-	margin-left: 15%;
+	margin-left: 10%;
+}
+
+.input-group{
 	margin-bottom: 20px;
 }
 

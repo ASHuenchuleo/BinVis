@@ -30,6 +30,7 @@ import { InputHierarchicalComponent } from './input-hierarchical/input-hierarchi
 
 import {MatExpansionModule} from '@angular/material/expansion';
 import { PrimaryCenteredHierarchicalComponent } from './primary-centered-hierarchical/primary-centered-hierarchical.component';
+import { VelocityViewHierarchicalComponent } from './velocity-view-hierarchical/velocity-view-hierarchical.component';
 
 
 @NgModule({
@@ -57,7 +58,8 @@ import { PrimaryCenteredHierarchicalComponent } from './primary-centered-hierarc
     ViewSelectionComponent,
     FileInputComponent,
     InputHierarchicalComponent,
-    PrimaryCenteredHierarchicalComponent
+    PrimaryCenteredHierarchicalComponent,
+    VelocityViewHierarchicalComponent
   ],
   imports: [
     BrowserModule,

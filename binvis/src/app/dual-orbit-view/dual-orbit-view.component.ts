@@ -20,13 +20,21 @@ export class DualOrbitViewComponent extends ThreeDView
             implements AfterViewInit, OnDestroy{
 
   /* Paths to be followed */
-  private xPathPrim : number[];
-  private yPathPrim : number[];
-  private zPathPrim : number[];
+  private xPathPrimAnimation : number[];
+  private yPathPrimAnimation : number[];
+  private zPathPrimAnimation : number[];
 
-  private xPathSec : number[];
-  private yPathSec : number[];
-  private zPathSec : number[];
+  private xPathSecAnimation : number[];
+  private yPathSecAnimation : number[];
+  private zPathSecAnimation : number[];
+
+  private xPathPrimDrawn : number[];
+  private yPathPrimDrawn : number[];
+  private zPathPrimDrawn : number[];
+
+  private xPathSecDrawn : number[];
+  private yPathSecDrawn : number[];
+  private zPathSecDrawn : number[];
 
   /** Meshes for the moving objects */
   secondaryReal : THREE.Mesh;
@@ -41,6 +49,8 @@ export class DualOrbitViewComponent extends ThreeDView
   constructor(private config : ConfigService) {
    super('dual-orbit-div');
    this.manager = config.managers[0];
+   this.manager.initTimes();
+
   }
 
   ngOnDestroy() : void{
@@ -65,46 +75,54 @@ export class DualOrbitViewComponent extends ThreeDView
     this.divName = this.divName + '-' + this.cardClass;
     this.initScene();
 
-    let pathPrim = this.manager.getPrimaryPath();
-    this.xPathPrim = pathPrim[0];
-    this.yPathPrim = pathPrim[1];
-    this.zPathPrim = pathPrim[2];
+    [this.xPathPrimAnimation, this.yPathPrimAnimation, this.zPathPrimAnimation] = this.manager.getPrimaryPath(this.manager.animationTimes);
 
-    let pathSec = this.manager.getSecondaryPath();
-    this.xPathSec = pathSec[0];
-    this.yPathSec = pathSec[1];
-    this.zPathSec = pathSec[2];
+    [this.xPathSecAnimation, this.yPathSecAnimation, this.zPathSecAnimation] = this.manager.getSecondaryPath(this.manager.animationTimes);
 
 
-    this.buildScaling(this.xPathSec, this.yPathSec, this.zPathSec);
+    [this.xPathPrimDrawn, this.yPathPrimDrawn, this.zPathPrimDrawn] = this.manager.getPrimaryPath(this.manager.pathTimes);
 
-    this.xPathPrim = this.xPathPrim.map(this.scalinFun);
-    this.yPathPrim = this.yPathPrim.map(this.scalinFun);
-    this.zPathPrim = this.zPathPrim.map(this.scalinFun);
+    [this.xPathSecDrawn, this.yPathSecDrawn, this.zPathSecDrawn] = this.manager.getSecondaryPath(this.manager.pathTimes);
 
-    this.xPathSec = this.xPathSec.map(this.scalinFun);
-    this.yPathSec = this.yPathSec.map(this.scalinFun);
-    this.zPathSec = this.zPathSec.map(this.scalinFun);
+
+    this.buildScaling(this.xPathSecDrawn, this.yPathSecDrawn, this.zPathSecDrawn);
+
+    this.xPathPrimAnimation = this.xPathPrimAnimation.map(this.scalinFun);
+    this.yPathPrimAnimation = this.yPathPrimAnimation.map(this.scalinFun);
+    this.zPathPrimAnimation = this.zPathPrimAnimation.map(this.scalinFun);
+
+    this.xPathSecAnimation = this.xPathSecAnimation.map(this.scalinFun);
+    this.yPathSecAnimation = this.yPathSecAnimation.map(this.scalinFun);
+    this.zPathSecAnimation = this.zPathSecAnimation.map(this.scalinFun);
+
+    this.xPathPrimDrawn = this.xPathPrimDrawn.map(this.scalinFun);
+    this.yPathPrimDrawn = this.yPathPrimDrawn.map(this.scalinFun);
+    this.zPathPrimDrawn = this.zPathPrimDrawn.map(this.scalinFun);
+
+    this.xPathSecDrawn = this.xPathSecDrawn.map(this.scalinFun);
+    this.yPathSecDrawn = this.yPathSecDrawn.map(this.scalinFun);
+    this.zPathSecDrawn = this.zPathSecDrawn.map(this.scalinFun);
+
 
 
     /* Primary and secondary in real view*/
-    let primarySize = 5;
-    let secondarySize = primarySize * this.manager.getMassRatio();
+    let primarySize = this.config.starViewSettings['primarySize'];
+    let secondarySize = primarySize * this.config.starViewSettings['starScalingFun'](this.manager.getMassRatio());
 
-    this.primaryReal = this.drawStar(this.primaryColor, primarySize);
-    this.secondaryReal = this.drawStar(this.secondaryColor, secondarySize);
+    this.primaryReal = this.drawStar(this.starColorArray[0], primarySize);
+    this.secondaryReal = this.drawStar(this.starColorArray[1], secondarySize);
 
     /* Real orbit line */
-    let orbitRealPrim = this.drawOrbitLine(this.xPathPrim, this.yPathPrim, this.zPathPrim);
-    let orbitReaSec = this.drawOrbitLine(this.xPathSec, this.yPathSec, this.zPathSec);
+    let orbitRealPrim = this.drawOrbitLine(this.xPathPrimDrawn, this.yPathPrimDrawn, this.zPathPrimDrawn);
+    let orbitReaSec = this.drawOrbitLine(this.xPathSecDrawn, this.yPathSecDrawn, this.zPathSecDrawn);
 
     /* Primary and secondary in projected view*/
-    this.primaryProj = this.drawStarProjection(this.primaryColor, primarySize);
-    this.secondaryProj = this.drawStarProjection(this.secondaryColor, secondarySize);
+    this.primaryProj = this.drawStarProjection(this.starColorArray[0], primarySize);
+    this.secondaryProj = this.drawStarProjection(this.starColorArray[1], secondarySize);
 
     /* Projected orbit line */
-    let orbitProjPrim = this.drawOrbitLine(this.xPathPrim, this.yPathPrim, 0);
-    let orbitProjSec = this.drawOrbitLine(this.xPathSec, this.yPathSec, 0);
+    let orbitProjPrim = this.drawOrbitLine(this.xPathPrimDrawn, this.yPathPrimDrawn, 0);
+    let orbitProjSec = this.drawOrbitLine(this.xPathSecDrawn, this.yPathSecDrawn, 0);
 
     /* Axis */
     let tickSize = 4;
@@ -120,17 +138,17 @@ export class DualOrbitViewComponent extends ThreeDView
   }
 
   moveFrames(frames : number){
-      this.index = (this.index + frames) % this.xPathPrim.length;
+      this.index = (this.index + frames) % this.xPathPrimAnimation.length;
       if(this.index < 0)
-        this.index = this.xPathPrim.length + this.index;
+        this.index = this.xPathPrimAnimation.length + this.index;
 
-      let xPrim = this.xPathPrim[this.index];
-      let yPrim = this.yPathPrim[this.index];
-      let zPrim = this.zPathPrim[this.index];
+      let xPrim = this.xPathPrimAnimation[this.index];
+      let yPrim = this.yPathPrimAnimation[this.index];
+      let zPrim = this.zPathPrimAnimation[this.index];
 
-      let xSec = this.xPathSec[this.index];
-      let ySec = this.yPathSec[this.index];
-      let zSec = this.zPathSec[this.index];
+      let xSec = this.xPathSecAnimation[this.index];
+      let ySec = this.yPathSecAnimation[this.index];
+      let zSec = this.zPathSecAnimation[this.index];
 
 
       this.secondaryReal.position.set(xSec, ySec, zSec);

@@ -1,5 +1,6 @@
 import { ConfigService} from './config.service';
 import {OrbitAttribute} from './orbit-attribute'
+import {TypeEnum} from './type-enum';
 
 import { throwError } from 'rxjs'; 
 
@@ -17,14 +18,20 @@ export class PosManager {
 
   /** Initial time for the orbit */
   initT : number;
+
+  /** Times for the orbit, in years */
+  animationTimes : number[];
+  pathTimes : number[];
+
   /** Number of steps for orbit*/
-  steps : number = 200;
+  steps : number = 3000;
+  animationSteps : number;
 
   /** How many years does a single step last */
   timeStep : number;
+  animationTimeStep : number;
 
-  /** Times for the orbit, in years */
-  times : number[];
+
 
 
   /** Trayectory for projection orbit */
@@ -42,46 +49,55 @@ export class PosManager {
   secondaryCMVelocities : number[];
 
 
-  private omega : number; // rad
-  private Omega : number; // rad
-  private i : number; // rad
-  private T : number; // yr
-  private P : number; // yr
-  private a : number; // ''
-  private e : number; 
-  private q : number;
-  private plx : number; // mas
+  omega : number; // rad
+  Omega : number; // rad
+  i : number; // rad
+  T : number; // yr
+  P : number; // yr
+  a : number; // ''
+  e : number; 
+  q : number;
+  plx : number; // mas
 
 
-  private A : number;
-  private B : number;
-  private F : number;
-  private G : number;
+  A : number;
+  B : number;
+  F : number;
+  G : number;
 
-  private C : number;
-  private H : number;
+  C : number;
+  H : number;
 
-  private Kp;
-  private Ks;
+  Kp;
+  Ks;
 
   /**
   * Velocity of centre of mass
   */
-  private v0 : number;
+  v0 : number;
   /**
   * Semi amplitude of the radial velocity curve, in km/s
   */
-  private Kl : number;
+  Kl : number;
+
   /**
-  *Values for E
+  * The manager for the system this system is currently orbiting
   */
-  private EVals : number[];
+  fatherManager : PosManager;
+  /**
+  * The type of orbit, either orbiting A, the CM or B
+  */
+  type : TypeEnum;
+
 
   arcsecToAU = (x) => {
     let plxArcSec = this.plx / 1000;
 
     return x / plxArcSec; // x was in arcsec
   }
+
+  framerate;
+  realSecondsPerSimYear;
 
   /**
   * Initializator for the manager class.
@@ -111,59 +127,45 @@ export class PosManager {
     this.plx = plx;
     this.v0 = v0;
 
-
-    this.steps = +Math.round((this.P / realSecondsPerSimYear) * framerate);
-
     this.findConstants();
-    this.initE();
+
+    this.framerate = framerate;
+    this.realSecondsPerSimYear = realSecondsPerSimYear;
+   
   }
 
   /**
-  * Converts an index in the path to its time
+  * Precalculates the values 
   */
-
-  /**
-  * Prepares the times array and solves all values of E for the array
-  */
-  initE() : void
+  initTimes(initT = this.T, finalT = this.T  + this.P)
   {
 
-    this.timeStep = this.P / this.steps;
-  	this.times = [];
-    this.initT = this.T;
-  	let currentTime = this.initT;
-  	for(var j = 0; j < this.steps; j++)
-  	{
-  		this.times.push(currentTime);
-  		currentTime += this.timeStep;
-    }
-    this.findEValsForTimes(this.times);
-  }
+    this.animationSteps = +Math.round(((finalT - initT) / this.realSecondsPerSimYear) * this.framerate);
 
 
+    // Inits the times
+    this.animationTimeStep = (finalT - initT) / this.animationSteps;
+    this.initT = initT;
 
-  /**
-  * Solves for E on given times
-  */
-  findEValsForTimes(times) : void{
-    this.EVals = []
-    for(var i = 0; i < times.length; i++)
+    this.animationTimes = [];
+    let currentTime = this.initT;
+    for(var j = 0; j < this.animationSteps; j++)
     {
-      let currentTime = times[i];
-      try
-      {
-        this.EVals.push(this.solveEFromTime(currentTime));
-      }
-      catch(e)
-      {
-        throw e;
-      }
-      finally
-      {
-        continue;
-      }
+      this.animationTimes.push(currentTime);
+      currentTime += this.animationTimeStep;
+    }
+
+    this.pathTimes = [];
+    this.timeStep = (finalT - initT) / this.steps;
+    currentTime = this.initT;
+    for(var j = 0; j < this.steps; j++)
+    {
+      this.pathTimes.push(currentTime);
+      currentTime += this.timeStep;
     }
   }
+
+
 
   /**
   * Calculates the Thiele-Innes constants, and other neccesary constants for calculation.
@@ -195,7 +197,7 @@ export class PosManager {
     this.Ks = scale_fact * a_s * fact;
   }
 
-  private solveEFromTime(tau : number) : number
+  solveEFromTime(tau : number) : number
   {
     const kepler = (E) => {
       return 2 * Math.PI * (tau - this.T) / this.P - (E - this.e * Math.sin(E));
@@ -216,7 +218,7 @@ export class PosManager {
   * given the value of the true anomaly. In arcseconds.
   */
 
-  private apparentPositionFromTrueAnomaly(nu : number){
+  apparentPositionFromTrueAnomaly(nu : number){
 
 
       /* Since atan only returns from -pi/2 to pi/2
@@ -243,22 +245,10 @@ export class PosManager {
   * relative to the primary
   * @return {number[number[]]} Array with triads (x, y, z)
   */
-  apparentPosition(index  : number)
+  apparentPosition(time  : number)
   {
-    let Esol = this.EVals[index]
+    let Esol = this.solveEFromTime(time);
     return this.getPositionFromE(Esol);
-  }
-
-
-
-  /**
-  * Calculates the secondary's position relative to the centre of mass
-  * @return {number[number[]]} Array with triads (x, y, z)
-  */
-  secondaryPositionFromIndex(index  : number)
-  {
-    let fact = 1 / (1 + this.q);
-    return this.apparentPosition(index).map((x) => {return x * fact});
   }
 
   /**
@@ -269,17 +259,6 @@ export class PosManager {
   secondaryPositionFromTime(tau : number) : number[]
   {
     return this.getPositionFromE(this.solveEFromTime(tau));
-  }
-
-
-  /**
-  * Calculates the primary's position relative to the centre of mass
-  * @return {number[number[]]} Array with triads (x, y, z)
-  */
-  primaryPositionFromIndex(index  : number)
-  {
-    let fact = - this.q / (1 + this.q);
-    return this.apparentPosition(index).map((x) => {return x * fact});
   }
 
   /**
@@ -296,12 +275,12 @@ export class PosManager {
 
   /**
   * Calculates the radial velocity for a given instant of time in km/s
-  * @param {number} tau Time, interpreted in the same units as the period
+  * @param {number} time Time, interpreted in the same units as the period
   * @return {number} The radial velocity in km/s;
   */
-  radialVelocity(index : number) : number
+  radialVelocity(time : number) : number
   {
-    let Esol = this.EVals[index];
+    let Esol = this.solveEFromTime(time);;
 
     var trueAnomaly = 2 * Math.atan(
       Math.sqrt((1 + this.e) / (1 - this.e)) * Math.tan(Esol/2));
@@ -314,12 +293,12 @@ export class PosManager {
 
   /**
   * Calculates the primary's radial velocity relative to the observer in km/s
-  * @param {number} tau Time, interpreted in the same units as the period
+  * @param {number} time Time, interpreted in the same units as the period
   * @return {number} The radial velocity in km/s
   */
-  primaryCMVelocity(index : number) : number
+  primaryCMVelocity(time : number) : number
   {
-    let Esol = this.EVals[index];
+    let Esol = this.solveEFromTime(time);
 
     var trueAnomaly = 2 * Math.atan(
       Math.sqrt((1 + this.e) / (1 - this.e)) * Math.tan(Esol/2));
@@ -331,12 +310,12 @@ export class PosManager {
 
   /**
   * Calculates the secondary's radial velocity relative to the observer in km/s
-  * @param {number} tau Time, interpreted in the same units as the period
+  * @param {number} time Time, interpreted in the same units as the period
   * @return {number} The radial velocity in km/s
   */
-  secondaryCMVelocity(index : number) : number
+  secondaryCMVelocity(time : number) : number
   {
-    let Esol = this.EVals[index];
+    let Esol = this.solveEFromTime(time);
 
     let trueAnomaly = 2 * Math.atan(
       Math.sqrt((1 + this.e) / (1 - this.e)) * Math.tan(Esol/2));
@@ -446,7 +425,7 @@ export class PosManager {
   */
   getProjectionPath(timeArray : number[] = undefined) : number[][]
   {
-    timeArray = timeArray || this.times;
+    timeArray = timeArray || this.animationTimes;
     this.projectionPath = [];
     let xarray = [];
     let yarray = [];
@@ -473,7 +452,7 @@ export class PosManager {
   */
   getPrimaryPath(timeArray : number[] = undefined) : number[][]
   {
-    timeArray = timeArray || this.times;
+    timeArray = timeArray || this.animationTimes;
     this.primaryPath = [];
     let xarray = [];
     let yarray = [];
@@ -496,7 +475,7 @@ export class PosManager {
   */
   getSecondaryPath(timeArray : number[] = undefined) : number[][]
   {
-    timeArray = timeArray || this.times;
+    timeArray = timeArray || this.animationTimes;
     this.secondaryPath = [];
     let xarray = [];
     let yarray = [];
@@ -517,34 +496,25 @@ export class PosManager {
 
   /**
   * Returns the values for the time steps
-  * @param {number} nT The number of periods to be returned
   * @return {number[]} array of values of time, in years
   */
-  getTimes(nT : number = 1) : number[]
+  getTimes() : number[]
   {
-    this.times = [];
-    let currentTime = this.initT;
-    for(var i = 0; i < this.steps * nT; i++)
-    {
-      this.times.push(currentTime);
-      currentTime += this.timeStep;
-    }
-    return this.times;
+    return this.animationTimes;
   }
 
   /**
   * Returns the values for the phase steps
-  * @param {number} nT The number of periods to be returned
   * @return {number[]} array of values of the phase, between 0 and 1
   */
-  getPhases(nT : number = 1) : number[]
+  getPhases() : number[]
   {
     let phases = [];
     let currentPhase = 0;
-    for(var i = 0; i < this.steps * nT; i++)
+    for(var i = 0; i < this.animationTimes.length; i++)
     {
       phases.push(currentPhase);
-      currentPhase += 1 / this.steps;
+      currentPhase = (this.animationTimes[i] - this.T)/this.P;
     }
     return phases;
   }
@@ -560,7 +530,7 @@ export class PosManager {
 
     this.radialVelocities = [];
 
-    for(var i = 0; i < this.steps; i++)
+    for(var i = 0; i < this.animationSteps; i++)
     {
       this.radialVelocities.push(this.radialVelocity(i));
     }
@@ -569,21 +539,19 @@ export class PosManager {
 
   /**
   * Returns the primary's radial velocity array relative to the observer
-  * @param {number} nT The number of periods to be returned
   */
-  getPrimaryCMVelocities(nT : number = 1) : number[]
+  getPrimaryCMVelocities() : number[]
   {
-    return this.buildPeriodic(this.primaryCMVelocities, nT);
+    return this.primaryCMVelocities;
   }
 
   /**
   * Returns the secondary's radial velocity array relative to the observer
-  * @param {number} nT The number of periods to be returned
   * @return {number[]} radial velocities for the secondary
   */
-  getSecondaryCMVelocities(nT : number = 1) : number[]
+  getSecondaryCMVelocities() : number[]
   {
-    return this.buildPeriodic(this.secondaryCMVelocities, nT); 
+    return this.secondaryCMVelocities; 
   }
 
   /**
@@ -592,7 +560,7 @@ export class PosManager {
   * @param {number[]} timeArray The optional array of times for the path generation.
   */
   getCMPath(times : number[] = undefined) : number[][]{
-    times = times || this.times;
+    times = times || this.animationTimes;
     let positions = [];
     let xarray = [];
     let yarray = [];
@@ -611,28 +579,62 @@ export class PosManager {
     return positions;
   }
 
+  /** 
+  *  Returns the path of the rotation center for heirarchical systems
+  * @param {number[]} times Time array for the positions to be calculated.
+  */
+  getRotationCenterPath(times : number[] = undefined) : number[][]
+  {
+    times = times || this.animationTimes;
+    let positions = [];
+    let xarray = [];
+    let yarray = [];
+    let zarray = [];
+    if(this.fatherManager)
+    {
+      switch(this.type)
+      {
+        case TypeEnum.CMCentered:
+          positions = this.fatherManager.getCMPath(times);
+        break;
 
+        case TypeEnum.PrimaryCentered:
+          positions = this.fatherManager.getRotationCenterPath(times);
+        break;
 
+        case TypeEnum.SecondaryCentered:
+          positions = this.fatherManager.getProjectionPath(times);
+        break;
+      }
+    }
+    else
+      positions = new Array(3).fill(new Array(this.animationSteps).fill(0));
+
+    return positions;
+  }
 
   /**
   * Builds the radial velocity for the primary and secondary respect to the CM
+  * @param {number[]} times Time array for the positions to be calculated.
   */
-  buildCMRadialVelocities() : void{
+  buildCMRadialVelocities(times : number[] = undefined) : void{
+    times = times || this.animationTimes;
+
     this.primaryCMVelocities = [];
     this.secondaryCMVelocities = [];
 
-    for(var i = 0; i < this.steps; i++)
+    for(var i = 0; i < this.animationTimes.length; i++)
     {
-      this.primaryCMVelocities.push(this.primaryCMVelocity(i));
-      this.secondaryCMVelocities.push(this.secondaryCMVelocity(i));
+      this.primaryCMVelocities.push(this.primaryCMVelocity(times[i]));
+      this.secondaryCMVelocities.push(this.secondaryCMVelocity(times[i]));
     }
   }
 
   /**
   * Builds the periodic array for nT number of periods
   * @param {number[]} array The array to be repeated
-  * @param {number} nT Number of this.times of repetition
-  * @param {number[]} Array repeated nT this.times
+  * @param {number} nT Number of this.animationTimes of repetition
+  * @param {number[]} Array repeated nT this.animationTimes
   */
   buildPeriodic(array, nT)
   {

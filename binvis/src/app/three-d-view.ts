@@ -43,9 +43,14 @@ export class ThreeDView implements ViewComponent{
 	/** Camera control */
 	protected controls;
 
-	/** Colors for the stars */
-	protected primaryColor = 0x0000cc ;
-	protected secondaryColor = 0xf39c12;
+	/** Colors for the stars, first is primary, second is secondary of the main system */
+	protected starColorArray = [
+		0x0000cc, // blue
+		0xf39c12, // orange
+  		'rgb(203, 67, 53)', // dark red
+  		'rgb(125, 60, 152)', // purple
+  		'rgb(19, 141, 117)' // dark green
+	]
 
 
 	/** Maximum value for position in absolute value */
@@ -57,6 +62,14 @@ export class ThreeDView implements ViewComponent{
 	/** Raycasting */
 	protected raycaster;
 	protected mouse;
+
+
+	/** Initial and final time for the orbit */
+	protected initT : number;
+	protected finalT : number;
+
+	
+
 
 	/* Scale factor for the plane size according to the axes size */
 	planeFactor : number = 5;
@@ -208,6 +221,7 @@ export class ThreeDView implements ViewComponent{
 	  let minPos =  Math.min(...pathx, ...pathy, ...pathz);
 
 	  this.maxAbsPos = Math.max(Math.abs(maxPos), Math.abs(minPos))
+
 
 	  this.scale =  this.maxDis / this.maxAbsPos;
 
@@ -392,9 +406,9 @@ export class ThreeDView implements ViewComponent{
 	* @param {number[]} yPath y positions for the orbit
 	* @param {number[]} zPath z positions for the orbit
 	* @param {number} color Color for the line
-	* @param {number} segLen Number of points per segment
+	* @param {number} seglen Segment length for the dashed line
 	*/
-	drawOrbitLine(xPath, yPath, zPath, color='black', segLen = 8) {
+	drawOrbitLine(xPath, yPath, zPath, color='black', segLen = undefined) {
 
 
 	  let material = new THREE.LineBasicMaterial(
@@ -402,6 +416,9 @@ export class ThreeDView implements ViewComponent{
 	      linewidth : 1} );
 
 	  let geometry = new THREE.Geometry();
+
+	  segLen = segLen || Math.ceil(xPath.length/50);
+	  //let segLen = xPath.length;
 
 	  for(let i = 0; i < xPath.length; i++){
 	    if(i%segLen===0 && i!=0){
@@ -411,7 +428,7 @@ export class ThreeDView implements ViewComponent{
 	      this.scene.add(line);
 
 	      geometry = new THREE.Geometry();
-	      i+= parseInt(String(segLen/4));
+	      i+= parseInt(String(5));
 	    }
 	    geometry.vertices.push(new THREE.Vector3(xPath[i], yPath[i], zPath[i]));
 	  }
