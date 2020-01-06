@@ -11,6 +11,9 @@ import { PosManager } from './pos-manager';
 @Injectable({
   providedIn: 'root'
 })
+/*
+* Contains all the settings and starts up the simulations with those settings
+*/
 export class ConfigService {
   /*
   * Current number of systems
@@ -29,32 +32,35 @@ export class ConfigService {
   dataInputSettings : {[type : string] : any};
 
   /*
-  * View settings
+  * Whether a hierarchical system is being displayed
   */
-  // Timescale for the orbit as in [s in real time]/[yr in simulation], greater means faster
-  realSecondsPerSimYear : number;
-  frameRate : number = 60;
-  starViewSettings : {[id : string] : any} = {
-    'primarySize' : 5,
-    'starScalingFun' : (x) => x ** (1/3)
-  };
-
-  // Whether a hierarchical system is being displayed
   isHierarchical : boolean = false;
-
-  // The types of orbits for every subsystem
-  systemTypeArray : {[id : string] : number}[];
 
 
   /*
-  *  Time settings dict for the hierarchical orbits, it does not matter for simple binary systems
+  * View settings for the stars
   */
-  timeSettings : {[id : string] : any} = {
-    'initT' : 1990,
-    'finalT' : 2020,
-    'orbitDependant' : true, // Does the time period depend on the outer orbit?
-    'nPeriods' : 3 // If so, how many periods are displayed
-  };
+  starViewSettings : {[id : string] : any};
+
+  /*
+  *  Time settings dictionary for the periodic simulations
+  */
+  timeSettings : {[id : string] : any};
+
+  /*
+  *  Animation and time scale settings dictionary
+  */
+  animationSettings : {[id : string] : any};
+
+  /*
+  * Scaling settings for the axes
+  */
+  scalingSettings : {[id : string] : any};
+
+  /*
+  * Array that describes each system's relations to its parent
+  */
+  systemRelations : {[id : string] : any}[] = [];
 
   /*
   * Observable string sources
@@ -87,20 +93,15 @@ export class ConfigService {
   * @param {OrbitAttribute[][]} attributes List with the numeric attributes of each orbit
   * @param {ViewWindow} leftView The selected view window for the left view
   * @param {ViewWindow} leftView The selected view window for the right view
-  * @param {number} realSecondsPerSimYear Timescale for the orbit as in [s in real time]/[yr in simulation], greater means faster
-  * @param {[id : string] : number}[] systemTypeArray The way the systems interact with the others.
   */
-  updateSceneAttr(attributeList : OrbitAttribute[][], leftView : ViewWindow, rightView : ViewWindow,
-    realSecondsPerSimYear : number, systemTypeArray : {[id : string] : number}[])
+  updateSceneAttr(attributeList : OrbitAttribute[][], leftView : ViewWindow, rightView : ViewWindow)
   {
     this.nSystems = attributeList.length;
     this.managers = new Array(this.nSystems);
-    this.realSecondsPerSimYear = realSecondsPerSimYear;
-    this.systemTypeArray = systemTypeArray;
 
     attributeList.forEach((attributes, i) =>
     {
-      this.managers[i] = new PosManager(attributes, this.realSecondsPerSimYear, this.frameRate); // Do calculations
+      this.managers[i] = new PosManager(attributes, this); // Do calculations
     });
     this.derivedParametersUpdateSource.next(); // Update derived parameters
     this.viewCardLeftUpdateSource.next(leftView); // Update left viewcard

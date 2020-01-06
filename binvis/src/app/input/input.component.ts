@@ -32,7 +32,6 @@ export class InputComponent extends InputBasic{
 	  {id: ViewWindow.Vel, name: "Velocity Graph"},
 	];
 
-
 	leftView = this.viewOptions[0];
 	rightView = this.viewOptions[2];
 	

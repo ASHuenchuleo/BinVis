@@ -1,4 +1,3 @@
-import { ConfigService} from './config.service';
 import {OrbitAttribute} from './orbit-attribute'
 import {TypeEnum} from './type-enum';
 
@@ -30,9 +29,6 @@ export class PosManager {
   /** How many years does a single step last */
   timeStep : number;
   animationTimeStep : number;
-
-
-
 
   /** Trayectory for projection orbit */
   projectionPath : number[][];
@@ -96,14 +92,15 @@ export class PosManager {
     return x / plxArcSec; // x was in arcsec
   }
 
-  framerate;
-  realSecondsPerSimYear;
+  config;
 
   /**
   * Initializator for the manager class.
   * @param {OrbitAttribute[]} attributes Attributes for the orbit to be managed
   */
-  constructor(attributes : OrbitAttribute[], realSecondsPerSimYear : number, framerate : number){
+  constructor(attributes : OrbitAttribute[], config){
+
+    this.config = config;
 
     let omega : number = attributes[0].value;
     let Omega : number = attributes[1].value;
@@ -128,9 +125,6 @@ export class PosManager {
     this.v0 = v0;
 
     this.findConstants();
-
-    this.framerate = framerate;
-    this.realSecondsPerSimYear = realSecondsPerSimYear;
    
   }
 
@@ -140,7 +134,8 @@ export class PosManager {
   initTimes(initT = this.T, finalT = this.T  + this.P)
   {
 
-    this.animationSteps = +Math.round(((finalT - initT) / this.realSecondsPerSimYear) * this.framerate);
+    this.animationSteps = +Math.round(((finalT - initT) /this.config.animationSettings['realSecondsPerSimYear'])
+                          * this.config.animationSettings['framerate']);
 
 
     // Inits the times

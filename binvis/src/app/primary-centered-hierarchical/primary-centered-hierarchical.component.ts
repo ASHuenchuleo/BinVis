@@ -160,8 +160,8 @@ export class PrimaryCenteredHierarchicalComponent extends ThreeDView
 
 
         // Add the orbit center path
-        let fatherIndex = this.config.systemTypeArray[i]['center'];
-        let orbitType = this.config.systemTypeArray[i]['type'];
+        let fatherIndex = this.config.systemRelations[i]['center'];
+        let orbitType = this.config.systemRelations[i]['type'];
 
         manager.fatherManager = this.managers[fatherIndex];
         manager.type = orbitType;
@@ -175,8 +175,8 @@ export class PrimaryCenteredHierarchicalComponent extends ThreeDView
         this.zPathAnimationArray[i] = this.zPathAnimationArray[i].map((val, j) => val + pathToAdd[2][j]);
 
         // lo mismo para el camino
-        fatherIndex = this.config.systemTypeArray[i]['center'];
-        orbitType = this.config.systemTypeArray[i]['type'];
+        fatherIndex = this.config.systemRelations[i]['center'];
+        orbitType = this.config.systemRelations[i]['type'];
 
         pathToAdd = manager.getRotationCenterPath(drawnTimes);
 

@@ -45,8 +45,9 @@ export class TwoDView implements ViewComponent
 	protected initXval : number;
 	protected finalXval : number;
 
-	/** Label for the x axis */
+	/** Labels for the axis */
 	protected xLabel : string;
+	protected yLabel : string;
 
 	/** Extremes for the velocity */
 	protected minVel : number;
@@ -118,6 +119,8 @@ export class TwoDView implements ViewComponent
 		this.finalXpixel = this.width * (1 + this.portionX) / 2 - 20;
 		this.initYpixel = this.height * (1 - this.portionY) / 2;
 		this.finalYpixel = this.height * (1 + this.portionY) / 2;
+
+		// Configuration
 	}
 
 	/** Sets up the scaling for both axis, given the values */
@@ -219,35 +222,23 @@ export class TwoDView implements ViewComponent
 	/**
 	* Draws the dotted line for a given y value
 	* @param {number} value Value to be drawn on the graph
-	* @param {number} initXpixel Lowest value for x position
-	* @param {number} finalXpixel Highest value for x position
-	* @param {number} initYpixel Lowest value for y position
-	* @param {number} finalYpixel Highest value for y position
-	* @param {number} scaleX Scale relating pixel values to real values in x axis
-	* @param {number} scaleY Scale relating pixel values to real values in y axis
-	* @param {number} minX Minimum x value for real values
-	* @param {number} maxX Maximum x value for real values
-	* @param {number} minY Minimum y value for real values
-	* @param {number} maxY Maximum y value for real values
+	* @param {String} label Label for the line
 	* @param {number} fontsize Font height in pixels
-	* @param {Two}  two Two scene to drawn on
 	*/
-	drawCMVelLine(value, initXpixel, finalXpixel, initYpixel, finalYpixel, scaleX, scaleY,
-	  minX, maxX, minY, maxY,
-	  fontsize, two) : void
+	drawCMVelLine(value, label, fontsize) : void
 	{
-		let lineYPos = finalYpixel - (value - minY) * scaleY;
+		let lineYPos = this.finalYpixel - (value - this.minVel) * this.scaleY;
 
 		let steps = 150;
 		let cutSize = 1;
 		let lineSize = 3;
 		let anchors = [];
-		let pos = initXpixel;
-		let step = (finalXpixel - initXpixel) / steps;
+		let pos = this.initXpixel;
+		let step = (this.finalXpixel - this.initXpixel) / steps;
 		for(let i = 0; i < steps; i++){
 		  if(i%lineSize===0 && i!=0){
 
-		    let line = two.makeCurve(anchors, true);
+		    let line = this.two.makeCurve(anchors, true);
 		    line.color = 'grey';
 
 		    i+=cutSize;
@@ -265,36 +256,19 @@ export class TwoDView implements ViewComponent
 	      fill: 'black',
 	      weight: 150
 	    };
-		var text = two.makeText('VCM = ' + value + ' km/s', finalXpixel - 20, lineYPos + 10, style);
+		var text = this.two.makeText(label, this.finalXpixel - 20, lineYPos + 10, style);
 	}
 
 
 	/**
-	* Draws the axis for the current view (Note: y values are inverted)
+	* Draws the axis for the current view. Y values are measured from the top
 	* @param {number} tickLength lengths of the tick in pixels
-	* @param {string} xLabel Label for x axis
-	* @param {string} yLabel Label for y axis
-	* @param {number} nT Number of periods in the graph
-	* @param {number} initXpixel Lowest value for x position
-	* @param {number} finalXpixel Highest value for x position
-	* @param {number} initYpixel Lowest value for y position
-	* @param {number} finalYpixel Highest value for y position
-	* @param {number} scaleX Scale relating pixel values to real values in x axis
-	* @param {number} scaleY Scale relating pixel values to real values in y axis
-	* @param {number} minX Minimum x value for real values
-	* @param {number} maxX Maximum x value for real values
-	* @param {number} minY Minimum y value for real values
-	* @param {number} maxY Maximum y value for real values
 	* @param {number} fontsize Font height in pixels
-	* @param {Two}  two Two scene to drawn on
 	*/
-	drawAxis(tickLength, nT,
-	  xLabel, yLabel, initXpixel, finalXpixel, initYpixel, finalYpixel, scaleX, scaleY,
-	  minX, maxX, minY, maxY,
-	  fontsize, two) : void
+	drawAxis(tickLength, fontsize) : void
 	{
-	  let lengthX = finalXpixel - initXpixel;
-	  let lengthY = finalYpixel - initYpixel;
+	  let lengthX = this.finalXpixel - this.initXpixel;
+	  let lengthY = this.finalYpixel - this.initYpixel;
 	  let stepsX = 0.3 * lengthX / fontsize; 
 	  let stepsY = 0.3 * lengthY / fontsize; 
 
@@ -307,7 +281,7 @@ export class TwoDView implements ViewComponent
 	  }
 
 	  /* Texto */
-	  let labels = [xLabel, yLabel];
+	  let labels = [this.xLabel, this.yLabel];
 	  let colors = ['blue', 'red'];
 	  let styles = [{
 	      family: 'arial',
@@ -323,79 +297,79 @@ export class TwoDView implements ViewComponent
 	      weight: 100
 	    }];
 	  let labelPos = [
-	    [initXpixel + lengthX + 20, finalYpixel],
-	    [initXpixel, finalYpixel - lengthY - 10]
+	    [this.initXpixel + lengthX + 20, this.finalYpixel],
+	    [this.initXpixel, this.finalYpixel - lengthY - 10]
 	    ];
 	  let axisEndPoints = [
-	    new Two.Anchor(initXpixel + lengthX, finalYpixel),
-	    new Two.Anchor(initXpixel, finalYpixel - lengthY)
+	    new Two.Anchor(this.initXpixel + lengthX, this.finalYpixel),
+	    new Two.Anchor(this.initXpixel, this.finalYpixel - lengthY)
 	    ];
 
-	  let labelsDistancesX = linspace(initXpixel, finalXpixel, stepsX)
-	  let labelsDistancesY = linspace(finalYpixel, initYpixel, stepsY)
+	  let labelsDistancesX = linspace(this.initXpixel, this.finalXpixel, stepsX)
+	  let labelsDistancesY = linspace(this.finalYpixel, this.initYpixel, stepsY)
 
 
 	  /* Draw the axis */
 	  for(let i = 0; i < 2; i++)
 	  {
 	    let anchors = [
-	      new Two.Anchor(initXpixel, finalYpixel),
+	      new Two.Anchor(this.initXpixel, this.finalYpixel),
 	      axisEndPoints[i]
 	    ];
-	    let axis = two.makeCurve(anchors, true);
+	    let axis = this.two.makeCurve(anchors, true);
 
 	    axis.linewidth = 2;
 	    axis.stroke = colors[i];
 	    axis.noFill();
 
-	    var text = two.makeText(labels[i], labelPos[i][0], labelPos[i][1], styles[i]);
+	    var text = this.two.makeText(labels[i], labelPos[i][0], labelPos[i][1], styles[i]);
 	  }
 
 	  /** Draw the labels */
 	  for(let j = 0; j < labelsDistancesX.length; j++)
 	  {
 
-	    var pos = [labelsDistancesX[j], finalYpixel + 2*tickLength];
-	    var tickStart = new Two.Anchor(labelsDistancesX[j], finalYpixel + tickLength/2);
-	    var tickEnd = new Two.Anchor(labelsDistancesX[j], finalYpixel - tickLength/2);
+	    var pos = [labelsDistancesX[j], this.finalYpixel + 2*tickLength];
+	    var tickStart = new Two.Anchor(labelsDistancesX[j], this.finalYpixel + tickLength/2);
+	    var tickEnd = new Two.Anchor(labelsDistancesX[j], this.finalYpixel - tickLength/2);
 
-	    let labelSpacing = +this.toFixed(((lengthX / scaleX) / stepsX), 2);
-	    var tickPosReal = +this.toFixed((j * labelSpacing + minX), 2);
+	    let labelSpacing = +this.toFixed(((lengthX / this.scaleX) / stepsX), 2);
+	    var tickPosReal = +this.toFixed((j * labelSpacing + this.initXval), 2);
 
-	    var text = two.makeText(tickPosReal, pos[0], pos[1], styles[0]);
+	    var text = this.two.makeText(tickPosReal, pos[0], pos[1], styles[0]);
 
 	    let anchors = [tickStart, tickEnd];
-	    let tick = two.makeCurve(anchors, true);
+	    let tick = this.two.makeCurve(anchors, true);
 	    tick.stroke = colors[0];
 	  }
 
 	  for(let j = 0; j < labelsDistancesY.length; j++)
 	  {
-	    var pos = [initXpixel - 2*tickLength, labelsDistancesY[j]];
-	    var tickStart = new Two.Anchor(initXpixel - tickLength/2, labelsDistancesY[j]);
-	    var tickEnd = new Two.Anchor(initXpixel + tickLength/2, labelsDistancesY[j]);
+	    var pos = [this.initXpixel - 2*tickLength, labelsDistancesY[j]];
+	    var tickStart = new Two.Anchor(this.initXpixel - tickLength/2, labelsDistancesY[j]);
+	    var tickEnd = new Two.Anchor(this.initXpixel + tickLength/2, labelsDistancesY[j]);
 
-	    let labelSpacing = +this.toFixed(((lengthY / scaleY) / stepsY), 2);
-	    var tickPosReal = +this.toFixed((j * labelSpacing + minY), 2);
+	    let labelSpacing = +this.toFixed(((lengthY / this.scaleY) / stepsY), 2);
+	    var tickPosReal = +this.toFixed((j * labelSpacing + this.minVel), 2);
 	    
-	    var text = two.makeText(tickPosReal, pos[0], pos[1], styles[1]);
+	    var text = this.two.makeText(tickPosReal, pos[0], pos[1], styles[1]);
 
 	    let anchors = [tickStart, tickEnd];
-	    let tick = two.makeCurve(anchors, true);
+	    let tick = this.two.makeCurve(anchors, true);
 	    tick.stroke = colors[1];
 	  }
 
-	  let tLines = linspace(initXpixel,finalXpixel, nT);
+	  let tLines = linspace(this.initXpixel,this.finalXpixel, this.nT);
 
 	  /** Draw the lines that divide periods */
-	  for(let frac = 1; frac <= nT; frac++)
+	  for(let frac = 1; frac <= this.nT; frac++)
 	  {
-	    let pos = [tLines[frac], finalYpixel];
-	    let lineStart = new Two.Anchor(tLines[frac], finalYpixel);
-	    let lineEnd = new Two.Anchor(tLines[frac], initYpixel);
+	    let pos = [tLines[frac], this.finalYpixel];
+	    let lineStart = new Two.Anchor(tLines[frac], this.finalYpixel);
+	    let lineEnd = new Two.Anchor(tLines[frac], this.initYpixel);
 
 	    let anchors = [lineStart, lineEnd];
-	    let line = two.makeCurve(anchors, true);
+	    let line = this.two.makeCurve(anchors, true);
 	    line.stroke = 'grey';
 	  }
 	}

@@ -49,9 +49,19 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
 
     this.two = new Two(this.params).appendTo(this.elem);
 
+    let xUnits = this.config.scalingSettings['velocityScale'].name;
+    let CMVel = this.manager.getCMVel();
     this.manager.buildCMRadialVelocities();
   	this.velsPrimary = this.manager.getPrimaryCMVelocities();
     this.velsSecondary = this.manager.getSecondaryCMVelocities();
+
+    if(xUnits == 'm/s')
+    {
+      CMVel = 1000 * CMVel;
+      this.velsPrimary = this.velsPrimary.map((x) => 1000*x);
+      this.velsSecondary = this.velsSecondary.map((x) => 1000*x);
+    }
+
 
     this.parametrization = AxisEnum.PHASE;
     if(this.parametrization == AxisEnum.TIMES)
@@ -70,6 +80,7 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
 
     let velocityScaling = (v) => {
       return -this.scaleY * (v - this.minVel) + this.finalYpixel;};
+
     this.velsPrimary = this.velsPrimary.map(velocityScaling);
     this.velsSecondary = this.velsSecondary.map(velocityScaling);
 
@@ -78,14 +89,8 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
     
     /** Axis */
     let fontsize = 11;
-    this.drawAxis(10, this.nT,
-      this.xLabel, 'V [km/s]',
-      this.initXpixel, this.finalXpixel,
-      this.initYpixel, this.finalYpixel,
-      this.scaleX, this.scaleY,
-      this.initXval, this.finalXval,
-      this.minVel, this.maxVel,
-      fontsize, this.two);
+    this.yLabel = 'V ' + xUnits;
+    this.drawAxis(10, fontsize);
 
     /** Drawing graphs */
     let primarySize = this.config.starViewSettings['primarySize'];
@@ -96,13 +101,8 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
     this.secondaryCurrent = this.makeVelocityCurve(
       secondarySize, this.Xaxis, this.velsSecondary, this.two, 'orange');
 
-    this.drawCMVelLine(this.manager.getCMVel(),
-      this.initXpixel, this.finalXpixel,
-      this.initYpixel, this.finalYpixel,
-      this.scaleX, this.scaleY,
-      this.initXval, this.finalXval,
-      this.minVel, this.maxVel,
-      fontsize, this.two);
+    this.drawCMVelLine(CMVel, 'VCM = ' + CMVel + ' ' +
+      xUnits, fontsize);
 
     /* Animation */
   	this.two.bind('update', this.update).play();

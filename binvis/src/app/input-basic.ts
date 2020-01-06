@@ -32,8 +32,15 @@ export class InputBasic{
   realSecondsPerSimYear : number = 0.5;
 
   
-  /** Properties for system type selection */
+  /** Options for selecting the parent for each of the systems */
   systemOptions;
+
+  /* Velocity scale options and variable*/
+  velocityScaleOptions = [
+  {id: 0, name: "km/s"},
+  {id: 1, name: "m/s"} 
+  ]
+  velocityScale = this.velocityScaleOptions[0];
 
   /** Function for input updating */
   private _nSystems : number = 1;
@@ -100,7 +107,6 @@ export class InputBasic{
 
   updateViews() {
     let attributeList : OrbitAttribute[][] = [];
-    let systemTypeArray : {[id : string] : number}[] = [];
 
     this.propertyInputChildren.forEach((inputChild) => 
       {
@@ -109,16 +115,44 @@ export class InputBasic{
             inputChild.measuredAttributes));
         attributeList.push(attributes);
 
+        /* The parent system and this system's relation to it */
         let typeDict = {};
         typeDict['type'] = inputChild.type.id;
         typeDict['center'] = inputChild.centerIndex.id;
 
-        systemTypeArray.push(typeDict);
+        this.config.systemRelations.push(typeDict);
 
       });
 
-    this.config.updateSceneAttr(attributeList, this.viewSelectionChild.leftView.id, this.viewSelectionChild.rightView.id,
-      this.realSecondsPerSimYear, systemTypeArray);
+    /**
+    * Set global settings via  input
+    */
+    this.config.scalingSettings =
+    {
+      'velocityScale' : this.velocityScale // Scaling for the velocity
+    };
+
+    this.config.timeSettings = {
+      'initT' : 1990,
+      'finalT' : 2020,
+      'orbitDependant' : true, // Does the time period depend on the outer orbit?
+      'nPeriods' : 3 // If so, how many periods are displayed
+    };
+
+    this.config.animationSettings =
+    {
+      'realSecondsPerSimYear' : this.realSecondsPerSimYear,
+      'framerate' : 60
+
+    };
+
+    this.config.starViewSettings = {
+      'primarySize' : 5,
+      'starScalingFun' : (x) => x ** (1/3)
+    };
+
+
+    this.config.updateSceneAttr(attributeList, this.viewSelectionChild.leftView.id, this.viewSelectionChild.rightView.id);
     this.sendAnimationCommand(); // Start animation
     this.sendFileInput(); // sends the files to be displayed
 
@@ -126,6 +160,10 @@ export class InputBasic{
     
   }
 
+  /*
+  * Sends the file to the configuration class, with the
+  * configuration set for that file
+  */
   sendFileInput(){
     this.fileInputChildren.forEach((fileInputChild) =>
     {

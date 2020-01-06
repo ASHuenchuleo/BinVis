@@ -41,6 +41,16 @@
 						<input class='input-group-text input-numeric' type="number" name='realSecondsPerSimYear' [(ngModel)]='realSecondsPerSimYear'> 
 				</div>
 		</div>
+		<div class='row'>
+		  	<div class="input-group input-group-parameter">
+		  	  <div class="input-group-prepend">
+		  	    <span class="input-group-text input-label">Velocity Scale</span>
+		  	  </div>
+			  	<select class="browser-default custom-select input-group-text" name="velocity-scale-select"[(ngModel)]="velocityScale">
+			  	     <option *ngFor="let c of velocityScaleOptions" [ngValue]="c">{{c.name}}</option>
+			  	</select>
+		  	</div>
+		</div>
 		
 		<div class="view-card-title"> <h5> Parameter Selection </h5> </div> 
 		<app-property-input> </app-property-input>
