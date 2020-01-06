@@ -11,7 +11,6 @@ The project is currently hosted at [a René Mendez's personal webpage](http://ww
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
 
 ## Acknoledgements
-Acknowledgments
 
 *	Constanza Villegas from Universidad de Chile's DIE, for kindly allowing me to use her work-in-progress thesis to develop the hierachical system simulation.
 
