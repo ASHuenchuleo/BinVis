@@ -31,25 +31,6 @@
 
 	<div class='col-lg-4 col-xs-12'>
 
-	<div class='row'>
-			<div class='input-group input-group-parameter'>
-					<div class='input-group-prepend'>
-					<span class="input-group-text input-label">Number of systems</span>
-					</div> 
-					<input class='input-group-text input-numeric' type="number" name='nSystems' [(ngModel)]='nSystems'> 
-			</div>
-	</div>
-
-
-	<div class='row'>
-			<div class='input-group input-group-parameter'>
-					<div class='input-group-prepend'>
-					<span class="input-group-text input-label">Timescale [yr/s]</span>
-					</div> 
-					<input class='input-group-text input-numeric' type="number" name='realSecondsPerSimYear' [(ngModel)]='realSecondsPerSimYear'> 
-			</div>
-	</div>
-
 	<div class="view-card-title"> <h5> Parameter Selection </h5> </div>
 		<div *ngFor="let index of systemEnumerator">
 		<mat-expansion-panel >
@@ -70,6 +51,26 @@
 	<div class="container">
 		<div class="view-card-title"> <h5> View Selection </h5> </div> 
 		<app-view-selection [leftView]="leftView" [rightView]="rightView" [viewOptions]="viewOptions" > </app-view-selection>
+
+		<div class='row'>
+				<div class='input-group input-group-parameter'>
+						<div class='input-group-prepend'>
+						<span class="input-group-text input-label">Timescale [yr/s]</span>
+						</div> 
+						<input class='input-group-text input-numeric' type="number" name='realSecondsPerSimYear' [(ngModel)]='realSecondsPerSimYear'
+						min='0' step=0.1 (keyup)="validateTimeScale($event)"> 
+				</div>
+		</div>
+		
+		<div class='row'>
+				<div class='input-group input-group-parameter'>
+						<div class='input-group-prepend'>
+						<span class="input-group-text input-label">Number of systems</span>
+						</div> 
+						<input class='input-group-text input-numeric' type="number" name='nSystems' [(ngModel)]='nSystems'
+						min='1' max='20' step="1" pattern="\d+" (keyup)='validateNumberOfSystems($event)'> 
+				</div>
+		</div>
 	</div>
 
 	<!--

@@ -8,7 +8,7 @@ export class OrbitAttribute {
   units : string = '';
 
   constructor(name: string,   value : number, units : string,
-  	hasRange = false, min = 0,  max = 0) {
+  	hasRange = false, min = -Number.MAX_SAFE_INTEGER,  max = Number.MAX_SAFE_INTEGER) {
   	this.name = name;
   	this.value = value;
     this.units = units;

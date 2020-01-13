@@ -6,7 +6,7 @@ import {ViewComponent} from './view.component';
 
 import {CsvParser, 	AstrometryRecord} from './csv-parser';
 
-
+import {linspace} from './utils'
 
 export class ThreeDView implements ViewComponent{
 	/** Speed factor of the orbit */
@@ -325,7 +325,7 @@ export class ThreeDView implements ViewComponent{
 	    new THREE.Vector3(0, 0, -length)
 	  ];
 
-	  let labelsDistances = this.linspace(0, length, steps)
+	  let labelsDistances = linspace(0, length, steps)
 
 
 	  for(let i = 0; i < 3; i++)
@@ -534,15 +534,6 @@ export class ThreeDView implements ViewComponent{
 		return node;
 	}
 
-
-	linspace(init, end, N)
-	{
-	    let ans = [];
-	    let step = (end - init)/N;
-	    for(let i = 0; i <= N; i++) ans.push(init + i * step);
-	    return ans;
-	}
-
 	/**
 	* Draws the X-Y plane
 	* @param {number} length The length of the axes
@@ -567,7 +558,7 @@ export class ThreeDView implements ViewComponent{
 	  // Funcion auxiliar
 
 	  let lineSteps = 2 * this.planeFactor * steps;
-	  let linesDistances = this.linspace(-planeLength, planeLength, lineSteps);
+	  let linesDistances = linspace(-planeLength, planeLength, lineSteps);
 
 	  let lineProps = {
 	    color : this.lineColor,

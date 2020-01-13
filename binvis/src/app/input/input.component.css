@@ -1,9 +1,5 @@
-.view-select{
-}
-
-
 .input-label{
-	width: 140px;
+	width: 155px;
 }
 
 .parameter-group{
@@ -12,11 +8,11 @@
 }
 
 .input-group-parameter{
-	margin-left: 15%;
+	margin-left: 5%;
 	margin-bottom: 20px;
-	margin-right: 15%
+	margin-right: 5%
 }
 
 .input-numeric{
-	width: 40%;
+	width: 42%;
 }

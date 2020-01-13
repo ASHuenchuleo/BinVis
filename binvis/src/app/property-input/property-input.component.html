@@ -3,7 +3,7 @@
 				<div class='input-group-prepend'>
 				<span class="input-group-text input-label" [innerHTML]="attr.name +  ' ' + attr.units"></span>
 				</div> 
-				<input class='input-group-text input-numeric' type="number" name='{{attr.name}}' [(ngModel)]='attr.value'> 
+				<input id="{{attr.name}}-input" class='input-group-text input-numeric' type="number" name='{{attr.name}}' [(ngModel)]='attr.value' min={{attr.min}} max={{attr.max}} (keyup)="validateRange($event, attr, attr.min, attr.max)">
 		</div>
 	</div>
 	<div class="parameter-group">
@@ -11,7 +11,7 @@
 				<div class='input-group-prepend'>
 				<span class="input-group-text input-label" [innerHTML]="attr.name +  ' ' + attr.units"></span>
 				</div> 
-				<input class='input-group-text input-numeric' type="number" name='{{attr.name}}' [(ngModel)]='attr.value'> 
+				<input id="{{attr.name}}-input" class='input-group-text input-numeric' type="number" name='{{attr.name}}' [(ngModel)]='attr.value' min={{attr.min}} max={{attr.max}} (keyup)="validateRange($event, attr, attr.min, attr.max)">
 		</div>
 	</div>
 
@@ -20,7 +20,7 @@
 				<div class='input-group-prepend'>
 				<span class="input-group-text input-label" [innerHTML]="attr.name + ' ' +  attr.units"></span>
 				</div> 
-				<input class='input-group-text input-numeric' type="number" name='{{attr.name}}' [(ngModel)]='attr.value'> 
+				<input id="{{attr.name}}-input" class='input-group-text input-numeric' type="number" name='{{attr.name}}' [(ngModel)]='attr.value' min={{attr.min}} max={{attr.max}} (keyup)="validateRange($event, attr, attr.min, attr.max)">
 
 		</div>
 	</div>

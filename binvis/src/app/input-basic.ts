@@ -1,5 +1,4 @@
 import { Component, ViewChild, ViewChildren, Input, QueryList} from '@angular/core';
-
 import {OrbitAttribute} from './orbit-attribute';
 import {ConfigService} from './config.service';
 import {ViewWindow} from './view-window';
@@ -47,6 +46,7 @@ export class InputBasic{
   get nSystems(): any {
     return this._nSystems;
   }
+
   
   @Input()
   set nSystems(val: any) {
@@ -107,12 +107,14 @@ export class InputBasic{
 
   updateViews() {
     let attributeList : OrbitAttribute[][] = [];
+    this.config.systemRelations = []
 
     this.propertyInputChildren.forEach((inputChild) => 
       {
         let attributes = inputChild.visualAttributes.concat(
           inputChild.physicalAttributes.concat(
             inputChild.measuredAttributes));
+
         attributeList.push(attributes);
 
         /* The parent system and this system's relation to it */
@@ -178,5 +180,27 @@ export class InputBasic{
     });
 
   }
+
+  /*
+  * Validates the time scale input
+  */
+  validateTimeScale(ev)
+  {
+    if(this.realSecondsPerSimYear < 0)
+      this.realSecondsPerSimYear = 0;
+  }
+
+  /*
+  * Validates the number of systems
+  */
+  validateNumberOfSystems(ev)
+  {
+    this.nSystems = parseInt(this.nSystems);
+    if(this.nSystems < 1)
+      this.nSystems = 1;
+    if(this.nSystems > 20)
+      this.nSystems = 20;
+  }
    
 }
+

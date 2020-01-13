@@ -2,7 +2,6 @@ import { Component, OnInit, Input} from '@angular/core';
 import {OrbitAttribute} from '../orbit-attribute'
 import {TypeEnum} from '../type-enum';
 
-
 @Component({
   selector: 'app-property-input',
   templateUrl: './property-input.component.html',
@@ -15,11 +14,11 @@ export class PropertyInputComponent implements OnInit {
   Omega : OrbitAttribute = new OrbitAttribute('&#937;', 51.2, '[°]', true, 0, 360); // deg
   i : OrbitAttribute = new OrbitAttribute('i',  146.2, '[°]', true, -180, 180); // deg
   T : OrbitAttribute = new OrbitAttribute('T', 1990.675, '[yr]'); // yr
-  P : OrbitAttribute = new OrbitAttribute('P', 0.546643, '[yr]'); // yr
-  a : OrbitAttribute = new OrbitAttribute('a', 0.019, '["]'); // arcsec
+  P : OrbitAttribute = new OrbitAttribute('P', 0.546643, '[yr]', true, 0); // yr
+  a : OrbitAttribute = new OrbitAttribute('a', 0.019, '["]', true, 0); // arcsec
   e : OrbitAttribute = new OrbitAttribute('e', 0.302, '', true, .0, 1.0);
   q : OrbitAttribute = new OrbitAttribute('q', 0.956, '', true, .0, 1.0);
-  plx : OrbitAttribute = new OrbitAttribute('π', 21.31, '[mas]'); // mas
+  plx : OrbitAttribute = new OrbitAttribute('π', 21.31, '[mas]', true, 0); // mas
   v0 : OrbitAttribute = new OrbitAttribute('V<sub>0</sub>', -14.131, '[<sup>km</sup>&frasl;<sub>s</sub>]'); // km/s
 
 
@@ -64,8 +63,16 @@ export class PropertyInputComponent implements OnInit {
   centerIndex = {id: 0, name: 'dummy'};
   type = this.typeOptions[1];
 
-
-
+  /*
+  * Validates the input to the range specified
+  */
+  validateRange(evt, obj, min = -Number.MAX_SAFE_INTEGER, max = Number.MAX_SAFE_INTEGER)
+  {
+    if(obj.value > max)
+      obj.value = max
+    if(obj.value < min)
+      obj.value = min
+  }
   constructor() {
   }
 

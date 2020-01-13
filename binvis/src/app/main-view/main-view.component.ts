@@ -9,6 +9,8 @@ import * as THREE from 'three'
 import SpriteText from 'three-spritetext';
 import OrbitControls from 'three-orbitcontrols';
 
+import {linspace} from '../utils';
+
 @Component({
   selector: 'app-main-view',
   templateUrl: './main-view.component.html',
@@ -123,9 +125,9 @@ export class MainViewComponent extends ThreeDView
     /* Line of nodes */
     let nSteps = 150;
     let nodesLine = this.drawOrbitLine(
-      this.linspace(desc[0], asc[0], nSteps),
-      this.linspace(desc[1], asc[1], nSteps),
-      this.linspace(desc[2], asc[2], nSteps));
+      linspace(desc[0], asc[0], nSteps),
+      linspace(desc[1], asc[1], nSteps),
+      linspace(desc[2], asc[2], nSteps));
 
 
     /* periastron and apoastron */
@@ -217,9 +219,9 @@ export class MainViewComponent extends ThreeDView
 
       let nSteps = 50;
       let segLen = 10;
-      let diffLinePathX = this.linspace(xPos, xPosReal, nSteps);
-      let diffLinePathY = this.linspace(yPos, yPosReal, nSteps);
-      let diffLinePathZ = this.linspace(0, 0, nSteps);
+      let diffLinePathX = linspace(xPos, xPosReal, nSteps);
+      let diffLinePathY = linspace(yPos, yPosReal, nSteps);
+      let diffLinePathZ = linspace(0, 0, nSteps);
       let diffLine = this.drawOrbitLine(diffLinePathX, diffLinePathY, diffLinePathZ,
                                           this.dataColor, segLen);
 

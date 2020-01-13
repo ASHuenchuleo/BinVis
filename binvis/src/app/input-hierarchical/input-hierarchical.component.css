@@ -1,13 +1,5 @@
-mat-expansion-panel{
-	margin: 5px;
-}
-
-.input-numeric{
-	width: 30%;
-}
-
 .input-label{
-	width: 160px;
+	width: 155px;
 }
 
 .parameter-group{
@@ -16,6 +8,11 @@ mat-expansion-panel{
 }
 
 .input-group-parameter{
-	margin-left: 15%;
+	margin-left: 5%;
 	margin-bottom: 20px;
+	margin-right: 5%
+}
+
+.input-numeric{
+	width: 42%;
 }

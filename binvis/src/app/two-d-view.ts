@@ -4,6 +4,8 @@ import {CsvParser, VelocityRecord} from './csv-parser';
 
 import Two from 'two.js'
 
+import {linspace} from './utils';
+
 
 export class TwoDView implements ViewComponent
 {
@@ -272,13 +274,6 @@ export class TwoDView implements ViewComponent
 	  let stepsX = 0.3 * lengthX / fontsize; 
 	  let stepsY = 0.3 * lengthY / fontsize; 
 
-	  // Funcion auxiliar
-	  let linspace = (init, end, N) => {
-	    let ans = [];
-	    let step = (end - init)/N;
-	    for(let i = 0; i <= N; i++) ans.push(init + i * step);
-	    return ans;
-	  }
 
 	  /* Texto */
 	  let labels = [this.xLabel, this.yLabel];
