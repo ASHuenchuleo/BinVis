@@ -1,14 +1,17 @@
 <div class='view-card-input container' style="margin-top: 20px">
-	<div class="row"> 
+	<div class="row">
 		<div class="col-12">
 			<div style="margin-bottom: 50px;margin-left: 5%;margin-right: 5%;">
 				<div> <h3> About Binvis </h3> </div>
 				<p>
 					Binvis is an open source web application that runs a simulation of a binary stellar system, and allows the user to interact with the system using animated graphics and 3D views. It also allows the simulation of higher order systems, treated as hierarchical systems where every additional component follows a Keplerian path around one of the other components or the centre of mass of a given pair.
 				</p>
-				<p> 
+				<p>
 					For a set of physical and geometrical parameters that describe the system, the Keplerian simulation calculates the position of the components and their properties over time, and renders them in the browser using the Javascript libraries <a href="https://threejs.org/">three.js</a> for drawing the system in a 3D space and <a href="https://two.js.org/">Two.js</a> for drawing graphs, with all computation done in the browser itself.
 				</p>
+        <p>
+          Binvis is a research project by Miguel Angel Sepulveda Huenchuleo under direction of Prof. Rene A. Mendez, Astronomy Department, Universidad de Chile.
+        </p>
 
 				<div> <h3> Using the tool </h3></div>
 				<p>
@@ -89,15 +92,15 @@
 				<div> <h5> Samples </h5></div>
 				<!--
 					<p>
-						Clicking on these links you can download samples for <a download="astrometric_HIP89000.csv" target="_blank"href="/assets/samples/astrometric_HIP89000.csv">astrometric</a> and <a  download="radvel_HIP89000.csv" target="_blank" href="/assets/samples/radvel_HIP89000.csv">spectroscopic</a>spectroscopic data of the default binary stellar system HIP89000. You can download them here and upload them on the binary tab and see how it compares to the simulation. 
+						Clicking on these links you can download samples for <a download="astrometric_HIP89000.csv" target="_blank"href="/BinVis/assets/samples/astrometric_HIP89000.csv">astrometric</a> and <a  download="radvel_HIP89000.csv" target="_blank" href="/BinVis/assets/samples/radvel_HIP89000.csv">spectroscopic</a>spectroscopic data of the default binary stellar system HIP89000. You can download them here and upload them on the binary tab and see how it compares to the simulation.
 					</p>
 				-->
 				<p>
-					Clicking on these links you can download samples for <a download="astrometric_HIP89000.csv" target="_blank"href="/~rmendez/0001_Research/2_Visual_Binaries/interactive/binvis/assets/samples/astrometric_HIP89000.csv">astrometric</a> and <a  download="radvel_HIP89000.csv" target="_blank" href="/~rmendez/0001_Research/2_Visual_Binaries/interactive/binvis/assets/samples/radvel_HIP89000.csv">spectroscopic</a> data of the default binary stellar system HIP89000. You can download them here and upload them on the binary tab and see how it compares to the simulation. <br>
+					Clicking on these links you can download samples for <a download="astrometric_HIP89000.csv" target="_blank"href="/BinVis/assets/samples/astrometric_HIP89000.csv">astrometric</a> and <a  download="radvel_HIP89000.csv" target="_blank" href="/BinVis/assets/samples/radvel_HIP89000.csv">spectroscopic</a> data of the default binary stellar system HIP89000. You can download them here and upload them on the binary tab and see how it compares to the simulation. <br>
 					References:
 				</p>
 				<ul>
-					<li>Mendez et al. 2017, Astronomical Journal, 154, 187: "Orbits for 18 Visual Binaries and Two Double-line Spectroscopic Binaries Observed with HRCAM on the CTIO SOAR 4 m Telescope, Using a New Bayesian Orbit Code Based on Markov Chain Monte Carlo", and supplemented with more recent epochs from the HRCam Speckle camera at the SOAR 4m, and the Zorro Speckle camera at the Gemini-South 8m telescope. <a href="/~rmendez/0001_Research/2_Visual_Binaries/interactive/binvis/assets/Mendez_2017_AJ_154_187.pdf">Download Here.</a></li>
+					<li>Mendez et al. 2017, Astronomical Journal, 154, 187: "Orbits for 18 Visual Binaries and Two Double-line Spectroscopic Binaries Observed with HRCAM on the CTIO SOAR 4 m Telescope, Using a New Bayesian Orbit Code Based on Markov Chain Monte Carlo", and supplemented with more recent epochs from the HRCam Speckle camera at the SOAR 4m, and the Zorro Speckle camera at the Gemini-South 8m telescope. <a href="/BinVis/assets/Mendez_2017_AJ_154_187.pdf">Download Here.</a></li>
 					<li>Pourbaix D., et al., 2004, Astronomy and Astrophysics, 424, 727: "SB9: The ninth catalogue of spectroscopic binary orbits" (Catalog available at: <a href="http://sb9.astro.ulb.ac.be/">http://sb9.astro.ulb.ac.be/</a>).</li>
 				</ul>
 				<div> <h4> Calculated Parameters </h4></div>
@@ -113,13 +116,13 @@
 						<b> m<sub>s</sub> </b>: The mass of the secondary component, in solar masses. It's obtained multiplying q by M<sub>p</sub>.
 					</li>
 					<li>
-						<b>Periastron and Apoastron</b>: The closest/farthest distance between both components, obtained by calculating the position of the secondary in arcseconds for true anomaly values 0 and <ng-katex [equation]="pi_eq"></ng-katex>, respectively. This is converted to distance diving it by the parallax. 
+						<b>Periastron and Apoastron</b>: The closest/farthest distance between both components, obtained by calculating the position of the secondary in arcseconds for true anomaly values 0 and <ng-katex [equation]="pi_eq"></ng-katex>, respectively. This is converted to distance diving it by the parallax.
 					</li>
 				</ul>
-			</div> 
-			<div class="row"> 
+			</div>
+			<div class="row">
 				<div class="col-12">
-				<div class="view-card-title" style="text-align:center;"> <h2> Acknowledgements </h2> </div> 
+				<div class="view-card-title" style="text-align:center;"> <h2> Acknowledgements </h2> </div>
 					<div style="margin-bottom: 20px;margin-left: 5%;margin-right: 5%;">
 						<ul>
 							<li> The hierarchical system simulation is based on the Master Thesis of Constanza Villegas-Mardones "Bayes-Based Estimation of Orbital Parameters in Triple Hierarchical Stellar Systems", Universidad de Chile, 2020. </li>
