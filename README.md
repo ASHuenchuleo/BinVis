@@ -5,7 +5,7 @@ BinVis is a web-based binary star system visualization tool, currently in develo
 For given geometrical and physical parameters, the application runs a simulation of the stellar system or systems in a 3D space, and allows the user to compare the simulation to observational data, a tutorial describing the parameters and how to use the application is in development.
 
 ## Getting started
-The project is currently hosted at [a René Mendez's personal webpage](http://www.das.uchile.cl/~rmendez/0001_Research/2_Visual_Binaries/interactive/binvis/). Because of the way it is hosted, reloading the webpage will cause a 404 error.
+The project is currently hosted at [Github Pages](https://ashuenchuleo.github.io/BinVis/). Because of the way it is hosted, reloading the webpage will cause a 404 error.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.

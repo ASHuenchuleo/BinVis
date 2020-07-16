@@ -21,13 +21,13 @@ export class ThreeDView implements ViewComponent{
 	protected scalinFun;
 
 	/** frustrum size */
-	protected frustumSize = 400;
+	protected frustumSize = 600;
 	protected aspect;
 
 	/** width of the canvas */
-	protected width : number = 400;
+	protected width : number = 600;
 	/** height of the canvas */
-	protected height : number = 400;
+	protected height : number = 600;
 
 	/** Portion of the canvas used for graph */
 	protected portion : number = 0.7;

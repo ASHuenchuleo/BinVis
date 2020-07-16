@@ -47,7 +47,7 @@ export class CsvParser {
         		record.epoch = currentRecord[0].trim();
         		record.PA = currentRecord[1].trim();
         		record.rho = currentRecord[2].trim();
-        		record.error_rho = currentRecord[3].trim(); 
+        		//record.error_rho = currentRecord[3].trim(); 
         	}
         	else if(type == 'velocity')
         	{
