@@ -33,26 +33,22 @@ export class CsvParser {
       if(hasHeader && i == 0)
       	continue;
 
-      let currentRecord = (<string>csvRecordsArray[i]).split(/\s+/);
+      let currentRecord = (<string>csvRecordsArray[i]).trim().split(/\s+/);
 
       try
       {
-        if (currentRecord.length == headerLength) {
+        if (currentRecord.length >= 3) {
         	let record;  
         	if(type == 'astrometry')
           {
-            //if(currentRecord.length != 4)
-            //  throw new Error('Bad file format!');
         		record = new AstrometryRecord();
         		record.epoch = currentRecord[0].trim();
         		record.PA = currentRecord[1].trim();
         		record.rho = currentRecord[2].trim();
-        		//record.error_rho = currentRecord[3].trim(); 
+        		record.error_rho = currentRecord[3].trim(); 
         	}
         	else if(type == 'velocity')
         	{
-            //if(currentRecord.length != 5)
-            //  throw new Error('Bad file format!');
         		record = new VelocityRecord();
         		record.epoch = currentRecord[0].trim(); 
         		record.vel = currentRecord[1].trim();
@@ -61,7 +57,8 @@ export class CsvParser {
           csvArr.push(record);  
         }
         else{
-          throw new Error('Bad header!');
+          console.log("Record skipped with length ", currentRecord.length)
+          //throw new Error('Bad header!');
         }
       }
       catch (error) {

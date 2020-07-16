@@ -16,7 +16,7 @@ export class PropertyInputComponent implements OnInit {
   T : OrbitAttribute = new OrbitAttribute('T', 1990.675, '[yr]'); // yr
   P : OrbitAttribute = new OrbitAttribute('P', 0.546643, '[yr]', true, 0); // yr
   a : OrbitAttribute = new OrbitAttribute('a', 0.019, '["]', true, 0); // arcsec
-  e : OrbitAttribute = new OrbitAttribute('e', 0.302, '', true, .0, 1.0);
+  e : OrbitAttribute = new OrbitAttribute('e', 0.302, '', true, .0, 0.95);
   q : OrbitAttribute = new OrbitAttribute('q', 0.956, '', true, .0, 1.0);
   plx : OrbitAttribute = new OrbitAttribute('π', 21.31, '[mas]', true, 0); // mas
   v0 : OrbitAttribute = new OrbitAttribute('V<sub>0</sub>', -14.131, '[<sup>km</sup>&frasl;<sub>s</sub>]'); // km/s

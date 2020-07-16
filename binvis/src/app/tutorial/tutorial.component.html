@@ -1,0 +1,132 @@
+<div class='view-card-input container' style="margin-top: 20px">
+	<div class="row"> 
+		<div class="col-12">
+			<div style="margin-bottom: 50px;margin-left: 5%;margin-right: 5%;">
+				<div> <h3> About Binvis </h3> </div>
+				<p>
+					Binvis is an open source web application that runs a simulation of a binary stellar system, and allows the user to interact with the system using animated graphics and 3D views. It also allows the simulation of higher order systems, treated as hierarchical systems where every additional component follows a Keplerian path around one of the other components or the centre of mass of a given pair.
+				</p>
+				<p> 
+					For a set of physical and geometrical parameters that describe the system, the Keplerian simulation calculates the position of the components and their properties over time, and renders them in the browser using the Javascript libraries <a href="https://threejs.org/">three.js</a> for drawing the system in a 3D space and <a href="https://two.js.org/">Two.js</a> for drawing graphs, with all computation done in the browser itself.
+				</p>
+
+				<div> <h3> Using the tool </h3></div>
+				<p>
+					The <b> view configuration section </b> allows you to input the parameters that describe the system and select the specifics on how you wish to view and interact with the simulation, allowing you to add additional systems in the hierarchical view, with a dedicated section for uploading your own data. Once everything is ready, you can push the "Render with these settings" button to begin the simulation. The specifics of each of the subsections, the available view options and the meaning of the parameters are described below.
+				</p>
+				<div> <h4> Parameter Selection </h4></div>
+				<p>
+					The default parameters for the system belong to the binary HIP89000, but you can input your own values in the boxes for each parameter in the units specified in the box itself. The properties are defined as follows:
+				</p>
+				<ul>
+					<li>
+						<b>The Argument of Periapsis &#969;</b> is the angle between the periastron and the ascending node, the intersection of the orbit and the sky when the secondary is moving away from the viewer. The allowed values go from 0° to 360°.
+					</li>
+					<li>
+						<b>The Longitude of Ascending Node &#937;</b> is the angle formed by the north axis and the ascending node on the sky plane. The allowed values go from 0° to 360°.
+					</li>
+					<li>
+						<b>The Inclination i</b> is the angle between a line perpendicular to the orbit and the sky plane. The allowed values go from -180° to 180°.
+					</li>
+					<li>
+						<b>The Parallax <ng-katex [equation]="Pi_eq"></ng-katex></b> is the annual parallax of the stellar system, measured in micro arcseconds.
+					</li>
+					<li>
+						<b>The Radial Velocity V<sub>o</sub></b> is the radial velocity of the centre of mass of the system, in km/s.
+					</li>
+					<li>
+						<b>The Period P</b> is the period of the system, measured in years.
+					</li>
+					<li>
+						<b>The Semimajor Axis a</b> is the axis of the ellipse that describes the orbit of the secondary component, measured in arcseconds.
+					</li>
+					<li>
+						<b>The Eccentricity e</b> of the orbit, and can go from 0 to 0.95 due to numerical limitations.
+					</li>
+					<li>
+						<b>The Mass Ratio q</b> is the ratio between the masses of the secondary and primary components, and can go from 0 to 1.
+					</li>
+				</ul>
+				<p>
+					For hierarchical systems, each additional component is treated as a system with its own separate set of parameters. For every additional system, you can specify its relationship to another system using the <b>Centered on</b> and <b>From system</b> selection boxers. The "Centered on" box allows you to specify the center of the orbit of the additional component with respect to the system specified in the "From system" selection box, giving the user freedom to describe a wide variety of hierarchical systems.
+				</p>
+				<div> <h4> View Options </h4></div>
+				<p>
+					This subsection allows you to specify what should be displayed and how. Once the simulation is ready, two different windows will appear on screen, each one with the specified view. What is displayed in each of the two windows can be adjusted before rendering in the <b>Left View</b> and <b>Right View</b> drop-down menus. The current options for binary systems are the following:
+				</p>
+					<ul>
+						<li> <b> 3D Relative to A</b>: The system is displayed in an interactive 3D view that allows you to zoom and rotate. The movement in the view is centered on the primary component of the system, showing how the secondary component rotates around the primary. </li>
+						<li> <b> 3D Relative to CM</b>: The system is displayed in an interactive 3D view that allows you to zoom and rotate. The movement in the view is centered on the centre of mass of the system, showing how both components rotate around it. </li>
+						<li> <b> Velocity Graph</b>: A 2D graph of the radial velocity of both components over a certain number of periods, with two moving markers illustrating the velocity over time. These radial velocities are relative to the barycenter of the solar system. </li>
+					</ul>
+				<p>
+					For hierarchical systems, only two options are currently available:
+				</p>
+					<ul>
+						<li> <b> All Systems</b>: All of the components are displayed in a 3D view that allows you to zoom and rotate, with the movement centered on the primary component of the first system. </li>
+						<li> <b> Zoomed on 0</b>: Only a zoomed in view of the first system is displayed, for clearer visualization of all components as the first system is often small. </li>
+					</ul>
+				<p>
+					The <b> Number of Systems</b> input specifies the number of systems for which you must specify its properties, in the hierarchical view, the <b>Velocity Scale</b> dropdown defines the units for the radial velocity in the radial velocity view, and the <b>Timescale</b> input box describes how fast the simulation advances, in years of the system per second of your time.
+				</p>
+				<div> <h5> About the views </h5> </div>
+				<p>
+					All of the views are synchronized with each other, and the animation playback can be controlled with the buttons on the top right of the view configuration section. The standard color for the primary component is blue, and for the secondary its orange, the ascending node is marked as red and the descending node is marked as blue, and the periastron and apoastron are marked with purple and green dots, respectively.
+				</p>
+				<div> <h4> Data Input </h4></div>
+				<p>
+					The application allows users to upload their own observational data in order to compare it to the simulation. The astrometric data is displayed in the 3D views, and the velocity data is displayed on the radial velocity graph.
+				</p>
+				<p>
+					For now, the astrometric data upload only accepts a headerless three column file, where the first column is the epoch in Julian years, the second column is the position angle of the secondary with respect to the primary, corrected for the precession of the equinox, and the third column is the angular separation between both components, in arcseconds.
+				</p>
+				<p>
+					As for the radial velocity upload, the file format is a headerless three column file, with the first column in Julian years, days or Besselian years, the option must be specified in the <b>Date Type</b> dropdown. The second column must contain the velocity in the units specified in the view selection subsection, and the third column must specify to which component the measurement corresponds, being either "Va" and "Vb" or "a" and "b".
+				</p>
+				<p>
+					Once the data is rendered, you can click on each data point to see more information about it.
+				</p>
+				<div> <h5> Samples </h5></div>
+				<!--
+					<p>
+						Clicking on these links you can download samples for <a download="astrometric_HIP89000.csv" target="_blank"href="/assets/samples/astrometric_HIP89000.csv">astrometric</a> and <a  download="radvel_HIP89000.csv" target="_blank" href="/assets/samples/radvel_HIP89000.csv">spectroscopic</a>spectroscopic data of the default binary stellar system HIP89000. You can download them here and upload them on the binary tab and see how it compares to the simulation. 
+					</p>
+				-->
+				<p>
+					Clicking on these links you can download samples for <a download="astrometric_HIP89000.csv" target="_blank"href="/~rmendez/0001_Research/2_Visual_Binaries/interactive/binvis/assets/samples/astrometric_HIP89000.csv">astrometric</a> and <a  download="radvel_HIP89000.csv" target="_blank" href="/~rmendez/0001_Research/2_Visual_Binaries/interactive/binvis/assets/samples/radvel_HIP89000.csv">spectroscopic</a> data of the default binary stellar system HIP89000. You can download them here and upload them on the binary tab and see how it compares to the simulation. <br>
+					References:
+				</p>
+				<ul>
+					<li>Mendez et al. 2017, Astronomical Journal, 154, 187: "Orbits for 18 Visual Binaries and Two Double-line Spectroscopic Binaries Observed with HRCAM on the CTIO SOAR 4 m Telescope, Using a New Bayesian Orbit Code Based on Markov Chain Monte Carlo", and supplemented with more recent epochs from the HRCam Speckle camera at the SOAR 4m, and the Zorro Speckle camera at the Gemini-South 8m telescope. <a href="/~rmendez/0001_Research/2_Visual_Binaries/interactive/binvis/assets/Mendez_2017_AJ_154_187.pdf">Download Here.</a></li>
+					<li>Pourbaix D., et al., 2004, Astronomy and Astrophysics, 424, 727: "SB9: The ninth catalogue of spectroscopic binary orbits" (Catalog available at: <a href="http://sb9.astro.ulb.ac.be/">http://sb9.astro.ulb.ac.be/</a>).</li>
+				</ul>
+				<div> <h4> Calculated Parameters </h4></div>
+				<p>
+					Here, physical properties of the system that can be derived from the geometrical parameters given by the user are displayed. The current calculated parameters are the following:
+				</p>
+				<ul>
+					<li>
+						<b> M<sub>p</sub> </b>: The mass of the primary component, in solar masses. It is calculated using the following expression: <br> <br>
+						<ng-katex style='margin-left:auto; margin-right:auto;width: 50%;' [equation]="primary_mass_formula" [options]='primary_mass_formula_prop'></ng-katex>
+					</li>
+					<li>
+						<b> m<sub>s</sub> </b>: The mass of the secondary component, in solar masses. It's obtained multiplying q by M<sub>p</sub>.
+					</li>
+					<li>
+						<b>Periastron and Apoastron</b>: The closest/farthest distance between both components, obtained by calculating the position of the secondary in arcseconds for true anomaly values 0 and <ng-katex [equation]="pi_eq"></ng-katex>, respectively. This is converted to distance diving it by the parallax. 
+					</li>
+				</ul>
+			</div> 
+			<div class="row"> 
+				<div class="col-12">
+				<div class="view-card-title" style="text-align:center;"> <h2> Acknowledgements </h2> </div> 
+					<div style="margin-bottom: 20px;margin-left: 5%;margin-right: 5%;">
+						<ul>
+							<li> The hierarchical system simulation is based on the Master Thesis of Constanza Villegas-Mardones "Bayes-Based Estimation of Orbital Parameters in Triple Hierarchical Stellar Systems", Universidad de Chile, 2020. </li>
+							<li> Fondecyt No. 1190038, IR René A. Mendez. </li>
+						</ul>
+					</div>
+				</div>
+			</div>
+</div>
+

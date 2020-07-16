@@ -41,6 +41,9 @@ export class TwoDView implements ViewComponent
 	/** Velocities of primary and secondary */
 	protected velsPrimary : number[];
 	protected velsSecondary : number[];
+	/** Path followed by the points */
+	protected velsPrimaryPath : number[];
+	protected velsSecondaryPath : number[];
 
 	/** Values for the x axis */
 	protected Xaxis : number[];
@@ -126,17 +129,17 @@ export class TwoDView implements ViewComponent
 	}
 
 	/** Sets up the scaling for both axis, given the values */
-	buildScaling() : void
+	buildScaling(yPathPrim, yPathSec, Xaxis) : void
 	{
-	  this.maxVel =  Math.max(...this.velsPrimary, ...this.velsSecondary);
-	  this.minVel =  Math.min(...this.velsPrimary, ...this.velsSecondary);
+	  this.maxVel =  Math.max(...yPathPrim, ...yPathSec);
+	  this.minVel =  Math.min(...yPathPrim, ...yPathSec);
 
 	  let sizeY = this.finalYpixel - this.initYpixel;
 	  this.scaleY =  sizeY / (this.maxVel - this.minVel);
 
 
-	  this.finalXval = this.Xaxis[this.Xaxis.length - 1];
-	  this.initXval = this.Xaxis[0];
+	  this.finalXval = Xaxis[Xaxis.length - 1];
+	  this.initXval = Xaxis[0];
 
 	  let sizeX = this.finalXpixel - this.initXpixel;
 	  this.scaleX =  sizeX / (this.finalXval -  this.initXval);

@@ -8,7 +8,7 @@
 		<h3> View Configuration </h3>
 	</div>
 	<div class='col-lg-3 col-xs-12' style='padding-bottom: 2%'>
-		<button type="submit" class="btn btn-outline-success">Render with these settings</button> 
+		<button type="submit" class="btn btn-outline-success">Render with these settings</button>
 	</div>
 	<div class='col-lg-3 col-xs-12' style='padding-bottom: 2%'>
 	<div class='btn-group'>
@@ -31,8 +31,8 @@
 
 
 
-	<div class='col-lg-4 col-xs-12'>		
-		<div class="view-card-title"> <h5> Parameter Selection </h5> </div> 
+	<div class='col-lg-4 col-xs-12'>
+		<div class="view-card-title"> <h5> Parameter Selection </h5> </div>
 		<app-property-input> </app-property-input>
 
 	</div>
@@ -41,15 +41,15 @@
 
 
 	<div class="container">
-		<div class="view-card-title"> <h5> View Options </h5> </div> 
+		<div class="view-card-title"> <h5> View Options </h5> </div>
 		<app-view-selection [leftView]="leftView" [rightView]="rightView" [viewOptions]="viewOptions"> </app-view-selection>
 		<div class='row'>
 				<div class='input-group input-group-parameter'>
 						<div class='input-group-prepend'>
 						<span class="input-group-text input-label">Timescale [yr/s]</span>
-						</div> 
+						</div>
 						<input class='input-group-text input-numeric' type="number" name='realSecondsPerSimYear' [(ngModel)]='realSecondsPerSimYear'
-						min='0' step=0.1 (keyup)="validateTimeScale($event)"> 
+						min='0.1' step=0.1 (keyup)="validateTimeScale($event)">
 				</div>
 		</div>
 		<div class='row'>
@@ -65,7 +65,7 @@
 	</div>
 
 	<div class="container">
-		<div class="view-card-title"> <h5> Data Input </h5> </div> 
+		<div class="view-card-title"> <h5> Data Input </h5> </div>
 		<app-file-input> </app-file-input>
 	</div>
 

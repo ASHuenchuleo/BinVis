@@ -30,14 +30,14 @@ export class InputBasic{
   /* Seconds per simulation year time scale */
   realSecondsPerSimYear : number = 0.5;
 
-  
+
   /** Options for selecting the parent for each of the systems */
   systemOptions;
 
   /* Velocity scale options and variable*/
   velocityScaleOptions = [
   {id: 0, name: "km/s"},
-  {id: 1, name: "m/s"} 
+  {id: 1, name: "m/s"}
   ]
   velocityScale = this.velocityScaleOptions[0];
 
@@ -47,7 +47,7 @@ export class InputBasic{
     return this._nSystems;
   }
 
-  
+
   @Input()
   set nSystems(val: any) {
     this._nSystems = val;
@@ -109,7 +109,7 @@ export class InputBasic{
     let attributeList : OrbitAttribute[][] = [];
     this.config.systemRelations = []
 
-    this.propertyInputChildren.forEach((inputChild) => 
+    this.propertyInputChildren.forEach((inputChild) =>
       {
         let attributes = inputChild.visualAttributes.concat(
           inputChild.physicalAttributes.concat(
@@ -159,7 +159,7 @@ export class InputBasic{
     this.sendFileInput(); // sends the files to be displayed
 
 
-    
+
   }
 
   /*
@@ -186,8 +186,8 @@ export class InputBasic{
   */
   validateTimeScale(ev)
   {
-    if(this.realSecondsPerSimYear < 0)
-      this.realSecondsPerSimYear = 0;
+    if(this.realSecondsPerSimYear <= 0)
+      this.realSecondsPerSimYear = 0.001;
   }
 
   /*
@@ -201,6 +201,6 @@ export class InputBasic{
     if(this.nSystems > 20)
       this.nSystems = 20;
   }
-   
+
 }
 

@@ -7,7 +7,7 @@ const kmUA = 1.496 * Math.pow(10, 8); // kilometers in an UA
 const secYr = 3.15 * Math.pow(10, 7); // Number of seconds in year
 const UApc = 206265; // Number of UA in a parsec
 let Gtemp = 4.3 * Math.pow(10, -3) ; // pc / Ms * (km/s)^2
-const G = Gtemp * Math.pow(secYr, 2) / Math.pow(kmUA, 2) * UApc;  // UA * (UA/yr)^2/ Ms
+const G = Gtemp * Math.pow(secYr, 2) / Math.pow(kmUA, 2) * UApc;  // UA / yr^2/ Ms
 
 
 
@@ -23,7 +23,7 @@ export class PosManager {
   pathTimes : number[];
 
   /** Number of steps for orbit*/
-  steps : number = 3000;
+  steps : number = 2000;
   animationSteps : number;
 
   /** How many years does a single step last */
@@ -194,17 +194,29 @@ export class PosManager {
 
   solveEFromTime(tau : number) : number
   {
-    const kepler = (E) => {
-      return 2 * Math.PI * (tau - this.T) / this.P - (E - this.e * Math.sin(E));
-    };
     let E0;
-    if(this.e < 0.8){
-      E0 = 2 * Math.PI * (tau - this.T) / this.P
+    let Esol;
+    let M = 2 * Math.PI * (tau - this.T) / this.P;
+    M = M % (2 * Math.PI);
+    const kepler = (E) => {
+      return  E - this.e * Math.sin(E) - M;
+    };
+
+    if(0 <= M % Math.PI  && M % Math.PI <= 0.25)
+      E0 = M + this.e * Math.sin(M) / (1 - Math.sin(M + this.e) + Math.sin(M));
+    if(0.25 < M % Math.PI  && M % Math.PI <= 2)
+      E0 = M + this.e;
+    if(2 < M % Math.PI  && M % Math.PI <= Math.PI)
+      E0 = M + this.e * (Math.PI - M) / (1 + this.e);
+    if(this.e <= 0.8){
+      E0 = M;
+      Esol = this.newtonRaphson(E0, 0.001, 15, 0.001, kepler);
+
     }
     else{
-      E0 = Math.PI;
+      E0 = M;
+      Esol = this.bisection(0, 10, 0.001, kepler, 15);
     }
-    var Esol = this.newtonRaphson(E0, 0.01, 100, 0.001, kepler);
     return Esol;
   }
 
@@ -212,10 +224,7 @@ export class PosManager {
   * Calculates the position of the secondary in the main view
   * given the value of the true anomaly. In arcseconds.
   */
-
   apparentPositionFromTrueAnomaly(nu : number){
-
-
       /* Since atan only returns from -pi/2 to pi/2
       * we must make adjustments
       */
@@ -231,8 +240,51 @@ export class PosManager {
       Math.sqrt((1 + this.e) / (1 - this.e)) * Math.tan(E/2)) - nu;
       };
 
-      var Esol = this.newtonRaphson(nu, 0.01, 100, 0.01, trueAnomalyRelation);
+      var Esol = this.bisection(-Math.PI, Math.PI, 0.001, trueAnomalyRelation, 100);
       return this.getPositionFromE(Esol);
+  }
+  bisection(a, b, eps, f, max = 100)
+  {
+    let n = 1;
+    let c;
+    while(n <= max)
+    {
+      c = (a + b)/2
+      if((b - a)/2 < eps || Math.abs(f(c)) < eps)
+        return c
+      if(f(a) * f(c) > 0)
+        a = c
+      else
+        b = c
+      n += 1
+
+    }
+    console.log(c);
+    console.log(f(c))
+    var e = new Error("Can't calculate position! Value of c:" + c);
+    e.name = "NumericalError";
+    throw(e);
+  }
+  newtonRaphson(guess, increment, iteration, eps, f) : number
+  {
+    let rootFound = false;
+
+    for (let i = 0; i < iteration + 1; i++) {
+        let fPrime = (f(guess + increment / 2) - f(guess - increment / 2)) / increment;
+        guess += -f(guess) / fPrime;
+        if (Math.abs(f(guess)) <= eps) {
+            rootFound = true;
+            break;
+        }
+    }
+    
+    if (rootFound) {
+        return guess;
+    } else {
+      var e = new Error("Can't calculate position! Value found: " + guess);
+      e.name = "NumericalError";
+      throw(e);
+    }
   }
 
   /**
@@ -321,27 +373,6 @@ export class PosManager {
     return rvel
   }
 
-  newtonRaphson(guess, increment, iteration, eps, f) : number
-  {
-    let rootFound = false;
-
-    for (let i = 0; i < iteration + 1; i++) {
-        let fPrime = (f(guess + increment / 2) - f(guess - increment / 2)) / increment;
-        guess += -f(guess) / fPrime;
-        if (Math.abs(f(guess)) <= eps) {
-            rootFound = true;
-            break;
-        }
-    }
-    
-    if (rootFound) {
-        return guess;
-    } else {
-      var e = new Error("Can't calculate position!");
-      e.name = "NumericalError";
-      throw(e);
-    }
-  }
 
 
   /*
@@ -502,14 +533,14 @@ export class PosManager {
   * Returns the values for the phase steps
   * @return {number[]} array of values of the phase, between 0 and 1
   */
-  getPhases() : number[]
-  {
+  getPhases(times : number[] = undefined) : number[]{
+    times = times || this.animationTimes;
     let phases = [];
     let currentPhase = 0;
-    for(var i = 0; i < this.animationTimes.length; i++)
+    for(var i = 0; i < times.length; i++)
     {
       phases.push(currentPhase);
-      currentPhase = (this.animationTimes[i] - this.T)/this.P;
+      currentPhase = (times[i] - this.T)/this.P;
     }
     return phases;
   }
@@ -535,18 +566,28 @@ export class PosManager {
   /**
   * Returns the primary's radial velocity array relative to the observer
   */
-  getPrimaryCMVelocities() : number[]
-  {
-    return this.primaryCMVelocities;
+  getPrimaryCMVelocities(times : number[] = undefined) : number[]{
+    times = times || this.animationTimes;
+    let primaryCMVelocities = [];
+
+    for(var i = 0; i < times.length; i++)
+      primaryCMVelocities.push(this.primaryCMVelocity(times[i]));
+
+    return primaryCMVelocities;
   }
 
   /**
   * Returns the secondary's radial velocity array relative to the observer
   * @return {number[]} radial velocities for the secondary
   */
-  getSecondaryCMVelocities() : number[]
-  {
-    return this.secondaryCMVelocities; 
+  getSecondaryCMVelocities(times : number[] = undefined) : number[]{
+    times = times || this.animationTimes;
+    let secondaryCMVelocities = [];
+
+    for(var i = 0; i < times.length; i++)
+      secondaryCMVelocities.push(this.secondaryCMVelocity(times[i]));
+
+    return secondaryCMVelocities; 
   }
 
   /**
@@ -606,23 +647,6 @@ export class PosManager {
       positions = new Array(3).fill(new Array(this.animationSteps).fill(0));
 
     return positions;
-  }
-
-  /**
-  * Builds the radial velocity for the primary and secondary respect to the CM
-  * @param {number[]} times Time array for the positions to be calculated.
-  */
-  buildCMRadialVelocities(times : number[] = undefined) : void{
-    times = times || this.animationTimes;
-
-    this.primaryCMVelocities = [];
-    this.secondaryCMVelocities = [];
-
-    for(var i = 0; i < this.animationTimes.length; i++)
-    {
-      this.primaryCMVelocities.push(this.primaryCMVelocity(times[i]));
-      this.secondaryCMVelocities.push(this.secondaryCMVelocity(times[i]));
-    }
   }
 
   /**

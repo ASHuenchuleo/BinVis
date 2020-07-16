@@ -4,6 +4,7 @@ import { ConfigService} from './../config.service';
 import {VelocityRecord} from './../csv-parser';
 
 import {TwoDView} from './../two-d-view';
+import {repeat} from './../utils'
 
 const AxisEnum = {
   TIMES: 1,
@@ -23,6 +24,7 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
   primaryCurrent;
   secondaryCurrent;
 
+
   // Manager for the orbit in the view
   manager : PosManager;
 
@@ -30,6 +32,7 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
     super(config,  'velocity-time');
     this.manager = config.managers[0];
     this.manager.initTimes(this.manager.T, this.manager.T + this.nT * this.manager.P);
+
 
   }
   
@@ -51,7 +54,10 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
 
     let xUnits = this.config.scalingSettings['velocityScale'].name;
     let CMVel = this.manager.getCMVel();
-    this.manager.buildCMRadialVelocities();
+    // Get the paths and the graph path
+    this.velsPrimaryPath = this.manager.getPrimaryCMVelocities(this.manager.pathTimes);
+    this.velsSecondaryPath = this.manager.getSecondaryCMVelocities(this.manager.pathTimes);
+
   	this.velsPrimary = this.manager.getPrimaryCMVelocities();
     this.velsSecondary = this.manager.getSecondaryCMVelocities();
 
@@ -60,33 +66,51 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
       CMVel = 1000 * CMVel;
       this.velsPrimary = this.velsPrimary.map((x) => 1000*x);
       this.velsSecondary = this.velsSecondary.map((x) => 1000*x);
+
+      this.velsPrimaryPath = this.velsPrimaryPath.map((x) => 1000*x);
+      this.velsSecondaryPath = this.velsSecondaryPath.map((x) => 1000*x);
     }
 
+    let XaxisPath = this.manager.pathTimes;
+    this.Xaxis = this.manager.getTimes();
 
     this.parametrization = AxisEnum.PHASE;
     if(this.parametrization == AxisEnum.TIMES)
     {
-      this.Xaxis = this.manager.getTimes();
       this.xLabel = 'T[yr]';
     }
     else if(this.parametrization == AxisEnum.PHASE)
     {
-      this.Xaxis = this.manager.getPhases();
+      this.Xaxis = this.manager.getPhases(this.Xaxis);
+      XaxisPath = this.manager.getPhases(XaxisPath);
       this.xLabel = 'Phase';
     }
 
     /** Scaling */
-    this.buildScaling();
+    // For the animation
+    this.buildScaling(this.velsPrimary, this.velsSecondary, this.Xaxis);
 
     let velocityScaling = (v) => {
       return -this.scaleY * (v - this.minVel) + this.finalYpixel;};
+    let xAxisScaling = (t)=> {return this.scaleX * (t - this.initXval) + this.initXpixel;};
 
     this.velsPrimary = this.velsPrimary.map(velocityScaling);
     this.velsSecondary = this.velsSecondary.map(velocityScaling);
 
-    let xAxisScaling = (t)=> {return this.scaleX * (t - this.initXval) + this.initXpixel;};
     this.Xaxis = this.Xaxis.map(xAxisScaling);
-    
+
+    // For the path
+    this.buildScaling(this.velsPrimaryPath, this.velsSecondaryPath, XaxisPath);
+
+    velocityScaling = (v) => {
+      return -this.scaleY * (v - this.minVel) + this.finalYpixel;};
+    xAxisScaling = (t)=> {return this.scaleX * (t - this.initXval) + this.initXpixel;};
+
+    this.velsPrimaryPath = this.velsPrimaryPath.map(velocityScaling);
+    this.velsSecondaryPath = this.velsSecondaryPath.map(velocityScaling);
+
+    XaxisPath = XaxisPath.map(xAxisScaling);
+
     /** Axis */
     let fontsize = 11;
     this.yLabel = 'V ' + xUnits;
@@ -97,9 +121,10 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
     let secondarySize = primarySize * this.config.starViewSettings['starScalingFun'](this.manager.getMassRatio());
     
     this.primaryCurrent = this.makeVelocityCurve(
-      primarySize, this.Xaxis, this.velsPrimary, this.two, 'blue');
+      primarySize, XaxisPath, this.velsPrimaryPath, this.two, 'blue');
     this.secondaryCurrent = this.makeVelocityCurve(
-      secondarySize, this.Xaxis, this.velsSecondary, this.two, 'orange');
+      secondarySize, XaxisPath, this.velsSecondaryPath, this.two, 'orange');
+
 
     this.drawCMVelLine(CMVel, 'VCM = ' + CMVel + ' ' +
       xUnits, fontsize);
@@ -153,8 +178,8 @@ export class VelocityViewComponent extends TwoDView implements AfterViewInit, On
 
         let component = record.comp;
         let markerColor = 'black';
-        if(component == 'Va') markerColor = this.dataColor1;
-        if(component == 'Vb') markerColor = this.dataColor2;
+        if(component == 'Va' || component == 'a') markerColor = this.dataColor1;
+        if(component == 'Vb' || component == 'b') markerColor = this.dataColor2;
         marker.stroke = markerColor;
 
         this.two.update(0);

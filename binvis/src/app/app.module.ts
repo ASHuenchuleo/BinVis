@@ -31,6 +31,9 @@ import { InputHierarchicalComponent } from './input-hierarchical/input-hierarchi
 import {MatExpansionModule} from '@angular/material/expansion';
 import { PrimaryCenteredHierarchicalComponent } from './primary-centered-hierarchical/primary-centered-hierarchical.component';
 import { VelocityViewHierarchicalComponent } from './velocity-view-hierarchical/velocity-view-hierarchical.component';
+import { TutorialComponent } from './tutorial/tutorial.component';
+
+import { KatexModule } from 'ng-katex';
 
 
 @NgModule({
@@ -59,7 +62,8 @@ import { VelocityViewHierarchicalComponent } from './velocity-view-hierarchical/
     FileInputComponent,
     InputHierarchicalComponent,
     PrimaryCenteredHierarchicalComponent,
-    VelocityViewHierarchicalComponent
+    VelocityViewHierarchicalComponent,
+    TutorialComponent
   ],
   imports: [
     BrowserModule,
@@ -69,7 +73,8 @@ import { VelocityViewHierarchicalComponent } from './velocity-view-hierarchical/
     NgbModule,
     MDBBootstrapModule.forRoot(),
     AppRoutingModule,
-    MatExpansionModule
+    MatExpansionModule,
+    KatexModule
   ],
   exports : [
    MatExpansionModule

@@ -14,7 +14,7 @@ export class FileInputComponent implements OnInit {
   {id: 2, name: "Besselian Years"},
   ];
 
-  dateVelocity = this.dateVelocityOptions[1];
+  dateVelocity = this.dateVelocityOptions[0];
 
   /* Files to be recieved */
   astrometryFile : File = null;
