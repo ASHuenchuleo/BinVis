@@ -1,8 +1,8 @@
 # BinVis
 
-BinVis is a web-based binary star system visualization tool, currently in development by Miguel Sepúlveda Huenchuleo, Astronomy student from Universidad de Chile, under the supervision of René Mendez, associate professor of the astronomy department.
+BinVis is a web-based binary star system visualization tool, currently in development by Miguel Sepúlveda Huenchuleo, Astronomy student from Universidad de Chile, under the supervision of Prof. Rene A. Mendez, of the astronomy department.
 
-For given geometrical and physical parameters, the application runs a simulation of the stellar system or systems in a 3D space, and allows the user to compare the simulation to observational data, a tutorial describing the parameters and how to use the application is in development.
+For given set of orbital elements, the application runs a simulation of the stellar system or systems in a 3D space, and allows the user to compare the simulation to observational data. A tutorial describing the parameters and how to use the application is under development.
 
 ## Getting started
 The project is currently hosted at [Github Pages](https://ashuenchuleo.github.io/BinVis/).
