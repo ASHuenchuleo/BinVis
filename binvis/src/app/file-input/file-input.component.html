@@ -1,9 +1,9 @@
 		<div class="row view-select">
 		  <div class="col">
 		  	<div class="form-group">
-		  	    <label for="file"> <h6> Choose file for astrometric measurements </h6>
+		  	    <label for="file"> <h6> Choose file with astrometric measurements</h6>
 		  	    	<div class="help-tip">
-		  	    		<p>The expected format is a 3 or more column file with epoch in julian years, theta in degrees and rho in arcseconds in order.</p>
+		  	    		<p>The expected format is a simple headerless ascii three column file (additional columns will be ignored) with epoch in Besselian years, position angle in degrees and separation in arcseconds, in that in order.</p>
 		  	    	</div>
 		  	    </label>
 		  	    <input type="file"
@@ -16,9 +16,9 @@
 		<div class="row view-select">
 		  <div class="col">
 		  	<div class="form-group">
-		  	    <label for="file"> <h6> Choose file for velocity measurements</h6>
+		  	    <label for="file"> <h6> Choose file with radial velocity measurements</h6>
 		  	    <div class="help-tip">
-		  	    	<p>The expected format is a 3 or more column file with epoch in julian years, days or besselian years, the velocity in the selected units and the components labeled either as 'Va', 'a', 'Vb' or 'b'.</p>
+		  	    	<p>The expected format is a simple headerless ascii three column file (additional columns will be ignored) with epoch in Besselian years or Julian days (choose proper Date Type below), the velocity in the selected units, and the components labeled either as 'Va', 'a', 'Vb' or 'b'.</p>
 		  	    </div>
 		  	</label>
 		  	    <input type="file"
