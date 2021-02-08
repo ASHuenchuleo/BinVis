@@ -46,7 +46,7 @@ export class DerivedParametersComponent{
       this.derivedParametersArray[index] =
       [
         new OrbitAttribute('M<sub>p</sub>:', M, '[M<sub>☉</sub>]'),
-        new OrbitAttribute('m<sub>s</sub>:', m, '[M<sub>☉</sub>]'),
+        new OrbitAttribute('M<sub>s</sub>:', m, '[M<sub>☉</sub>]'),
         new OrbitAttribute('Periastron:', peri, '[AU]'),
         new OrbitAttribute('Apoastron:', apo, '[AU]')
       ];
