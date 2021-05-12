@@ -34,7 +34,7 @@
     "fs": "0.0.1-security",
     "hammerjs": "^2.0.8",
     "jquery": "^3.4.1",
-    "mathjs": "^6.0.4",
+    "mathjs": "^7.5.1",
     "mdbootstrap": "^4.8.9",
     "mocha": "^6.2.0",
     "ng-bootstrap-select": "^0.5.0",
